@@ -122,9 +122,75 @@ For each detected hazal citation:
 4. **Range punctuation.** En-dash with spaces around: `י, ע"א – יא, ע"ב`.
 5. **Quotation accuracy.** When a hazal source is quoted (not just cited), the Hebrew must match the canonical edition character-for-character. Any deviation gets `[...]`.
 
+## Sefaria validation (preferred — when available)
+
+The skill now validates every detected citation against [Sefaria](https://www.sefaria.org), which is the canonical online corpus.
+
+### Method 1 — Sefaria MCP tool (preferred, when running inside Claude Code with the MCP server enabled)
+
+If the agent has access to `mcp__claude_ai_Sefaria__get_text` (or any of the other Sefaria MCP tools), call it directly with the English Sefaria reference form:
+
+| Hebrew citation in manuscript | Sefaria reference to query |
+|---|---|
+| `(בבלי ברכות י, ע"א)` | `Berakhot 10a` |
+| `(ירושלמי ברכות א:א)` | `Jerusalem Talmud Berakhot 1:1` |
+| `(בראשית רבה ב:ה)` | `Genesis Rabbah 2:5` |
+| `(רמב"ם, הלכות תשובה ג:ב)` | `Mishneh Torah, Repentance 3:2` |
+| `(שולחן ערוך, אורח חיים צ:א)` | `Shulchan Arukh, Orach Chayim 90:1` |
+| `(בראשית א:א)` | `Genesis 1:1` |
+| `(תהלים קיט:א-יח)` | `Psalms 119:1-18` |
+
+Mapping rules:
+- Hebrew gematria → Arabic numeral.
+- Tractate / book name → English Sefaria title (use `mcp__claude_ai_Sefaria__clarify_name_argument` if uncertain).
+- Page-side `ע"א` → `a`; `ע"ב` → `b`.
+
+If MCP returns text → **VERIFIED**.
+If MCP returns an error or empty → **NOT-FOUND** (mark in manuscript as `[הציטוט לא נמצא בספריא — לבדוק במהדורה מודפסת]`).
+
+### Method 2 — Bundled fallback script (when MCP is unavailable)
+
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/verify-citation.sh "<English Sefaria reference>"`.
+
+The script tries the `sefaria` CLI first, then falls back to the public Sefaria API via curl.
+
+Output:
+- Line 1: `VERIFIED` | `NOT-FOUND` | `UNVERIFIED`
+- Line 2: canonical reference (or original on miss)
+
+If line 1 is `UNVERIFIED` (no network / no tool), mark the citation in the manuscript with `[UNVERIFIED]` so a human can validate later.
+
+### Caveat — Sefaria normalisation
+
+Sefaria is forgiving about edge inputs. A made-up reference like `Bava Metzia 999a` may silently normalise to `Bava Metzia 2a` (the first valid page). Always compare the **canonical ref returned by Sefaria** against the **original ref**. If they differ in chapter/page numbers, treat as `NOT-FOUND` and flag.
+
+## Marking unverified citations in the manuscript
+
+For citations that cannot be validated (no network, no MCP, source not in Sefaria, or Sefaria returned a different canonical ref):
+
+```
+(בבלי ברכות י, ע"א) [UNVERIFIED — Sefaria unreachable this session, please verify against printed edition]
+```
+
+The square-bracket flag is a deliberate, agent-friendly marker. The proofreader sweeps for `[UNVERIFIED]` flags during pass 2 and reports them as a list. **Never strip `[UNVERIFIED]` markers without reverifying.**
+
 ## Output
 
-Embedded in `CITATION_REPORT.md` (the cite-master skill's main report) as a separate "Hazal Citations" section.
+Embedded in `CITATION_REPORT.md` (the cite-master skill's main report) as a separate "Hazal Citations" section. Schema:
+
+```
+## Hazal Citations
+
+| # | Citation in manuscript | Sefaria ref | Status | Notes |
+|---|---|---|---|---|
+| 1 | (בבלי ברכות י, ע"א) | Berakhot 10a | ✓ VERIFIED | exact match |
+| 2 | (בבלי ברכות י, ע"ב) | Berakhot 10b | ✓ VERIFIED | |
+| 3 | (בבלי ברכות תקעב, ע"א) | — | ✗ NOT-FOUND | page does not exist |
+| 4 | (ירושלמי ברכות א:א) | Jerusalem Talmud Berakhot 1:1 | [UNVERIFIED] | Sefaria unreachable |
+```
+
+For NOT-FOUND citations: append `[INVALID — no such reference]` to the manuscript and explain in PROOF_NOTES.md.
+For UNVERIFIED citations: append `[UNVERIFIED]` and require human verification before publication.
 
 ## Hard rules
 

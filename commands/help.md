@@ -17,6 +17,7 @@ A Claude Code plugin for the Israeli book-production pipeline in Hebrew. Lector 
 | `/typeset` | Typesetting brief (Frank Ruhl Libre, RTL, גיליון דפוס) |
 | `/ship <file>` | Full pipeline with checkpoints |
 | `/voice` | Update AUTHOR_VOICE.md from accumulated feedback |
+| `/thesis [append\|show\|refresh]` | Manage the author's CandleKeep thesis notebook for this book |
 | `/help` | This help |
 
 ## Agents
@@ -41,7 +42,8 @@ A Claude Code plugin for the Israeli book-production pipeline in Hebrew. Lector 
 
 ## Runtime dependencies
 
-- **CandleKeep** — for the writer's guide. Plugin runs in degraded mode without it.
+- **CandleKeep** — author's curated knowledge layer (writer's guide, thesis notebook, craft extras). Plugin runs in degraded mode without it.
+- **Sefaria** (MCP or public API) — canonical-text validator for every Hazal citation. Citations that can't be validated get marked `[UNVERIFIED]`.
 - **Superpowers** — for plan-review-gate / design-review-gate.
 - **Metaswarm** — for multi-agent orchestration.
 

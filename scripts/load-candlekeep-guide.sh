@@ -1,60 +1,115 @@
 #!/usr/bin/env bash
-# load-candlekeep-guide.sh — fetch the canonical writer's guide from CandleKeep
-# and cache it to .ctx/writers-guide.md in the project root.
+# load-candlekeep-guide.sh — fetch the user's curated writing-craft knowledge
+# from CandleKeep and cache under .ctx/ in the project root.
 #
-# CandleKeep item ID: cmok9h0m10ahik30zt8yt0lt2
-# ("The Writer's Guide: How to Write, Edit, and Proofread a Book" — v2)
+# Design principle: CandleKeep is for the AUTHOR'S KNOWLEDGE LAYER —
+# craft books, the author's own evolving thesis notebook, voice fingerprints,
+# anti-AI patterns the author has flagged before, tone/style observations.
+# It is NOT for canonical primary texts (Tanakh, Talmud, Rambam, etc.) —
+# those live in Sefaria, and the hazal-citation skill queries Sefaria directly.
 #
-# Fail-open: if CandleKeep is unavailable, write a stub and exit 0 so the
-# pipeline continues in degraded mode.
+# Always loads:
+#   cmok9h0m10ahik30zt8yt0lt2  → .ctx/writers-guide.md       (King/Zinsser/Penn/Shapiro compendium)
+#   cmnudfue5003rmy0zlxt7ioa1  → .ctx/agent-team-guide.md    (Building Your Agent Team)
+#
+# Optional, controlled by book.yaml:
+#   thesis_notebook: <ck-id>          → .ctx/thesis-notebook.md
+#         The author's own CandleKeep notebook for THIS book — running thesis,
+#         chapter ideas, voice observations, things they want to come back to.
+#         Created by the author with `ck items create` outside this plugin.
+#
+#   craft_extras: [<ck-id>, ...]      → .ctx/craft-extras/<id>.md
+#         Additional craft references the author has curated — e.g. another
+#         writing book, a style guide, a translation theory text, an idiolect
+#         analysis from a previous project.
+#
+# Fail-open: if CandleKeep is unavailable, write a stub for missing items
+# and exit 0. Idempotent: re-fetches only if cached file is older than 12h.
+#
+# Citation lookups (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, Shulchan Arukh)
+# are NOT handled by this script — see scripts/verify-citation.sh.
 
 set -u
 
-GUIDE_ID="cmok9h0m10ahik30zt8yt0lt2"
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 CTX_DIR="${PROJECT_ROOT}/.ctx"
-GUIDE_FILE="${CTX_DIR}/writers-guide.md"
+mkdir -p "${CTX_DIR}/craft-extras"
 
-mkdir -p "${CTX_DIR}"
+# Always-on writing-craft references (verified against the user's library).
+GUIDE_ID_WRITERS="cmok9h0m10ahik30zt8yt0lt2"        # The Writer's Guide
+GUIDE_ID_AGENT_TEAM="cmnudfue5003rmy0zlxt7ioa1"     # Building Your Agent Team
 
-# If we already cached it this session and it's non-empty, skip.
-if [ -s "${GUIDE_FILE}" ]; then
-  age_seconds=$(( $(date +%s) - $(stat -f %m "${GUIDE_FILE}" 2>/dev/null || stat -c %Y "${GUIDE_FILE}" 2>/dev/null || echo 0) ))
-  # Re-fetch if older than 12 hours; otherwise reuse.
-  if [ "${age_seconds}" -lt 43200 ]; then
-    echo "writers-guide cached (age: ${age_seconds}s) — skipping fetch"
-    exit 0
-  fi
-fi
+# fetch_guide <ID> <output-path-under-.ctx> <description>
+fetch_guide() {
+  local id="$1"
+  local out="${CTX_DIR}/$2"
+  local desc="$3"
 
-# Try to fetch via ck CLI.
-if command -v ck >/dev/null 2>&1; then
-  if ck items get "${GUIDE_ID}" > "${GUIDE_FILE}" 2>/dev/null; then
-    chars=$(wc -m < "${GUIDE_FILE}" | tr -d ' ')
-    if [ "${chars}" -gt 1000 ]; then
-      echo "writers-guide cached: ${chars} chars from CandleKeep item ${GUIDE_ID}"
-      exit 0
+  if [ -s "${out}" ]; then
+    local age=$(( $(date +%s) - $(stat -f %m "${out}" 2>/dev/null || stat -c %Y "${out}" 2>/dev/null || echo 0) ))
+    if [ "${age}" -lt 43200 ]; then
+      echo "  (cached, ${age}s old)  ${desc}"
+      return 0
     fi
   fi
+
+  if command -v ck >/dev/null 2>&1; then
+    if ck items get "${id}" > "${out}" 2>/dev/null; then
+      local chars
+      chars=$(wc -m < "${out}" | tr -d ' ')
+      if [ "${chars}" -gt 100 ]; then
+        echo "  fetched ${chars} chars  ${desc}"
+        return 0
+      fi
+    fi
+  fi
+
+  cat > "${out}" <<STUB
+# ${desc} — UNAVAILABLE
+
+CandleKeep item \`${id}\` could not be loaded.
+Either ck CLI is not installed, or this item is not accessible.
+
+[UNVERIFIED — agents may not assume content from this reference is loaded]
+STUB
+  echo "  STUB (unavailable)  ${desc}"
+}
+
+echo "Loading CandleKeep references — author knowledge layer"
+echo
+
+# ── Always-on craft references ──────────────────────────────
+fetch_guide "${GUIDE_ID_WRITERS}"     "writers-guide.md"     "The Writer's Guide (craft)"
+fetch_guide "${GUIDE_ID_AGENT_TEAM}"  "agent-team-guide.md"  "Building Your Agent Team (multi-agent design)"
+
+# ── Author's own thesis notebook (optional) ─────────────────
+if [ -f "${PROJECT_ROOT}/book.yaml" ]; then
+  thesis_id=$(grep -E '^thesis_notebook:[[:space:]]*' "${PROJECT_ROOT}/book.yaml" | head -1 | sed -E 's/^thesis_notebook:[[:space:]]*//; s/[[:space:]]*#.*$//; s/^"//; s/"$//' | tr -d ' ')
+  if [ -n "${thesis_id}" ]; then
+    fetch_guide "${thesis_id}" "thesis-notebook.md" "Author's thesis notebook (per-project)"
+  fi
 fi
 
-# Fail-open: write a stub.
-cat > "${GUIDE_FILE}" <<'STUB'
-# Writer's Guide — STUB
+# ── Author's curated craft extras (optional) ────────────────
+if [ -f "${PROJECT_ROOT}/book.yaml" ]; then
+  # Parse a YAML list:  craft_extras: [id1, id2, ...]   OR a multi-line list.
+  # Tolerant single-line parser:
+  extras_line=$(grep -E '^craft_extras:[[:space:]]*\[' "${PROJECT_ROOT}/book.yaml" | head -1)
+  if [ -n "${extras_line}" ]; then
+    ids=$(printf '%s' "${extras_line}" | sed -E 's/^craft_extras:[[:space:]]*\[//; s/\][[:space:]]*$//; s/"//g; s/,/ /g')
+    for id in ${ids}; do
+      [ -z "${id}" ] && continue
+      fetch_guide "${id}" "craft-extras/${id}.md" "Author craft-extra: ${id}"
+    done
+  fi
+fi
 
-CandleKeep is not available in this session.
+echo
+echo "Done. Cached references in: ${CTX_DIR}/"
+echo
+echo "NOTE on canonical religious texts (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, etc.):"
+echo "  Those are NOT cached here. The hazal-citation skill queries Sefaria directly"
+echo "  via MCP or via scripts/verify-citation.sh. CandleKeep is for the author's"
+echo "  curated knowledge layer (craft, thesis, voice), not canonical primary texts."
 
-The plugin runs in degraded mode without craft references from
-King, Zinsser, Penn, Shapiro, or the Hebrew editorial conventions.
-
-To enable:
-  1. Install CandleKeep CLI: see https://candlekeep.cloud
-  2. Run `ck auth login`
-  3. Verify item access: `ck items get cmok9h0m10ahik30zt8yt0lt2`
-
-Continuing without the guide. Editorial agents will rely on their
-built-in instructions only.
-STUB
-
-echo "writers-guide stub written (CandleKeep unavailable)"
 exit 0

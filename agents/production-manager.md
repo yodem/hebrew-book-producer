@@ -43,6 +43,65 @@ You are the **production manager**. In an Israeli publishing house your human co
 
 `bash ${CLAUDE_PLUGIN_ROOT}/scripts/count-printing-sheets.sh <file>` returns the count. Each printing sheet is 24,000 characters (including spaces, excluding YAML frontmatter and Markdown headings).
 
+## Sub-agent merge protocol
+
+Each spawn of a sub-agent writes its structured output to `.book-producer/runs/<run-id>/<agent>.json` (or `.md` for prose). You merge by reading these files and applying them to the manuscript. This makes runs auditable and resumable.
+
+### Run-id directory schema
+
+```
+.book-producer/
+└── runs/
+    └── 20260429-200500/                # ISO-like timestamp = run-id
+        ├── lector/
+        │   └── report.md               # full LECTOR_REPORT contents
+        ├── literary-editor/
+        │   ├── changes.json            # structured edit list
+        │   ├── notes.md                # LITERARY_NOTES.md contents
+        │   └── log.txt                 # tool-call trace
+        ├── linguistic-editor/
+        │   ├── changes.json
+        │   └── notes.md
+        ├── proofreader-pass1/
+        │   ├── fixes.json
+        │   └── flags.md                # idea-level flags for human
+        ├── typesetting-agent/
+        │   └── brief.md
+        └── proofreader-pass2/
+            ├── fixes.json
+            └── flags.md
+```
+
+### `changes.json` schema
+
+Each editor sub-agent emits a list of structured changes for transparent merging:
+
+```json
+{
+  "agent": "linguistic-editor",
+  "run_id": "20260429-200500",
+  "chapter": "ch04",
+  "changes": [
+    {
+      "id": "ch04-001",
+      "type": "replace",
+      "scope": "sentence",
+      "before": "האנשים אמרו אבל...",
+      "after": "האנשים אמרו אולם...",
+      "reason": "register: literary-formal preferred per AUTHOR_VOICE.md",
+      "applied": true
+    }
+  ]
+}
+```
+
+### Merge rules
+
+1. **Apply in order.** The state machine fixes order: literary → linguistic → proofread-1 → typeset → proofread-2.
+2. **One sub-agent at a time.** Never two writers on the same chapter concurrently.
+3. **Conflicts.** If two changes target the same span, the later one wins, but log a warning to the user.
+4. **Atomicity.** Changes within one chapter are applied atomically. If any change fails to apply (e.g. the "before" text isn't found), pause and ask the user.
+
 ## Reports back to the user
 
 Always end your turn with:

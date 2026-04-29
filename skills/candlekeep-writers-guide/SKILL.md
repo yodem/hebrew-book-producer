@@ -1,6 +1,6 @@
 ---
 name: candlekeep-writers-guide
-description: Bridge skill that loads the canonical writer's guide from the user's CandleKeep library at session start. Caches CandleKeep item cmok9h0m10ahik30zt8yt0lt2 ("The Writer's Guide: How to Write, Edit, and Proofread a Book") to .ctx/writers-guide.md so all editing agents can quote King, Zinsser, Penn, Shapiro, and the Hebrew editorial conventions without re-fetching.
+description: Bridge skill that loads the AUTHOR'S CURATED KNOWLEDGE LAYER from CandleKeep at session start — Writer's Guide (King/Zinsser/Penn/Shapiro), Agent-Team guide, the author's per-project thesis notebook (optional), and any craft_extras the author lists in book.yaml. NOT used for canonical religious texts — those go through Sefaria. Caches everything under .ctx/ so all editing agents share one read.
 user-invocable: false
 ---
 

@@ -14,14 +14,14 @@ mkdir -p "$(dirname "${MEM_FILE}")" 2>/dev/null || exit 0
 
 # Tool-call payload arrives on stdin.
 payload="$(cat 2>/dev/null || true)"
+[ -z "${payload}" ] && exit 0
 
-file=""
-if command -v jq >/dev/null 2>&1; then
-  file="$(printf '%s' "${payload}" | jq -r '.tool_input.file_path // .params.file_path // empty' 2>/dev/null || true)"
+# Strict: require jq. No regex JSON parsing.
+if ! command -v jq >/dev/null 2>&1; then
+  exit 0
 fi
-if [ -z "${file}" ]; then
-  file="$(printf '%s' "${payload}" | grep -oE '"file_path"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed -E 's/.*"file_path"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')"
-fi
+
+file=$(printf '%s' "${payload}" | jq -r '.tool_input.file_path // .params.file_path // empty' 2>/dev/null || true)
 
 [ -z "${file}" ] && exit 0
 [ ! -f "${file}" ] && exit 0

@@ -19,9 +19,11 @@ A Claude Code plugin that turns a Hebrew manuscript into a print-ready book thro
 
 This plugin **does not bundle** any of the following — they must be installed separately:
 
-1. **CandleKeep** (`ck` CLI) — long-term project memory. The plugin reads the user's writing-craft compendium *The Writer's Guide: How to Write, Edit, and Proofread a Book* (item ID `cmok9h0m10ahik30zt8yt0lt2`) at session start. Falls back gracefully if missing.
-2. **Superpowers** — provides `$plan-review-gate`, `$design-review-gate`, and the `writing-skills/anthropic-best-practices` reference used by the senior agents.
-3. **Metaswarm** — provides `$start`, `$orchestrated-execution`, and the multi-agent spawn conventions used by `production-manager`.
+1. **CandleKeep** (`ck` CLI) — *the author's curated knowledge layer*. The plugin reads the user's writing-craft library at session start (Writer's Guide + Agent-Team guide + optional per-project thesis notebook + any `craft_extras` the author lists in `book.yaml`). Falls back gracefully if missing.
+   **CandleKeep is not used for canonical religious texts** — those queries go to Sefaria.
+2. **Sefaria** (MCP tool `mcp__claude_ai_Sefaria__get_text`, or the bundled `scripts/verify-citation.sh` against the public API) — *the canonical-text validator*. Every Hazal citation in the manuscript is verified against Sefaria. Unverifiable citations are flagged `[UNVERIFIED]` in the manuscript.
+3. **Superpowers** — provides `$plan-review-gate`, `$design-review-gate`, and the `writing-skills/anthropic-best-practices` reference used by the senior agents.
+4. **Metaswarm** — provides `$start`, `$orchestrated-execution`, and the multi-agent spawn conventions used by `production-manager`.
 
 If any are missing, the plugin still works in degraded single-agent mode.
 
@@ -47,13 +49,33 @@ cd /path/to/your/manuscript
 
 ## Memory architecture
 
+The plugin uses three layers of memory, each with a different lifecycle and purpose.
+
+### Local (per-project)
+
 | File | Purpose | Versioned in git? |
 |---|---|---|
-| `book.yaml` | Project metadata: title, author, genre, citation style, word target, niqqud on/off | yes |
+| `book.yaml` | Project metadata: title, author, genre, citation style, word target, niqqud on/off, optional `thesis_notebook:` (CandleKeep ID) and `craft_extras:` (list of CandleKeep IDs) | yes |
 | `AUTHOR_VOICE.md` | Voice fingerprint: example paragraphs, preferred/banned phrases, register, persona | yes |
-| `.book-producer/memory.md` | Rolling log of user corrections (what the AI got wrong) | no |
 | `.book-producer/state.json` | Pipeline state per chapter | no |
-| `.ctx/writers-guide.md` | Cached copy of the CandleKeep writer's guide | no |
+| `.book-producer/memory.md` | Rolling log of user corrections (what the AI got wrong) | no |
+| `.book-producer/runs/<id>/` | Per-run sub-agent outputs (changes.json, notes.md, log.txt) — auditable, resumable | no |
+| `.book-producer/snapshots/` | Pre-edit file snapshots (rollback safety) | no |
+
+### CandleKeep (cross-project, author knowledge layer)
+
+| File (cached under `.ctx/`) | Source | Purpose |
+|---|---|---|
+| `writers-guide.md` | `cmok9h0m10ahik30zt8yt0lt2` | Writer's Guide (King/Zinsser/Penn/Shapiro) |
+| `agent-team-guide.md` | `cmnudfue5003rmy0zlxt7ioa1` | Building Your Agent Team (multi-agent design) |
+| `thesis-notebook.md` | `book.yaml: thesis_notebook` | Author's running notes for THIS book (managed via `/thesis`) |
+| `craft-extras/<id>.md` | `book.yaml: craft_extras: [...]` | Additional craft references the author has curated |
+
+### External (canonical-text validator)
+
+| Source | Used for |
+|---|---|
+| Sefaria MCP / API | Validating every Hazal citation in the manuscript (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, Shulchan Arukh, responsa) |
 
 ## Hebrew architecture document
 

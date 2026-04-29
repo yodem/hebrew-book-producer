@@ -13,16 +13,16 @@ mkdir -p "${SNAP_DIR}" 2>/dev/null || exit 0
 
 # Tool-call payload arrives on stdin as JSON.
 payload="$(cat 2>/dev/null || true)"
+[ -z "${payload}" ] && exit 0
 
-# Extract file_path from payload. Use a tolerant grep — the format may vary
-# across Claude Code versions and we'd rather skip than crash.
-file=""
-if command -v jq >/dev/null 2>&1; then
-  file="$(printf '%s' "${payload}" | jq -r '.tool_input.file_path // .params.file_path // empty' 2>/dev/null || true)"
+# Extract file_path. Strict policy: require jq (it's standard on macOS via
+# brew and on most Linux). If jq is missing, silently skip (don't try to parse
+# JSON with regex — escaped quotes break it).
+if ! command -v jq >/dev/null 2>&1; then
+  exit 0
 fi
-if [ -z "${file}" ]; then
-  file="$(printf '%s' "${payload}" | grep -oE '"file_path"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed -E 's/.*"file_path"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')"
-fi
+
+file=$(printf '%s' "${payload}" | jq -r '.tool_input.file_path // .params.file_path // empty' 2>/dev/null || true)
 
 # Nothing to snapshot if no file or file doesn't exist yet (Write of a new file).
 [ -z "${file}" ] && exit 0

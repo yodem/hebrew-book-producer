@@ -1,0 +1,29 @@
+{
+  "name": "hebrew-book-producer",
+  "version": "0.1.0",
+  "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, and typesetting for ספרי עיון, אוטוביוגרפיה, ופילוסופיה. Bridges CandleKeep (writer's guide), Superpowers (long-context analysis), and Metaswarm (agent orchestration).",
+  "author": {
+    "name": "yodem",
+    "url": "https://github.com/yodem"
+  },
+  "license": "MIT",
+  "keywords": [
+    "hebrew",
+    "non-fiction",
+    "philosophy",
+    "autobiography",
+    "religious-texts",
+    "book-production",
+    "literary-editing",
+    "linguistic-editing",
+    "proofreading",
+    "typesetting",
+    "candlekeep",
+    "metaswarm",
+    "superpowers"
+  ],
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "hooks": "./hooks/"
+}

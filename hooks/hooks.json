@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/pre-edit-snapshot.sh",
+            "statusMessage": "Snapshotting file before edit..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-feedback.sh",
+            "statusMessage": "Logging diff to .book-producer/memory.md..."
+          }
+        ]
+      }
+    ]
+  }
+}

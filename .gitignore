@@ -1,0 +1,15 @@
+# Project-level state created by hebrew-book-producer when used on a manuscript
+.book-producer/
+.ctx/
+*.bak
+*.swp
+*.swo
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Test sandbox (created during plugin self-test, deleted afterwards)
+test-sandbox/

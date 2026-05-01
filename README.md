@@ -27,13 +27,90 @@ This plugin **does not bundle** any of the following — they must be installed 
 
 If any are missing, the plugin still works in degraded single-agent mode.
 
-## Install (local development)
+## Install — per-project (recommended)
+
+The plugin is **not** auto-loaded by Claude Code, and you usually don't want it loaded globally — it only makes sense inside a book-project directory. Enable it just in the folders where you actually have a manuscript.
+
+### Option A — install from GitHub, enable per-project
+
+In **any** Claude Code session (it doesn't matter which folder), add the GitHub marketplace once:
 
 ```bash
-cd ~/dev/hebrew-book-producer
-claude plugin install --local .
-# or symlink into ~/.claude/plugins/local/
+/plugin marketplace add yodem/hebrew-book-producer
+/plugin install hebrew-book-producer@yodem/hebrew-book-producer
 ```
+
+This makes the plugin **available** but doesn't enable it anywhere yet.
+
+Then, in the **specific folder** where you have a manuscript:
+
+```bash
+cd /path/to/your/book-project
+mkdir -p .claude
+cat > .claude/settings.json <<'EOF'
+{
+  "enabledPlugins": {
+    "hebrew-book-producer@yodem/hebrew-book-producer": true
+  }
+}
+EOF
+```
+
+Now `hebrew-book-producer` is **only** active when Claude Code is launched from that directory. Other projects are untouched.
+
+Restart Claude Code from inside the project. Verify with `/help` — you should see `/start`, `/proof`, `/draft`, etc.
+
+### Option B — install locally for development, enable per-project
+
+Clone the repo somewhere outside the book project:
+
+```bash
+git clone https://github.com/yodem/hebrew-book-producer.git ~/dev/hebrew-book-producer
+```
+
+Then in your book-project folder:
+
+```bash
+cd /path/to/your/book-project
+mkdir -p .claude
+cat > .claude/settings.json <<'EOF'
+{
+  "enabledPlugins": {
+    "hebrew-book-producer@local": true
+  },
+  "extraKnownMarketplaces": {
+    "local": {
+      "source": { "source": "local", "path": "/Users/YOU/dev" }
+    }
+  }
+}
+EOF
+```
+
+Replace `/Users/YOU/dev` with the actual parent directory of the cloned repo. Restart Claude Code from inside the project.
+
+### Don't forget to gitignore the settings file (if your manuscript is in a git repo)
+
+`.claude/settings.json` is project-scoped configuration — you typically don't want it in version control:
+
+```bash
+echo ".claude/" >> .gitignore
+```
+
+### Optional but strongly recommended runtime dependencies
+
+Install these once on your machine; the plugin uses them when present and degrades gracefully otherwise:
+
+```bash
+# CandleKeep CLI — for the shared writing-craft + Hebrew Linguistic Reference layer
+curl -fsSL https://candlekeep.dev/install.sh | sh
+ck auth login
+
+# Python deps for the voice fingerprint extractor (only needed for /init-voice heavy path)
+pip install pdfplumber python-docx
+```
+
+Sefaria MCP comes with claude.ai's default tools — just authenticate when prompted.
 
 ## Quick start — the one-sentence flow
 

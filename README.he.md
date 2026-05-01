@@ -2,6 +2,89 @@
 
 פלאגין Claude Code לסביבת הפקה מקצועית של ספרי עיון, אוטוביוגרפיה, פילוסופיה וטקסטים דתיים בעברית. הפלאגין מדמה את שרשרת הערך של הוצאת ספרים ישראלית — מהערכת כתב היד הראשונית ועד לקובץ המוכן לדפוס — באמצעות מערכת סוכנים אוטונומית הפועלת בסביבה מקומית מאובטחת.
 
+## התקנה — לפי פרויקט (מומלץ)
+
+הפלאגין **אינו** נטען אוטומטית ב־Claude Code, ובד״כ אין סיבה לטעון אותו גלובלית — הוא רלוונטי רק בתיקיות שיש בהן כתב יד. הפעל אותו רק בפרויקטים הספציפיים.
+
+### דרך A — התקנה מ־GitHub, הפעלה לפי פרויקט
+
+בכל סשן Claude Code שהוא (לא משנה מאיפה), הוסף את ה־marketplace פעם אחת:
+
+```bash
+/plugin marketplace add yodem/hebrew-book-producer
+/plugin install hebrew-book-producer@yodem/hebrew-book-producer
+```
+
+הפלאגין כעת **זמין** אבל עדיין לא מופעל בשום מקום.
+
+עכשיו, **בתוך תיקיית הפרויקט** של הספר:
+
+```bash
+cd /path/to/your/book-project
+mkdir -p .claude
+cat > .claude/settings.json <<'EOF'
+{
+  "enabledPlugins": {
+    "hebrew-book-producer@yodem/hebrew-book-producer": true
+  }
+}
+EOF
+```
+
+מעכשיו `hebrew-book-producer` יהיה פעיל **רק** כש־Claude Code יופעל מהתיקייה הזאת. שאר הפרויקטים שלך לא ייגעו.
+
+הפעל מחדש את Claude Code מתוך התיקייה. ודא עם `/help` שאתה רואה את `/start`, `/proof`, `/draft` וכו׳.
+
+### דרך B — התקנה מקומית לפיתוח, הפעלה לפי פרויקט
+
+שכפל את הריפו אל מחוץ לפרויקט של הספר:
+
+```bash
+git clone https://github.com/yodem/hebrew-book-producer.git ~/dev/hebrew-book-producer
+```
+
+ואז בתיקיית הפרויקט:
+
+```bash
+cd /path/to/your/book-project
+mkdir -p .claude
+cat > .claude/settings.json <<'EOF'
+{
+  "enabledPlugins": {
+    "hebrew-book-producer@local": true
+  },
+  "extraKnownMarketplaces": {
+    "local": {
+      "source": { "source": "local", "path": "/Users/YOU/dev" }
+    }
+  }
+}
+EOF
+```
+
+החלף את `/Users/YOU/dev` בתיקיית האם של הריפו ששכפלת. הפעל מחדש את Claude Code מהתיקייה.
+
+### זכור להוסיף ל־.gitignore (אם כתב היד שלך תחת git)
+
+`.claude/settings.json` הוא קונפיגורציה לוקלית — בד״כ לא רוצים אותו ב־git:
+
+```bash
+echo ".claude/" >> .gitignore
+```
+
+### תלויות ריצה (מומלצות, לא חובה)
+
+```bash
+# CandleKeep CLI — לשכבת הידע המשותפת (מדריך כתיבה + Hebrew Linguistic Reference)
+curl -fsSL https://candlekeep.dev/install.sh | sh
+ck auth login
+
+# Python — לחילוץ טביעת אצבע סגנונית במסלול הכבד של /init-voice
+pip install pdfplumber python-docx
+```
+
+Sefaria MCP מגיע עם הכלים של claude.ai; רק לאשר כשמבקשים.
+
 ## התחלה מהירה — משפט אחד
 
 שמור את כתב היד שלך כ־`manuscript.md` בתיקייה (או פרקים תחת `chapters/`). פתח את התיקייה ב־Claude Code וכתוב באופן חופשי, בעברית או באנגלית:

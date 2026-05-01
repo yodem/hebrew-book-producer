@@ -18,10 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`skills/cite-master/SKILL.md`** — folds the Hazal path back in as an inline routine (no external delegation).
 - **`workflows/full-pipeline.md`, `scripts/load-candlekeep-guide.sh`** — drop residual `hazal-citation` references.
 
-### Planned (later v0.3.0 streams)
-- Stream 2 — `/init-voice` hybrid auto-detect voice/style fingerprint flow.
-- Stream 3 — Hebrew editorial knowledge moved to a shared CandleKeep book *Hebrew Linguistic Reference*, backed by the public GitHub repo `yodem/hebrew-linguistics-data`.
-- Stream 4 — cross-plugin sharing with `academic-helper`.
+### Added (Stream 3)
+- **Shared Hebrew Linguistic Reference book**, synced from the public GitHub repo `yodem/hebrew-linguistics-data`. Eight curated chapters: academy-decisions, connectives-modern-usage, niqqud-rules, anti-ai-markers, citation-conventions, typography-conventions, author-register, style-fingerprint-baseline. Now loaded at session start via the candlekeep-writers-guide loader; consumed by every linguistics-touching skill.
+- All affected skills (`connectives`, `review-style`, `cite-master`, `niqqud-pass`, `voice-preserver`, `hebrew-typography`, `candlekeep-writers-guide`) gained a "Knowledge source" section pointing at the right chapter ID. No new local `references/` folders.
+
+### Added (Stream 2)
+- **`/init-voice` command + voice-miner agent** with hybrid auto-detect: heavy path (computational fingerprint over `past-books/`) or light path (3-chapter manuscript sample + 10-question Hebrew interview). Produces `.book-producer/profile.json` and `AUTHOR_VOICE.md` (or `AUTHOR_VOICE.draft.md` if one already exists).
+- **`scripts/extract-voice-fingerprint.py`** — Hebrew text-statistics extractor. Output schema is binary-compatible with academic-writer's documented `style-miner` schema, so the same baseline JSON works for both plugins. Supports `.md`, `.txt`, `.pdf` (via pdfplumber), `.docx` (via python-docx).
+- **`scripts/voice-interview.md`** — 10-question Hebrew interview used by the light path.
+
+### Planned (Stream 4)
+- Per-agent enrichment (CandleKeep chapter pinning in agent frontmatter).
+- Cross-plugin: extend `academic-helper`'s session-start loader to also read the shared book; refactor its baseline loading to fetch from CandleKeep.
+- End-to-end verification + tag `v0.3.0`.
 
 ## [0.2.0] — 2026-04-29
 

@@ -16,6 +16,7 @@ A Claude Code plugin for the Israeli book-production pipeline in Hebrew. Lector 
 | `/proof [chapter]` | Proofreading (pass 1 or 2 — auto-detected) |
 | `/typeset` | Typesetting brief (Frank Ruhl Libre, RTL, גיליון דפוס) |
 | `/ship <file>` | Full pipeline with checkpoints |
+| `/init-voice` | Build the author's voice fingerprint (auto-detect heavy/light) |
 | `/voice` | Update AUTHOR_VOICE.md from accumulated feedback |
 | `/thesis [append\|show\|refresh]` | Manage the author's CandleKeep thesis notebook for this book |
 | `/help` | This help |
@@ -28,6 +29,7 @@ A Claude Code plugin for the Israeli book-production pipeline in Hebrew. Lector 
 - **linguistic-editor** (sonnet) — sentence-level Hebrew, register, AI-marker removal.
 - **proofreader** (sonnet) — typos, niqqud, layout artefacts. Two passes.
 - **typesetting-agent** (sonnet) — typesetting brief.
+- **voice-miner** (opus) — author voice/style fingerprint extraction (heavy/light auto-detect).
 
 ## Skills
 

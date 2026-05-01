@@ -1,6 +1,6 @@
 ---
 name: cite-master
-description: Format citations consistently per the project's citation style (Chicago Author-Date / APA / Hazal). Reads book.yaml's citation_style field. Validates that every footnote and bibliography entry follows the chosen format. Hands off to hazal-citation skill when religious primary sources appear.
+description: Format citations consistently per the project's citation style (Chicago Author-Date / APA / Hazal-style). Reads book.yaml's citation_style field. Validates that every footnote and bibliography entry follows the chosen format. Includes an inline routine for religious primary sources that verifies each reference against Sefaria via the MCP tool.
 user-invocable: false
 ---
 
@@ -24,7 +24,7 @@ citation_style: chicago-author-date  # | apa | hazal | mixed
 |---|---|
 | `chicago-author-date` | Hebrew academic philosophy, history, social science. Default. |
 | `apa` | Hebrew popular psychology, applied science. |
-| `hazal` | Hebrew religious texts (delegated to `hazal-citation` skill) |
+| `hazal` | Hebrew religious primary sources — formatted inline by this skill, with each reference verified against Sefaria. |
 | `mixed` | Books that span multiple registers. Author specifies a per-chapter override. |
 
 ## Chicago Author-Date — Hebrew conventions
@@ -54,13 +54,33 @@ Bibliography:
 שמיר, א' (2018). *הסדר החדש*. הוצאת מאגנס.
 ```
 
-## Hazal — delegated
+## Hazal — inline routine
 
-For tractate references, midrash, scripture: hand off to the `hazal-citation` skill. This skill recognises the pattern and delegates:
+For tractate references, midrash, scripture, Rambam, Shulchan Arukh, responsa: this skill formats and verifies them directly. No external skill is invoked.
 
-- "(בבלי ברכות י, ע"ב)" → hazal-citation
-- "(מדרש רבה, בראשית פרשה ב, ה)" → hazal-citation
-- "(רמב"ם, הלכות תשובה ג, ב)" → hazal-citation
+### Recognised patterns
+- `(בבלי ברכות י, ע"ב)`
+- `(ירושלמי שבת ב, ג)`
+- `(מדרש רבה, בראשית פרשה ב, ה)`
+- `(רמב"ם, הלכות תשובה ג, ב)`
+- `(שולחן ערוך, אורח חיים סימן א)`
+- Tanakh: `(בראשית א, א)` / `(תהילים קיט, יח)`
+
+### Format rules
+- Always Hebrew, traditional reference order: source → tractate/sefer → chapter → page or halacha.
+- Use `ע"א` / `ע"ב` for Babylonian Talmud daf-side, with quotation marks (not straight ASCII apostrophe).
+- Use a space-comma between chapter and verse: `בראשית א, א`.
+- Italicise nothing — Hazal references are by convention plain.
+
+### Verification — Sefaria MCP
+
+For every Hazal-style reference detected, call `mcp__claude_ai_Sefaria__get_text` with the reference string normalised to Sefaria's API form (e.g., "Berakhot 10b", "Genesis 1:1"). Three outcomes:
+
+1. Sefaria returns the text → reference is valid; leave alone.
+2. Sefaria returns 404 / no result → tag the in-text reference with `[UNVERIFIED]` so the author can fix it manually.
+3. Sefaria returns text but the manuscript's quoted Hebrew differs significantly → flag in `CITATION_REPORT.md` under "primary-source quote drift".
+
+Do **not** auto-correct primary-source quotes. The author may have intentionally bracketed an emendation. The skill's job is to flag, not to rewrite.
 
 ## What this skill validates
 
@@ -83,7 +103,7 @@ Bibliography entries: 138
 Orphans (cited but not in bib): 4
 Unused (in bib but not cited): 0
 Style violations: 7 (see below)
-Hazal delegations: 23
+Hazal references verified via Sefaria: 23 (1 [UNVERIFIED])
 ```
 
 Followed by a numbered list of violations with page references.

@@ -45,7 +45,7 @@ List 5–10 sentences that read as AI-generated and 5–10 that read as authenti
 ### 6. המלצה לעריכה
 - Stage gates needed: literary? linguistic? both?
 - Estimated effort in גיליון דפוס.
-- Special concerns: niqqud? hazal citations? sensitivity reading?
+- Special concerns: niqqud? religious primary sources (verified via Sefaria MCP)? sensitivity reading?
 
 ### 7. Go / No-Go
 One of:

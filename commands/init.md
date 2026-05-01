@@ -14,7 +14,7 @@ Create a new book project in the current directory.
    - שם המחבר?
    - סוגה: philosophy / autobiography / religious / popular-science / mixed?
    - יעד באורך — כמה מילים? (alt: כמה גיליונות דפוס? `1 גיליון = ~4,000 מילים`)
-   - סגנון ציטוט: chicago-author-date / apa / hazal / mixed?
+   - סגנון ציטוט: chicago-author-date / apa / mixed?
    - ניקוד? (true for poetry/religious, false otherwise)
    - דד-ליין?
 3. **Create `book.yaml`:**

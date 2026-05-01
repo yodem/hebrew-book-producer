@@ -33,17 +33,16 @@ A Claude Code plugin for the Israeli book-production pipeline in Hebrew. Lector 
 
 - review-style — Burstiness, AI-marker detection.
 - voice-preserver — enforces AUTHOR_VOICE.md rules.
-- cite-master — citation consistency (Chicago / APA / Hazal).
+- cite-master — citation consistency (Chicago / APA / Hazal). Includes inline Sefaria-MCP verification routine for religious primary sources.
 - hebrew-connectives — logical connector reference.
 - hebrew-typography — fonts, margins, layout.
 - niqqud-pass — vowel-pointing proofread (poetry / religious).
-- hazal-citation — religious-source citation conventions.
 - candlekeep-writers-guide — loads the canonical writer's guide at session start.
 
 ## Runtime dependencies
 
 - **CandleKeep** — author's curated knowledge layer (writer's guide, thesis notebook, craft extras). Plugin runs in degraded mode without it.
-- **Sefaria** (MCP or public API) — canonical-text validator for every Hazal citation. Citations that can't be validated get marked `[UNVERIFIED]`.
+- **Sefaria MCP** — canonical-text validator for every Hazal citation (sole validator). Citations that can't be validated get marked `[UNVERIFIED]`.
 - **Superpowers** — for plan-review-gate / design-review-gate.
 - **Metaswarm** — for multi-agent orchestration.
 

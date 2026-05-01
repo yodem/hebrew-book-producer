@@ -5,6 +5,24 @@ All notable changes to `hebrew-book-producer` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-05-01
+
+### Removed
+- **`skills/hazal-citation/`** removed entirely. Hazal-style references are now handled inline by `cite-master` via a Sefaria-MCP routine — one path, not two.
+- **`scripts/verify-citation.sh`** removed. The Sefaria MCP tool (`mcp__claude_ai_Sefaria__get_text`) is the **sole** validator for canonical religious texts.
+
+### Changed
+- **CLAUDE.md / READMEs** updated to reflect single Sefaria path; genre table no longer references `hazal-citation`.
+- **`agents/proofreader.md`, `agents/lector.md`** — replaced the `hazal-citation` conditional-skill block with a direct Sefaria-MCP verification routine.
+- **`commands/proof.md`, `commands/init.md`, `commands/help.md`** — removed `hazal-citation` references; citation-style choices are now `chicago` / `apa` / `mixed`.
+- **`skills/cite-master/SKILL.md`** — folds the Hazal path back in as an inline routine (no external delegation).
+- **`workflows/full-pipeline.md`, `scripts/load-candlekeep-guide.sh`** — drop residual `hazal-citation` references.
+
+### Planned (later v0.3.0 streams)
+- Stream 2 — `/init-voice` hybrid auto-detect voice/style fingerprint flow.
+- Stream 3 — Hebrew editorial knowledge moved to a shared CandleKeep book *Hebrew Linguistic Reference*, backed by the public GitHub repo `yodem/hebrew-linguistics-data`.
+- Stream 4 — cross-plugin sharing with `academic-helper`.
+
 ## [0.2.0] — 2026-04-29
 
 ### Added

@@ -11,7 +11,7 @@ You are operating inside the **hebrew-book-producer** plugin. Your job is to hel
 1. **Language enforcement.** All editorial output, agent reports, and user-facing prose default to **Hebrew**. Sub-agent system prompts can be in English (developer-facing). Only switch to English when the user explicitly asks.
 2. **Voice preservation is non-negotiable.** At the start of every session, read `AUTHOR_VOICE.md` and `.book-producer/memory.md` if they exist. The author's voice always wins over a "more correct" rephrasing.
 3. **CandleKeep — author knowledge layer only.** At the start of every session, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh` to cache the **author's curated knowledge** — the Writer's Guide (King/Zinsser/Penn/Shapiro), the Agent-Team guide, optionally the author's thesis notebook for this book (configured via `thesis_notebook:` in `book.yaml`), and any `craft_extras:` the author lists. **CandleKeep is NOT used to cache canonical religious texts** (Tanakh, Bavli, Rambam, etc.) — those go through Sefaria directly (rule 4).
-4. **Sefaria for canonical religious texts.** When the manuscript cites a Hazal source (Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa), validate it via the Sefaria MCP tool (`mcp__claude_ai_Sefaria__get_text`) when available, otherwise via `${CLAUDE_PLUGIN_ROOT}/scripts/verify-citation.sh` (which calls the public Sefaria API). Citations that fail to verify get marked `[UNVERIFIED]` in the manuscript.
+4. **Sefaria for canonical religious texts.** When the manuscript cites a Hazal source (Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa), validate it via the Sefaria MCP tool (`mcp__claude_ai_Sefaria__get_text`). This is the **sole** validator — no fallback script. Citations that fail to verify get marked `[UNVERIFIED]` in the manuscript.
 5. **Production tracking.** All chapter-level state lives in `.book-producer/state.json`, written and read only by `production-manager`. Do not write to it from other agents.
 6. **No prose from the orchestrator.** `production-manager` schedules and merges. It does not write or edit prose. Sub-agents do.
 7. **Two-pass proofreading.** `proofreader` runs once before typesetting and once after. Never skip the second pass — typesetting introduces new errors.
@@ -22,9 +22,9 @@ Read `book.yaml` at the project root. The `genre` field gates skill activation:
 
 | Genre | Always-on skills | Conditional skills |
 |---|---|---|
-| `philosophy` | review-style, voice-preserver, cite-master, connectives | hazal-citation (if Jewish-thought), niqqud-pass (off) |
+| `philosophy` | review-style, voice-preserver, cite-master, connectives | niqqud-pass (off) |
 | `autobiography` | review-style, voice-preserver, connectives | niqqud-pass (off) |
-| `religious` | review-style, voice-preserver, hazal-citation, niqqud-pass | connectives |
+| `religious` | review-style, voice-preserver, niqqud-pass | connectives |
 | `popular-science` | review-style, voice-preserver, cite-master, connectives | niqqud-pass (off) |
 
 ## Anti-AI-marker rules
@@ -42,7 +42,7 @@ Replace with concrete openers: a question, a fact, a scene, a citation.
 ## Citation conventions
 
 - Academic philosophy: Chicago Author-Date by default; switch via `book.yaml`.
-- Religious texts: Hazal style (e.g., בבלי ברכות י, ע"ב). Never paraphrase a primary source — quote with brackets `[...]` for any change.
+- Religious texts: traditional reference style (e.g., בבלי ברכות י, ע"ב). Verify each reference via the Sefaria MCP tool. Never paraphrase a primary source — quote with brackets `[...]` for any change.
 
 ## Hooks
 
@@ -69,5 +69,5 @@ Two file-system hooks run automatically:
 | What does Stephen King say about adverbs? | `.ctx/writers-guide.md` § Ch. 2 |
 | Which Hebrew connector means "however"? | `skills/connectives/references/connectives-table.md` |
 | What font do we use? | `skills/hebrew-typography/references/fonts.md` |
-| How do I cite the Talmud? | `skills/hazal-citation/SKILL.md` (rules) |
-| Is "Berakhot 99z" a real reference? | Sefaria — call `mcp__claude_ai_Sefaria__get_text` or `${CLAUDE_PLUGIN_ROOT}/scripts/verify-citation.sh` |
+| How do I cite the Talmud? | `skills/cite-master/SKILL.md` (Hazal-style routine inside cite-master) |
+| Is "Berakhot 99z" a real reference? | Sefaria — call `mcp__claude_ai_Sefaria__get_text` (sole validator) |

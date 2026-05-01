@@ -22,7 +22,7 @@ The proofreader detects which pass to run by reading `.book-producer/state.json`
 ## Conditional skills
 
 - If `book.yaml` has `niqqud: true` → run the `niqqud-pass` skill as a separate sweep AFTER the main proofread (never during).
-- If religious primary sources detected → run the `hazal-citation` skill to verify citation accuracy.
+- If religious primary sources detected → verify each reference inline via `mcp__claude_ai_Sefaria__get_text`; tag `[UNVERIFIED]` on anything that fails to resolve.
 
 ## Output
 

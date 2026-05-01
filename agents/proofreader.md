@@ -44,7 +44,7 @@ For each pass, work in this order (Textratz convention, writers-guide §7.3):
 ## Conditional skills
 
 - **`niqqud-pass`** — Activate only if `book.yaml` has `niqqud: true` (poetry or religious texts). **Always run as a SEPARATE sweep AFTER the main proofread — never inside the main proofreading loop, because niqqud rules conflict with general modern-Hebrew conventions and would damage prose mid-sentence.** Sequence: complete the four-level main pass on the chapter first; commit; then re-open the file and run niqqud-pass as a second activity.
-- **`hazal-citation`** — Activate for religious texts (or any text with Tanakh / Bavli / Yerushalmi / Midrash citations). Verify every reference against Sefaria via the MCP tool when available, otherwise via `${CLAUDE_PLUGIN_ROOT}/scripts/verify-citation.sh`. Mark unverifiable citations with `[UNVERIFIED]` in the manuscript so the user can see what needs human validation.
+- **Religious primary sources** — when the manuscript cites Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa, verify each reference directly against Sefaria via `mcp__claude_ai_Sefaria__get_text`. Mark unverifiable citations with `[UNVERIFIED]` in the manuscript so the user can see what needs human validation. Do not invent or paraphrase a primary source — quote with brackets `[...]` for any change.
 
 ## Output
 

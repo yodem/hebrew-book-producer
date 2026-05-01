@@ -37,7 +37,7 @@ The end-to-end flow that `/ship` orchestrates. Used by production-manager and do
 ┌─────────────────┐  agent: proofreader (sonnet)
 │   proofread     │  4 levels: אות / מילה / משפט / רעיון
 │     pass 1      │  + niqqud-pass (if niqqud:true)
-│                 │  + hazal-citation (if religious source)
+│                 │  + Sefaria-MCP verification (if religious source)
 │                 │  output: manuscript edited
 │                 │  + PROOF_NOTES.md
 └────────┬────────┘

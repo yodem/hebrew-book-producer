@@ -6,7 +6,8 @@
 # craft books, the author's own evolving thesis notebook, voice fingerprints,
 # anti-AI patterns the author has flagged before, tone/style observations.
 # It is NOT for canonical primary texts (Tanakh, Talmud, Rambam, etc.) —
-# those live in Sefaria, and the hazal-citation skill queries Sefaria directly.
+# those live in Sefaria and are queried directly via the Sefaria MCP tool
+# (mcp__claude_ai_Sefaria__get_text), the sole validator for religious sources.
 #
 # Always loads:
 #   cmok9h0m10ahik30zt8yt0lt2  → .ctx/writers-guide.md       (King/Zinsser/Penn/Shapiro compendium)
@@ -27,7 +28,8 @@
 # and exit 0. Idempotent: re-fetches only if cached file is older than 12h.
 #
 # Citation lookups (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, Shulchan Arukh)
-# are NOT handled by this script — see scripts/verify-citation.sh.
+# are NOT handled by this script — they go directly to the Sefaria MCP tool
+# (mcp__claude_ai_Sefaria__get_text) inside the cite-master skill.
 
 set -u
 
@@ -108,8 +110,9 @@ echo
 echo "Done. Cached references in: ${CTX_DIR}/"
 echo
 echo "NOTE on canonical religious texts (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, etc.):"
-echo "  Those are NOT cached here. The hazal-citation skill queries Sefaria directly"
-echo "  via MCP or via scripts/verify-citation.sh. CandleKeep is for the author's"
-echo "  curated knowledge layer (craft, thesis, voice), not canonical primary texts."
+echo "  Those are NOT cached here. The cite-master skill queries Sefaria directly"
+echo "  via the MCP tool mcp__claude_ai_Sefaria__get_text (sole validator)."
+echo "  CandleKeep is for the author's curated knowledge layer (craft, thesis, voice),"
+echo "  not canonical primary texts."
 
 exit 0

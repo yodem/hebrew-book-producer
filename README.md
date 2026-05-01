@@ -21,7 +21,7 @@ This plugin **does not bundle** any of the following — they must be installed 
 
 1. **CandleKeep** (`ck` CLI) — *the author's curated knowledge layer*. The plugin reads the user's writing-craft library at session start (Writer's Guide + Agent-Team guide + optional per-project thesis notebook + any `craft_extras` the author lists in `book.yaml`). Falls back gracefully if missing.
    **CandleKeep is not used for canonical religious texts** — those queries go to Sefaria.
-2. **Sefaria** (MCP tool `mcp__claude_ai_Sefaria__get_text`, or the bundled `scripts/verify-citation.sh` against the public API) — *the canonical-text validator*. Every Hazal citation in the manuscript is verified against Sefaria. Unverifiable citations are flagged `[UNVERIFIED]` in the manuscript.
+2. **Sefaria** (MCP tool `mcp__claude_ai_Sefaria__get_text`) — *the canonical-text validator*. Every Hazal citation in the manuscript is verified against Sefaria via the MCP tool. Unverifiable citations are flagged `[UNVERIFIED]` in the manuscript.
 3. **Superpowers** — provides `$plan-review-gate`, `$design-review-gate`, and the `writing-skills/anthropic-best-practices` reference used by the senior agents.
 4. **Metaswarm** — provides `$start`, `$orchestrated-execution`, and the multi-agent spawn conventions used by `production-manager`.
 
@@ -75,7 +75,7 @@ The plugin uses three layers of memory, each with a different lifecycle and purp
 
 | Source | Used for |
 |---|---|
-| Sefaria MCP / API | Validating every Hazal citation in the manuscript (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, Shulchan Arukh, responsa) |
+| Sefaria MCP | Validating every Hazal citation in the manuscript (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, Shulchan Arukh, responsa) |
 
 ## Hebrew architecture document
 
@@ -83,7 +83,7 @@ The full Hebrew design document is at [`README.he.md`](./README.he.md).
 
 ## Status
 
-`v0.1.0` — scaffold only. Agents and skills have stub bodies; reference data (Hebrew connectives, typography rules) is filled in. See `CLAUDE.md` for what each component should grow into.
+`v0.3.0` — Sefaria-only Jewish-source path; voice/style init flow with hybrid auto-detect; Hebrew editorial knowledge moved to a shared CandleKeep book (`Hebrew Linguistic Reference`) backed by the public GitHub repo `yodem/hebrew-linguistics-data`. See `CHANGELOG.md` for full v0.3.0 changes and `CLAUDE.md` for current behaviour.
 
 ## License
 

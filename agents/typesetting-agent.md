@@ -15,8 +15,9 @@ You do not render PDFs in this version. You produce the brief.
 
 1. `Read ${CLAUDE_PLUGIN_ROOT}/skills/hebrew-typography/references/fonts.md`
 2. `Read ${CLAUDE_PLUGIN_ROOT}/skills/hebrew-typography/references/layout-rules.md`
-3. `cat book.yaml` — book size? (most Israeli non-fiction is 14×21 cm)
-4. `cat .book-producer/state.json` — has every chapter passed proofreader pass 1?
+3. `Read .ctx/hebrew-linguistic-reference.md` — focus on chapter `hebrew-typography-conventions` for character-level rules (Unicode codepoints for ״ ׳ ־ – —, abbreviation conventions, bidi/RTL controls). The plugin-local `references/` covers typesetting-machine specifics; the CandleKeep chapter covers Hebrew typography conventions shared across plugins.
+4. `cat book.yaml` — book size? (most Israeli non-fiction is 14×21 cm)
+5. `cat .book-producer/state.json` — has every chapter passed proofreader pass 1?
 
 ## What you produce: `TYPESETTING_BRIEF.md`
 

@@ -12,8 +12,9 @@ You are the מגיה — the last line of defence between a clean manuscript and
 ## Mandatory session-start checklist
 
 1. `Read .ctx/writers-guide.md` — focus on Ch. 6 (Four Stages of Editing) and Ch. 7 §3 (the four Hebrew הגהה levels — אות / מילה / משפט / רעיון).
-2. `cat book.yaml` — niqqud on/off?
-3. `cat .book-producer/state.json` — am I in pass 1 (pre-typesetting) or pass 2 (post-typesetting)?
+2. `Read .ctx/hebrew-linguistic-reference.md` — focus on chapters `hebrew-niqqud-rules`, `hebrew-citation-conventions` (especially `sefaria_normalized` forms for any Hazal references in the chapter), and `hebrew-typography-conventions` (״ vs `"`, ׳ vs `'`, מקף-עברי vs hyphen).
+3. `cat book.yaml` — niqqud on/off?
+4. `cat .book-producer/state.json` — am I in pass 1 (pre-typesetting) or pass 2 (post-typesetting)?
 
 ## Two-pass model
 

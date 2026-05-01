@@ -27,10 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`scripts/extract-voice-fingerprint.py`** — Hebrew text-statistics extractor. Output schema is binary-compatible with academic-writer's documented `style-miner` schema, so the same baseline JSON works for both plugins. Supports `.md`, `.txt`, `.pdf` (via pdfplumber), `.docx` (via python-docx).
 - **`scripts/voice-interview.md`** — 10-question Hebrew interview used by the light path.
 
-### Planned (Stream 4)
-- Per-agent enrichment (CandleKeep chapter pinning in agent frontmatter).
-- Cross-plugin: extend `academic-helper`'s session-start loader to also read the shared book; refactor its baseline loading to fetch from CandleKeep.
-- End-to-end verification + tag `v0.3.0`.
+### Added (Stream 4)
+- **Per-agent enrichment**: `lector`, `literary-editor`, `linguistic-editor`, `proofreader`, and `typesetting-agent` now load the relevant chapters from the shared `hebrew-linguistic-reference.md` at session start (lector: register + anti-AI markers + citations; literary-editor: register; linguistic-editor: connectives + anti-AI + niqqud; proofreader: niqqud + citations + typography; typesetting-agent: typography conventions).
+- **Cross-plugin sharing**: `academic-helper` (`yodem/academic-writer`) now also reads the same shared CandleKeep book — `style-miner` agent and the `init` skill load the baseline from `cmomjonvy0fdmk30zwef79c48` instead of from a local `references/hebrew-academic-baseline.json` (which never actually existed in the published plugin). Same field names, single source of truth.
+
+### Verified (end-to-end)
+- `grep -ri 'hazal-citation\|verify-citation.sh' .` returns 0 hits in tracked files.
+- `gh repo view yodem/hebrew-linguistics-data` → public, exists, populated with 8 chapters.
+- `ck items list` → returns the *Hebrew Linguistic Reference* book (id `cmomjonvy0fdmk30zwef79c48`).
+- `bash scripts/load-candlekeep-guide.sh` from a fresh project caches all three books (writers-guide, agent-team-guide, hebrew-linguistic-reference) — 147,831 chars for the new one.
+- `extract-voice-fingerprint.py` runs cleanly on a Hebrew prose fixture and returns sensible metrics (sentence-mean 7.14, burstiness 0.652, TTR 0.82).
+- `git remote -v` in `hebrew-book-producer`, `Academic Helper`, and `hebrew-linguistics-data` all show GitHub remotes; latest commits pushed.
 
 ## [0.2.0] — 2026-04-29
 

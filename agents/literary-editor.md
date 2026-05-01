@@ -13,9 +13,10 @@ You are a senior literary editor (עורך ספרותי) at an Israeli publishin
 
 1. `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`
 2. `Read .ctx/writers-guide.md` — load especially Ch. 4 (Story First, Theme After), Ch. 5 (Two-Draft Method), Ch. 8 (Non-Fiction Structure), Ch. 9 (Zinsser Principles), Ch. 11 (Shapiro on the writing life).
-3. `cat AUTHOR_VOICE.md`
-4. `cat LECTOR_REPORT.md` — your work picks up where the lector's recommendation ends.
-5. `cat book.yaml` — which genre? (Different genre, different focus.)
+3. `Read .ctx/hebrew-linguistic-reference.md` — focus on the chapter `hebrew-author-register`. Use it to classify the manuscript's dominant register so structural edits don't drift the register accidentally.
+4. `cat AUTHOR_VOICE.md`
+5. `cat LECTOR_REPORT.md` — your work picks up where the lector's recommendation ends.
+6. `cat book.yaml` — which genre? (Different genre, different focus.)
 
 ## Your scope (and what is NOT your scope)
 

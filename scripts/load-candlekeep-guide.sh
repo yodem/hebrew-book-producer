@@ -40,6 +40,7 @@ mkdir -p "${CTX_DIR}/craft-extras"
 # Always-on writing-craft references (verified against the user's library).
 GUIDE_ID_WRITERS="cmok9h0m10ahik30zt8yt0lt2"        # The Writer's Guide
 GUIDE_ID_AGENT_TEAM="cmnudfue5003rmy0zlxt7ioa1"     # Building Your Agent Team
+GUIDE_ID_HE_LINGUISTICS="cmomjonvy0fdmk30zwef79c48" # Hebrew Linguistic Reference (yodem/hebrew-linguistics-data)
 
 # fetch_guide <ID> <output-path-under-.ctx> <description>
 fetch_guide() {
@@ -81,8 +82,9 @@ echo "Loading CandleKeep references — author knowledge layer"
 echo
 
 # ── Always-on craft references ──────────────────────────────
-fetch_guide "${GUIDE_ID_WRITERS}"     "writers-guide.md"     "The Writer's Guide (craft)"
-fetch_guide "${GUIDE_ID_AGENT_TEAM}"  "agent-team-guide.md"  "Building Your Agent Team (multi-agent design)"
+fetch_guide "${GUIDE_ID_WRITERS}"        "writers-guide.md"                 "The Writer's Guide (craft)"
+fetch_guide "${GUIDE_ID_AGENT_TEAM}"     "agent-team-guide.md"              "Building Your Agent Team (multi-agent design)"
+fetch_guide "${GUIDE_ID_HE_LINGUISTICS}" "hebrew-linguistic-reference.md"   "Hebrew Linguistic Reference (Academy + curated blogs; shared with academic-writer)"
 
 # ── Author's own thesis notebook (optional) ─────────────────
 if [ -f "${PROJECT_ROOT}/book.yaml" ]; then

@@ -14,8 +14,18 @@ user-invocable: false
 
 ## Reference files (load these)
 
-- [`references/fonts.md`](./references/fonts.md) — fonts and sizing.
-- [`references/layout-rules.md`](./references/layout-rules.md) — margins, headers, chapter breaks, גיליון דפוס math.
+- [`references/fonts.md`](./references/fonts.md) — fonts and sizing (typesetting-machine-specific, plugin-local).
+- [`references/layout-rules.md`](./references/layout-rules.md) — margins, headers, chapter breaks, גיליון דפוס math (typesetting-machine-specific, plugin-local).
+
+## Knowledge source — Hebrew character & punctuation conventions
+
+For everything character-level (`״` vs `"`, `׳` vs `'`, en-dash vs מקף עברי, RTL/LTR controls, numerals, quotation rules), read the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-typography-conventions`:
+
+```bash
+ck items read <hebrew-linguistic-reference-id> --chapter hebrew-typography-conventions
+```
+
+The chapter has the full Unicode-codepoint table, abbreviation rules (גרש vs גרשיים), and the bidi pitfalls in mixed-language passages. Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data). The local `references/` folder stays for typesetting-machine specifics that are not shared cross-plugin.
 
 ## גיליון דפוס (printing sheet) math
 

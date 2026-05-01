@@ -6,6 +6,16 @@ user-invocable: false
 
 # niqqud-pass — vowel-pointing proofreading
 
+## Knowledge source
+
+The full Academy ruleset for niqqud (כללי הניקוד 1996 + updates), shwa-na'/shwa-nach rules, dagesh kal/chazak rules, and the common-mistakes table live in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-niqqud-rules`. Read at activation:
+
+```bash
+ck items read <hebrew-linguistic-reference-id> --chapter hebrew-niqqud-rules
+```
+
+Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data).
+
 ## When to invoke
 
 ONLY when `book.yaml` has:

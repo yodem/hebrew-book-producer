@@ -13,12 +13,16 @@ user-invocable: false
 
 ## What it does
 
-Runs:
+Runs (delegated to `scripts/load-candlekeep-guide.sh`):
 
 ```bash
 mkdir -p .ctx
 ck items get cmok9h0m10ahik30zt8yt0lt2 > .ctx/writers-guide.md
+ck items get cmnudfue5003rmy0zlxt7ioa1 > .ctx/agent-team-guide.md
+ck items get cmomjonvy0fdmk30zwef79c48 > .ctx/hebrew-linguistic-reference.md
 ```
+
+The third item is the shared **Hebrew Linguistic Reference** book (id `cmomjonvy0fdmk30zwef79c48`) — synced from the public GitHub repo [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data). It is also consumed by the `academic-writer` plugin so the two plugins share one source of truth for Hebrew editorial knowledge.
 
 If `ck` is not on PATH, or the item is not accessible, write a minimal stub to `.ctx/writers-guide.md`:
 

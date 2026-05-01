@@ -10,7 +10,7 @@ You are operating inside the **hebrew-book-producer** plugin. Your job is to hel
 
 1. **Language enforcement.** All editorial output, agent reports, and user-facing prose default to **Hebrew**. Sub-agent system prompts can be in English (developer-facing). Only switch to English when the user explicitly asks.
 2. **Voice preservation is non-negotiable.** At the start of every session, read `AUTHOR_VOICE.md` and `.book-producer/memory.md` if they exist. The author's voice always wins over a "more correct" rephrasing.
-3. **CandleKeep — author knowledge layer only.** At the start of every session, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh` to cache the **author's curated knowledge** — the Writer's Guide (King/Zinsser/Penn/Shapiro), the Agent-Team guide, optionally the author's thesis notebook for this book (configured via `thesis_notebook:` in `book.yaml`), and any `craft_extras:` the author lists. **CandleKeep is NOT used to cache canonical religious texts** (Tanakh, Bavli, Rambam, etc.) — those go through Sefaria directly (rule 4).
+3. **CandleKeep — author knowledge layer + shared Hebrew linguistic reference.** At the start of every session, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh` to cache (a) the **author's curated knowledge** — Writer's Guide (King/Zinsser/Penn/Shapiro), Agent-Team guide, optional `thesis_notebook:` and `craft_extras:` from `book.yaml` — and (b) the **shared Hebrew Linguistic Reference** book (synced from `yodem/hebrew-linguistics-data` on GitHub; same book is also loaded by `academic-writer`). **CandleKeep is NOT used to cache canonical religious texts** — those go through Sefaria directly (rule 4).
 4. **Sefaria for canonical religious texts.** When the manuscript cites a Hazal source (Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa), validate it via the Sefaria MCP tool (`mcp__claude_ai_Sefaria__get_text`). This is the **sole** validator — no fallback script. Citations that fail to verify get marked `[UNVERIFIED]` in the manuscript.
 5. **Production tracking.** All chapter-level state lives in `.book-producer/state.json`, written and read only by `production-manager`. Do not write to it from other agents.
 6. **No prose from the orchestrator.** `production-manager` schedules and merges. It does not write or edit prose. Sub-agents do.
@@ -67,7 +67,10 @@ Two file-system hooks run automatically:
 | What did the user reject last time? | `.book-producer/memory.md` (last 50 lines) |
 | What is the author's running thesis / project notes? | `.ctx/thesis-notebook.md` (if `thesis_notebook:` set in `book.yaml`) |
 | What does Stephen King say about adverbs? | `.ctx/writers-guide.md` § Ch. 2 |
-| Which Hebrew connector means "however"? | `skills/connectives/references/connectives-table.md` |
+| Which Hebrew connector means "however"? | `.ctx/hebrew-linguistic-reference.md` § `hebrew-connectives-modern-usage` (cached from CandleKeep) |
+| Banned AI openers in Hebrew? | `.ctx/hebrew-linguistic-reference.md` § `hebrew-anti-ai-markers` |
+| Niqqud rules / dagesh / שווא? | `.ctx/hebrew-linguistic-reference.md` § `hebrew-niqqud-rules` |
+| Sefaria-API form for a Hazal reference? | `.ctx/hebrew-linguistic-reference.md` § `hebrew-citation-conventions` (`sefaria_normalized` field) |
 | What font do we use? | `skills/hebrew-typography/references/fonts.md` |
 | How do I cite the Talmud? | `skills/cite-master/SKILL.md` (Hazal-style routine inside cite-master) |
 | Is "Berakhot 99z" a real reference? | Sefaria — call `mcp__claude_ai_Sefaria__get_text` (sole validator) |

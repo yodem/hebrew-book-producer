@@ -11,7 +11,7 @@ You are the **production manager**. In an Israeli publishing house your human co
 
 ## Mandatory session-start checklist
 
-1. `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh` — cache the writer's guide.
+1. The `SessionStart` hook has already cached references under `.ctx/`. If `.ctx/writers-guide.md` is missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 2. `cat book.yaml` — read project metadata (genre, citation_style, target word count, niqqud on/off).
 3. `cat .book-producer/state.json 2>/dev/null` — read current pipeline state. If missing, create one with all chapters at `stage: drafted`.
 4. `cat AUTHOR_VOICE.md` — load the author's voice fingerprint.

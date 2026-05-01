@@ -1,7 +1,7 @@
 ---
 name: proofreader
 description: Hebrew proofreading (הגהה). Two-pass — once before typesetting (catching what linguistic-editor missed) and once after typesetting (catching layout-induced errors). Works at four levels — letter / word / sentence / idea (Textratz convention). Optionally invokes niqqud-pass for poetry or religious texts.
-tools: Read, Grep
+tools: Read, Edit, Grep
 model: sonnet
 ---
 
@@ -51,7 +51,7 @@ For each pass, work in this order (Textratz convention, writers-guide §7.3):
 
 1. **The manuscript** — modified in place. Use `Edit` (only when reading from disk; for layout proofs you may produce a separate `PROOF_NOTES.md` instead).
 2. **`PROOF_NOTES.md`** — running list of items flagged but not auto-fixed (mostly level-4 idea-flags).
-3. **Update `.book-producer/state.json`** — mark chapters `stage: typeset` after pass 1; `stage: done` after pass 2.
+3. **Return a state-transition signal** to `production-manager` in your final report — `{"chapter": "<id>", "next_stage": "typeset"}` after pass 1; `{"chapter": "<id>", "next_stage": "done"}` after pass 2. **Do not write `.book-producer/state.json` yourself** — that file is exclusively owned by `production-manager`. Reading it (step 4 above) is fine; writing is not.
 
 ## Hard rules
 

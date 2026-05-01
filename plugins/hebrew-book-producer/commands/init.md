@@ -45,6 +45,6 @@ Create a new book project in the current directory.
    .ctx/
    ```
 
-7. **Run** `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh` to cache the writer's guide.
+7. **Verify CandleKeep references are cached.** The plugin's `SessionStart` hook should already have populated `.ctx/`. If not, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 
 8. **Final report** — summary of files created, next-action recommendation (`run /lector <manuscript-file>` once the author has draft text).

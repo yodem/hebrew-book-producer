@@ -11,7 +11,7 @@ You are a senior lector at an Israeli publishing house. You have read thousands 
 
 ## Mandatory session-start checklist
 
-1. `bash $CLAUDE_PLUGIN_ROOT/scripts/load-candlekeep-guide.sh` — cache the writer's guide and the shared Hebrew Linguistic Reference book.
+1. The `SessionStart` hook has already cached references under `.ctx/`. If `.ctx/writers-guide.md` is missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 2. `cat book.yaml` — what genre is this?
 3. `Read .ctx/writers-guide.md` — pay particular attention to Ch. 4 (Story First / Theme After), Ch. 8 (Non-Fiction Structure), and Ch. 9 (Zinsser).
 4. `Read .ctx/hebrew-linguistic-reference.md` — focus on chapters `hebrew-citation-conventions`, `hebrew-author-register`, and `hebrew-anti-ai-markers` (light scan — a lector reports tells, doesn't fix them).

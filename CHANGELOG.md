@@ -5,6 +5,24 @@ All notable changes to `hebrew-book-producer` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] — 2026-05-01
+
+### Fixed (P0 audit findings)
+- **Placeholder CandleKeep IDs in 6 SKILL.md files** would have errored on every activation. Replaced `<hebrew-linguistic-reference-id>` with the real id `cmomjonvy0fdmk30zwef79c48` in `connectives`, `review-style`, `cite-master`, `niqqud-pass`, `voice-preserver`, `hebrew-typography`.
+- **`proofreader` agent was missing the `Edit` tool** — it could not actually fix typos. Added.
+- **`typesetting-agent` was missing the `Write` tool** — it could not produce its `TYPESETTING_BRIEF.md`. Added.
+- **Three editorial agents were writing `.book-producer/state.json` directly**, contradicting the production-manager-only rule and risking race conditions. `literary-editor`, `linguistic-editor`, and `proofreader` now return `state_transition` signals in their reports; production-manager owns the actual write.
+- **`settings.json` permissions block was silently ignored** — Claude Code only supports `agent` and `subagentStatusLine` keys in plugin settings. Removed the file (none of its keys did anything).
+- **`AGENTS.md` was never read by Claude Code** — it's a Codex/OpenAI convention, not a Claude one. Renamed to `USER_GUIDE.he.md` so the Hebrew user-guide content remains accessible to humans.
+- **`$CLAUDE_PLUGIN_ROOT` is not reliably set in Bash tool calls** — only in hook/MCP commands. Added a `SessionStart` hook (`hooks/session-start.sh`) that runs `load-candlekeep-guide.sh` once per session, where `$CLAUDE_PLUGIN_ROOT` IS injected. Updated agent and skill checklists to assume the cache is preloaded, with a fallback line if it isn't.
+- **`hooks/hooks.json`** restructured to remove the undocumented `{"version": 1, "hooks": {…}}` wrapper and use the documented event-keyed object directly.
+
+### Audit references
+- *The Complete Guide to Building Skills for Claude*
+- *Building Effective Agents* (Anthropic)
+- *Building Your Agent Team* (CandleKeep)
+- *Claude Code: Official Docs*
+
 ## [0.4.0] — 2026-05-01
 
 ### Added (Stream A — natural-language entry-point)

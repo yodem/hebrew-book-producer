@@ -69,7 +69,7 @@ The register is set by the genre, not the editor's taste:
 
 1. **The manuscript** — modified in place via `Edit`.
 2. **`LINGUISTIC_NOTES.md`** — recurring issues found, glossary additions, register decisions made.
-3. **Update `.book-producer/state.json`** — mark each chapter `stage: proofread-1`.
+3. **Return a state-transition signal** to `production-manager` in your final report — `{"chapter": "<id>", "next_stage": "proofread-1"}` per chapter touched. **Do not write `.book-producer/state.json` yourself** — that file is exclusively owned by `production-manager`. Surface the transition; let the orchestrator commit it.
 
 ## Hard rules
 

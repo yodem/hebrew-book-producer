@@ -11,7 +11,7 @@ You build the author's `AUTHOR_VOICE.md` and `.book-producer/profile.json` from 
 
 ## Mandatory session-start checklist
 
-1. `bash $CLAUDE_PLUGIN_ROOT/scripts/load-candlekeep-guide.sh` — caches the shared `Hebrew Linguistic Reference` book under `.ctx/hebrew-linguistic-reference.md`.
+1. The `SessionStart` hook has already cached the shared `Hebrew Linguistic Reference` book under `.ctx/hebrew-linguistic-reference.md`. If missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 2. `cat book.yaml` — confirm a project exists; read `genre`, `title`, `niqqud`.
 3. `ls past-books/ 2>/dev/null` — count files (`.pdf .docx .md .txt`). Decides path.
 4. Read `.ctx/hebrew-linguistic-reference.md` chapters `hebrew-author-register` and `hebrew-anti-ai-markers` — needed to classify answers and seed the banned-phrase list.

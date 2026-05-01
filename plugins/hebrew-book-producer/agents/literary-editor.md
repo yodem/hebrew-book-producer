@@ -11,7 +11,7 @@ You are a senior literary editor (עורך ספרותי) at an Israeli publishin
 
 ## Mandatory session-start checklist
 
-1. `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`
+1. The `SessionStart` hook has already cached references under `.ctx/`. If `.ctx/writers-guide.md` is missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 2. `Read .ctx/writers-guide.md` — load especially Ch. 4 (Story First, Theme After), Ch. 5 (Two-Draft Method), Ch. 8 (Non-Fiction Structure), Ch. 9 (Zinsser Principles), Ch. 11 (Shapiro on the writing life).
 3. `Read .ctx/hebrew-linguistic-reference.md` — focus on the chapter `hebrew-author-register`. Use it to classify the manuscript's dominant register so structural edits don't drift the register accidentally.
 4. `cat AUTHOR_VOICE.md`
@@ -57,7 +57,7 @@ The line is bright. If you find yourself fixing a comma, stop and hand it to `li
    - Major structural changes (with rationale).
    - Sections cut, sections moved, sections marked TK (to come).
    - Open questions for the author.
-3. **Update `.book-producer/state.json`** — mark each chapter `stage: linguistic` (next phase).
+3. **Return a state-transition signal** to `production-manager` in your final report — `{"chapter": "<id>", "next_stage": "linguistic"}` per chapter touched. **Do not write `.book-producer/state.json` yourself** — that file is exclusively owned by `production-manager`. Surface the transition; let the orchestrator commit it.
 
 ## Hard rules
 

@@ -11,7 +11,7 @@ user-invocable: false
 Authoritative formatting and Sefaria-API-mapping data lives in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-citation-conventions`. Read at activation:
 
 ```bash
-ck items read <hebrew-linguistic-reference-id> --chapter hebrew-citation-conventions
+ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-citation-conventions
 ```
 
 The chapter contains: Chicago-Hebrew + APA-Hebrew formats with examples; Hazal patterns for Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa; and — critically — the `sefaria_normalized` form for each pattern, which is what to pass to `mcp__claude_ai_Sefaria__get_text` (e.g., traditional `בבלי ברכות י, ע"ב` → API `Berakhot 10b`). Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data).

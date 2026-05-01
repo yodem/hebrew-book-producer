@@ -11,7 +11,7 @@ user-invocable: false
 The five-register taxonomy (high / academic / journalistic / everyday / colloquial), the per-register vocabulary lists, and the register-mismatch tells live in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-author-register`. Read at activation:
 
 ```bash
-ck items read <hebrew-linguistic-reference-id> --chapter hebrew-author-register
+ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-author-register
 ```
 
 Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data). Use the chapter to classify the chapter's actual register before deciding whether a proposed edit shifts register; do not classify by intuition alone.

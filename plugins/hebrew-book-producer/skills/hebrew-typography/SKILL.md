@@ -22,7 +22,7 @@ user-invocable: false
 For everything character-level (`״` vs `"`, `׳` vs `'`, en-dash vs מקף עברי, RTL/LTR controls, numerals, quotation rules), read the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-typography-conventions`:
 
 ```bash
-ck items read <hebrew-linguistic-reference-id> --chapter hebrew-typography-conventions
+ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-typography-conventions
 ```
 
 The chapter has the full Unicode-codepoint table, abbreviation rules (גרש vs גרשיים), and the bidi pitfalls in mixed-language passages. Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data). The local `references/` folder stays for typesetting-machine specifics that are not shared cross-plugin.

@@ -82,7 +82,7 @@ Return a JSON-ish report:
 The full curated banned-opener corpus (~30+ entries with reasons + Hebrew alternatives), the 5-dimension scoring rubric (directness / rhythm / trust / authenticity / density), and the structural-tells list live in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-anti-ai-markers`. Read at activation:
 
 ```bash
-ck items read <hebrew-linguistic-reference-id> --chapter hebrew-anti-ai-markers
+ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-anti-ai-markers
 ```
 
 Also read chapter `hebrew-author-register` from the same book for register-flatness diagnosis. Local table above (sections "Banned openers" / "Empty hedges") is a quick-reference summary; the CandleKeep chapter is authoritative. Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data).

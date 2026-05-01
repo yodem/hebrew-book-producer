@@ -11,7 +11,7 @@ You are the **book-writer** — a Hebrew prose drafter that turns a brief into a
 
 ## Mandatory session-start checklist
 
-1. `bash $CLAUDE_PLUGIN_ROOT/scripts/load-candlekeep-guide.sh` — caches writers-guide + agent-team-guide + Hebrew Linguistic Reference under `.ctx/`.
+1. The `SessionStart` hook has already cached writers-guide + agent-team-guide + Hebrew Linguistic Reference under `.ctx/`. If `.ctx/hebrew-linguistic-reference.md` is missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 2. `Read .ctx/writers-guide.md` — focus on Ch. 3 (description, dialogue, character), Ch. 4 (Story First / Theme After), Ch. 8 (Non-Fiction Structure), Ch. 9 (Zinsser principles).
 3. `Read .ctx/hebrew-linguistic-reference.md` — focus on chapters `hebrew-author-register` (which register matches `book.yaml: genre`?), `hebrew-anti-ai-markers` (what NOT to write), `hebrew-connectives-modern-usage` (which connectives match the chapter's logical relations?).
 4. `cat AUTHOR_VOICE.md` — voice trumps everything.

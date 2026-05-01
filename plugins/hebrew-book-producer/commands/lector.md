@@ -11,7 +11,7 @@ Run the **lector** agent on a draft manuscript file.
 
 - Verify `book.yaml` exists. If not — refuse and tell the user to run `/init` first.
 - Verify the argument file exists.
-- Verify `.ctx/writers-guide.md` is loaded; if not, run `bash $CLAUDE_PLUGIN_ROOT/scripts/load-candlekeep-guide.sh`.
+- The `SessionStart` hook normally caches `.ctx/writers-guide.md`. If missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 
 ## What happens
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "hebrew-book-producer",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Natural-language entry-point: type 'תוכל להגיה את הספר שלי?' and the plugin auto-bootstraps the project.",
   "owner": {
     "name": "yodem",
@@ -13,7 +13,7 @@
   "plugins": [
     {
       "name": "hebrew-book-producer",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Includes a natural-language entry-point: type 'תוכל להגיה את הספר שלי?' and the plugin auto-bootstraps the project.",
       "category": "writing",
       "author": {

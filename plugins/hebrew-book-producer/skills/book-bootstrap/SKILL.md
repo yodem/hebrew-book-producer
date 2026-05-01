@@ -91,13 +91,13 @@ If present:
 
 ### Step 6 — Cache the CandleKeep references
 
-Run:
+Normally the plugin's `SessionStart` hook has already cached `writers-guide.md`, `agent-team-guide.md`, and `hebrew-linguistic-reference.md` under `.ctx/`. If any of those files is missing, fall back to:
 
 ```bash
-bash $CLAUDE_PLUGIN_ROOT/scripts/load-candlekeep-guide.sh
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh
 ```
 
-This caches `writers-guide.md`, `agent-team-guide.md`, and `hebrew-linguistic-reference.md` under `.ctx/`. Idempotent — script handles its own freshness check.
+The loader is idempotent and handles its own freshness check.
 
 ### Step 7 — Confirmation (ONE Hebrew question)
 

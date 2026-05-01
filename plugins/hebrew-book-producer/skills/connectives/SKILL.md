@@ -16,7 +16,7 @@ user-invocable: false
 Single source of truth: the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-connectives-modern-usage`. Read it at activation:
 
 ```bash
-ck items read <hebrew-linguistic-reference-id> --chapter hebrew-connectives-modern-usage
+ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-connectives-modern-usage
 ```
 
 The chapter contains: a Hebrew prose explainer of the five logical relations; a JSON `connectives` table with ~80 entries across `addition / contrast / cause / result / concession / exemplification`, each tagged with a `register` field (`colloquial / journalistic / neutral / literary / high / very_high`) and a `note` for AI-overuse traps; usage rules. Source is mirrored on GitHub at [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data) — do not edit the local `references/connectives-table.md`, it is frozen for back-compat.

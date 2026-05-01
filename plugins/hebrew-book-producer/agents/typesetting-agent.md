@@ -1,7 +1,7 @@
 ---
 name: typesetting-agent
 description: Generates a Hebrew typesetting brief (סדר / עימוד) for hand-off to InDesign or LaTeX. Outputs TYPESETTING_BRIEF.md with font, size, leading, margins, running-header rules, and chapter-break conventions. Does NOT render a PDF — produces specification, not output.
-tools: Read, Bash
+tools: Read, Write, Bash
 model: sonnet
 ---
 

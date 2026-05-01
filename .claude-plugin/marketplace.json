@@ -1,0 +1,14 @@
+{
+  "name": "hebrew-book-producer",
+  "owner": {
+    "name": "yodem",
+    "url": "https://github.com/yodem"
+  },
+  "plugins": [
+    {
+      "name": "hebrew-book-producer",
+      "source": ".",
+      "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Includes a natural-language entry-point: type 'תוכל להגיה את הספר שלי?' and the plugin auto-bootstraps the project."
+    }
+  ]
+}

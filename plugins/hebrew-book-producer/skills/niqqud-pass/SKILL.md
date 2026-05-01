@@ -1,6 +1,6 @@
 ---
 name: niqqud-pass
-description: Optional Hebrew niqqud-only proofreading pass for poetry, religious texts, or any project with `niqqud: true` in book.yaml. NEVER applied to modern non-fiction — niqqud rules conflict with standard modern Hebrew conventions and will damage prose. Run as a separate sweep after the main proofread.
+description: Niqqud-only proofreading pass for poetry, religious texts, and children's books (book.yaml: niqqud: true). Invoke ONLY as a separate sweep AFTER the main proofreader pass on the same chapter. Do NOT use on modern non-fiction prose — niqqud rules conflict with standard modern Hebrew conventions and will damage the text.
 user-invocable: false
 ---
 

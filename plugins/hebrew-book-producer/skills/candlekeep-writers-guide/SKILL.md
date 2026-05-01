@@ -1,6 +1,6 @@
 ---
 name: candlekeep-writers-guide
-description: Bridge skill that loads the AUTHOR'S CURATED KNOWLEDGE LAYER from CandleKeep at session start — Writer's Guide (King/Zinsser/Penn/Shapiro), Agent-Team guide, the author's per-project thesis notebook (optional), and any craft_extras the author lists in book.yaml. NOT used for canonical religious texts — those go through Sefaria. Caches everything under .ctx/ so all editing agents share one read.
+description: Loads the author's curated knowledge layer (Writer's Guide, Agent-Team guide, Hebrew Linguistic Reference) from CandleKeep into .ctx/ at session start — delegated to the SessionStart hook so agents share one cached read. Invoked when .ctx/ cache is missing or stale. Do NOT use to fetch canonical religious texts — those go through Sefaria MCP.
 user-invocable: false
 ---
 
@@ -37,23 +37,7 @@ craft references. Install CandleKeep CLI and run `ck auth login` to enable.
 
 ## What's in the guide (when loaded)
 
-The full v2 of the user's writer's compendium. 11 chapters + 2 appendices:
-
-| Chapter | What it covers | Cite from when… |
-|---|---|---|
-| Ch. 1 — The Great Commandment | Read a lot, write a lot, 2,000 words/day | Author asks about discipline |
-| Ch. 2 — The Writer's Toolbox | Vocabulary, grammar, adverbs, paragraph rhythm | Linguistic-editor needs sentence-level rules |
-| Ch. 3 — On the Page | Description, dialogue, character | Literary-editor working on autobiography |
-| Ch. 4 — Story First, Theme After | Situation vs. plot, fossil metaphor | Literary-editor finding the spine |
-| Ch. 5 — The Two-Draft Method | Closed-door / open-door, 6-week rest, 10% formula | Production-manager scheduling rounds |
-| Ch. 6 — The Four Stages of Editing | Developmental → line → copy → proof | Pipeline state-management |
-| Ch. 7 — Editing in Hebrew | עריכה ספרותית / לשונית / הגהה — the 4 levels of proofreading | Linguistic-editor + proofreader |
-| Ch. 8 — Non-Fiction Structure | Thesis vs. topic, 5 core structures, chapter promises | Lector + literary-editor |
-| Ch. 9 — Zinsser's Principles of Non-Fiction | Simplicity, clutter, style, audience | Linguistic-editor's primary reference |
-| Ch. 10 — Penn's Practical Pipeline | Research, AI tools, professional editing | Production-manager + author onboarding |
-| Ch. 11 — Shapiro on the Writing Life | Toehold, habit, blank page | Author psychology / writer's block |
-| Appendix A | 30-rule quick reference | Quick lookup for any agent |
-| Appendix B | 37+ source citations | Recommending further reading |
+The full v2 of the user's writer's compendium — 11 chapters + 2 appendices. Chapter index lives at `references/writers-guide-index.md` — load when an agent needs to know which chapter covers a given topic.
 
 ## How agents use it
 

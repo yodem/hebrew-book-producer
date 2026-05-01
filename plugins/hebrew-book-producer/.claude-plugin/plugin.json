@@ -1,10 +1,9 @@
 {
   "name": "hebrew-book-producer",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Natural-language entry-point: 'תוכל להגיה את הספר שלי?' auto-bootstraps the project. Bridges CandleKeep (shared Hebrew Linguistic Reference), Sefaria MCP (Jewish-source verification), and the user's curated writing-craft library.",
   "author": {
-    "name": "yodem",
-    "url": "https://github.com/yodem"
+    "name": "yodem"
   },
   "license": "MIT",
   "keywords": [
@@ -21,9 +20,5 @@
     "candlekeep",
     "metaswarm",
     "superpowers"
-  ],
-  "agents": "./agents/",
-  "skills": "./skills/",
-  "commands": "./commands/",
-  "hooks": "./hooks/"
+  ]
 }

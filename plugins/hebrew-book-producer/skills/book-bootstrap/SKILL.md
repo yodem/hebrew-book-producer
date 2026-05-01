@@ -1,6 +1,6 @@
 ---
 name: book-bootstrap
-description: Auto-detect a Hebrew manuscript in the current directory and scaffold the project — book.yaml, .book-producer/, AUTHOR_VOICE.md (via express-voice if missing). Used by /start before dispatching to any terminal action. Idempotent — safe to run on a project that's already scaffolded. Asks ONE Hebrew confirmation question; never seven.
+description: Auto-detect a Hebrew manuscript and scaffold the project — book.yaml, .book-producer/, AUTHOR_VOICE.md (via express-voice if missing). Invoked by /start before any terminal action; idempotent on already-scaffolded projects. Do NOT use as a standalone CLI — it has no terminal output of its own; it returns a JSON result to the caller.
 user-invocable: false
 ---
 

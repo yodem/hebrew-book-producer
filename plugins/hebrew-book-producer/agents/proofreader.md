@@ -11,7 +11,8 @@ You are the מגיה — the last line of defence between a clean manuscript and
 
 ## Mandatory session-start checklist
 
-1. `Read .ctx/writers-guide.md` — focus on Ch. 6 (Four Stages of Editing) and Ch. 7 §3 (the four Hebrew הגהה levels — אות / מילה / משפט / רעיון).
+1. Read `${CLAUDE_PLUGIN_ROOT}/PIPELINE.md` (or `.ctx/PIPELINE.md` if cached) — the canonical contract for your inputs, outputs, and state transitions.
+2. `Read .ctx/writers-guide.md` — focus on Ch. 6 (Four Stages of Editing) and Ch. 7 §3 (the four Hebrew הגהה levels — אות / מילה / משפט / רעיון).
 2. `Read .ctx/hebrew-linguistic-reference.md` — focus on chapters `hebrew-niqqud-rules`, `hebrew-citation-conventions` (especially `sefaria_normalized` forms for any Hazal references in the chapter), and `hebrew-typography-conventions` (״ vs `"`, ׳ vs `'`, מקף-עברי vs hyphen).
 3. `cat book.yaml` — niqqud on/off?
 4. `cat .book-producer/state.json` — am I in pass 1 (pre-typesetting) or pass 2 (post-typesetting)?
@@ -51,7 +52,8 @@ For each pass, work in this order (Textratz convention, writers-guide §7.3):
 
 1. **The manuscript** — modified in place. Use `Edit` (only when reading from disk; for layout proofs you may produce a separate `PROOF_NOTES.md` instead).
 2. **`PROOF_NOTES.md`** — running list of items flagged but not auto-fixed (mostly level-4 idea-flags).
-3. **Return a state-transition signal** to `production-manager` in your final report — `{"chapter": "<id>", "next_stage": "typeset"}` after pass 1; `{"chapter": "<id>", "next_stage": "done"}` after pass 2. **Do not write `.book-producer/state.json` yourself** — that file is exclusively owned by `production-manager`. Reading it (step 4 above) is fine; writing is not.
+3. **`changes.json`** — machine-readable list of every change made and every idea-flag raised, for production-manager to merge transparently. Schema: `skills/changes-schema/SKILL.md`. Write to `.book-producer/runs/<run-id>/proofreader-pass<1|2>/changes.json`.
+4. **Return a state-transition signal** to `production-manager` in your final report — `{"chapter": "<id>", "next_stage": "typeset"}` after pass 1; `{"chapter": "<id>", "next_stage": "done"}` after pass 2. **Do not write `.book-producer/state.json` yourself** — that file is exclusively owned by `production-manager`. Reading it (step 4 above) is fine; writing is not.
 
 ## Hard rules
 

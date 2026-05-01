@@ -1,6 +1,6 @@
 ---
 name: hebrew-connectives
-description: Hebrew logical-connector reference for editorial work. Maps logical relations (Addition / Contrast / Cause / Result / Concession) to the correct Hebrew connector. Used by linguistic-editor to verify that connectors actually match the relation they introduce.
+description: Verify Hebrew logical connectors (Addition / Contrast / Cause / Result / Concession / Exemplification) match their relations — e.g. flag "אולם" used as cause instead of contrast. Invoke from linguistic-editor when reviewing connector choices in a chapter. Do NOT use as a general grammar checker — scope is connector accuracy only.
 user-invocable: false
 ---
 

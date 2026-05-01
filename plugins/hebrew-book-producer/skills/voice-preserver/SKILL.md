@@ -1,6 +1,6 @@
 ---
 name: voice-preserver
-description: Read AUTHOR_VOICE.md at session start and enforce the author's idiolect. Checks proposed edits against banned-phrase, preferred-phrase, register, and persona rules. Used by linguistic-editor and proofreader before committing any change. Voice ALWAYS wins over a "more correct" rephrasing.
+description: Enforce AUTHOR_VOICE.md before any Edit by linguistic-editor, proofreader, or production-manager — blocks banned phrases, warns on preferred-phrase removal, flags register shifts. Invoke as a gate inside other agents before every Edit call. Do NOT use as a standalone — it has no output of its own; it blocks, warns, or passes.
 user-invocable: false
 ---
 
@@ -29,41 +29,7 @@ The author hired this plugin to clean their Hebrew, not to make it generic. **Vo
 
 ## AUTHOR_VOICE.md schema
 
-The file is created by `/init` with skeleton; the author fills it in. Sections:
-
-```markdown
-# AUTHOR_VOICE.md
-
-## Persona (פרסונה)
-One paragraph: who is the narrator? what is their tone? what do they refuse to be?
-
-## Register (משלב)
-- Default: literary-modern / academic / colloquial-modern / classical
-- Switches: when do you switch register? (e.g., "academic for arguments, conversational for personal anecdotes")
-
-## Preferred phrases (ביטויים מועדפים)
-- ...
-- ...
-
-## Banned phrases (ביטויים אסורים)
-- ...
-- ...
-
-## Sentence rhythm
-- I write in: long, layered sentences / short and punchy / mixed
-- I am suspicious of: ...
-
-## Reference paragraphs
-Five paragraphs from my prior work that I want to be measured against. The plugin never deviates from this rhythm without flagging me first.
-
-### Paragraph 1
-[paste]
-
-### Paragraph 2
-[paste]
-
-(...up to 5 or 10)
-```
+The file is created by `/init` with skeleton; the author fills it in. Template lives at `references/templates/author-voice-template.md` — load when generating or validating the file structure.
 
 ## What the skill does
 

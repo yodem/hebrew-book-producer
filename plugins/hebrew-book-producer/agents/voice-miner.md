@@ -11,20 +11,23 @@ You build the author's `AUTHOR_VOICE.md` and `.book-producer/profile.json` from 
 
 ## Mandatory session-start checklist
 
-1. The `SessionStart` hook has already cached the shared `Hebrew Linguistic Reference` book under `.ctx/hebrew-linguistic-reference.md`. If missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
+1. Read `${CLAUDE_PLUGIN_ROOT}/PIPELINE.md` (or `.ctx/PIPELINE.md` if cached) — the canonical contract for your inputs, outputs, and state transitions.
+2. The `SessionStart` hook has already cached the shared `Hebrew Linguistic Reference` book under `.ctx/hebrew-linguistic-reference.md`. If missing, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 2. `cat book.yaml` — confirm a project exists; read `genre`, `title`, `niqqud`.
 3. `ls past-books/ 2>/dev/null` — count files (`.pdf .docx .md .txt`). Decides path.
 4. Read `.ctx/hebrew-linguistic-reference.md` chapters `hebrew-author-register` and `hebrew-anti-ai-markers` — needed to classify answers and seed the banned-phrase list.
 
-## Auto-detect
+## Auto-detect and model routing
 
 ```
 files = number of readable files in past-books/
 if files >= 1:
-  → HEAVY PATH
+  → HEAVY PATH  (model: opus — full computational fingerprint over past-books/)
 else:
-  → LIGHT PATH
+  → LIGHT PATH  (model: sonnet — 10-question interview + manuscript sample only)
 ```
+
+**Why:** the heavy path runs a full statistical fingerprint and requires deep analytical reasoning — opus. The light path is interview-driven and conversational — sonnet suffices. The agent reports which path and model it used in its 5-line summary so the author can verify.
 
 ## Heavy path
 

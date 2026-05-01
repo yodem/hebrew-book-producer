@@ -1,10 +1,20 @@
 ---
 name: review-style
-description: Detect AI-flat Hebrew prose and prescribe fixes. Measures Burstiness (sentence-length variance), flags banned AI-marker phrases ("בעולם המשתנה של היום", "חשוב לזכור ש"...), and suggests rhythm injections. Use whenever the linguistic-editor or proofreader is about to commit edits — and whenever the user reports that the prose "sounds AI."
+description: Detect Burstiness flat zones, AI-marker phrases, and register flatness in Hebrew prose. Invoke before any linguistic-editor commit, or when the user reports "this sounds like AI." Do NOT use before the proofreader's normal pass — typo noise drowns the signal.
 user-invocable: false
 ---
 
 # review-style — giving Hebrew prose its human pulse
+
+## Knowledge source (load FIRST)
+
+The full curated banned-opener corpus (~30+ entries with reasons + Hebrew alternatives), the 5-dimension scoring rubric (directness / rhythm / trust / authenticity / density), and the structural-tells list live in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-anti-ai-markers`. Read at activation:
+
+```bash
+ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-anti-ai-markers
+```
+
+Also read chapter `hebrew-author-register` from the same book for register-flatness diagnosis. Local tables below (sections "Banned openers" / "Empty hedges") are a quick-reference summary; the CandleKeep chapter is authoritative. Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data).
 
 ## When to invoke
 
@@ -76,16 +86,6 @@ Return a JSON-ish report:
 
 - **Suggest, do not auto-fix.** Voice is the author's. The skill produces flags; the linguistic-editor decides.
 - **Don't flag style as a marker.** Some authors genuinely write long, complex sentences. The Burstiness check fails when applied to a deliberate stylistic choice. Always cross-reference `AUTHOR_VOICE.md` first.
-
-## Knowledge source
-
-The full curated banned-opener corpus (~30+ entries with reasons + Hebrew alternatives), the 5-dimension scoring rubric (directness / rhythm / trust / authenticity / density), and the structural-tells list live in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-anti-ai-markers`. Read at activation:
-
-```bash
-ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-anti-ai-markers
-```
-
-Also read chapter `hebrew-author-register` from the same book for register-flatness diagnosis. Local table above (sections "Banned openers" / "Empty hedges") is a quick-reference summary; the CandleKeep chapter is authoritative. Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data).
 
 ## References
 

@@ -12,7 +12,7 @@
 
 ```bash
 /plugin marketplace add yodem/hebrew-book-producer
-/plugin install hebrew-book-producer@yodem/hebrew-book-producer
+/plugin install hebrew-book-producer@hebrew-book-producer
 ```
 
 הפלאגין כעת **זמין** אבל עדיין לא מופעל בשום מקום.
@@ -25,7 +25,7 @@ mkdir -p .claude
 cat > .claude/settings.json <<'EOF'
 {
   "enabledPlugins": {
-    "hebrew-book-producer@yodem/hebrew-book-producer": true
+    "hebrew-book-producer@hebrew-book-producer": true
   }
 }
 EOF

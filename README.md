@@ -37,7 +37,7 @@ In **any** Claude Code session (it doesn't matter which folder), add the GitHub 
 
 ```bash
 /plugin marketplace add yodem/hebrew-book-producer
-/plugin install hebrew-book-producer@yodem/hebrew-book-producer
+/plugin install hebrew-book-producer@hebrew-book-producer
 ```
 
 This makes the plugin **available** but doesn't enable it anywhere yet.
@@ -50,7 +50,7 @@ mkdir -p .claude
 cat > .claude/settings.json <<'EOF'
 {
   "enabledPlugins": {
-    "hebrew-book-producer@yodem/hebrew-book-producer": true
+    "hebrew-book-producer@hebrew-book-producer": true
   }
 }
 EOF

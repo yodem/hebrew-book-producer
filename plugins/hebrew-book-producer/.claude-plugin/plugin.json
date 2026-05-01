@@ -21,8 +21,6 @@
     "metaswarm",
     "superpowers"
   ],
-  "agents": "./agents/",
   "skills": "./skills/",
-  "commands": "./commands/",
-  "hooks": "./hooks/"
+  "commands": "./commands/"
 }

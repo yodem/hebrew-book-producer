@@ -28,6 +28,15 @@ Create a new book project in the current directory.
    niqqud: false
    deadline: 2026-12-31
    created: 2026-04-29
+   author_profile:          # CandleKeep item IDs — populated by voice-miner; empty = no profile yet
+     overview: ""
+     banned_phrases: ""
+     preferred_phrases: ""
+     reference_paragraphs: ""
+     voice_fingerprint: ""
+     chapter_patterns: ""
+     source_style: ""
+     register_examples: ""
    ```
 
 4. **Create `AUTHOR_VOICE.md` skeleton** — see template in `skills/voice-preserver/SKILL.md`. Pre-fill the headings; the author fills in the content.

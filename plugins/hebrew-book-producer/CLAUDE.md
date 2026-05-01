@@ -29,7 +29,7 @@ Rules:
 ## Default behaviours
 
 1. **Language enforcement.** All editorial output, agent reports, and user-facing prose default to **Hebrew**. Sub-agent system prompts can be in English (developer-facing). Only switch to English when the user explicitly asks.
-2. **Voice preservation is non-negotiable.** At the start of every session, read `AUTHOR_VOICE.md` and `.book-producer/memory.md` if they exist. The author's voice always wins over a "more correct" rephrasing.
+2. **Voice preservation is non-negotiable.** At the start of every session, read `.ctx/author-profile.md` (the session-cached author voice overview, loaded by the SessionStart hook from CandleKeep) and `.book-producer/memory.md` if they exist. If `.ctx/author-profile.md` is missing or empty, check `book.yaml` for `author_profile.overview` and fetch it with `ck items get <id> --no-session > .ctx/author-profile.md` before proceeding. The author's voice always wins over a "more correct" rephrasing.
 3. **CandleKeep — author knowledge layer + shared Hebrew linguistic reference.** The plugin's **`SessionStart` hook** automatically caches the references on every session start — agents do **not** need to invoke the loader themselves. The cache lands at `.ctx/writers-guide.md`, `.ctx/agent-team-guide.md`, and `.ctx/hebrew-linguistic-reference.md`. The third file is the shared book, synced from `yodem/hebrew-linguistics-data` on GitHub and also loaded by `academic-writer`. If `.ctx/` is missing or stale, fall back to running `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh` directly — but normally don't. **CandleKeep is NOT used to cache canonical religious texts** — those go through Sefaria directly (rule 4).
 4. **Sefaria for canonical religious texts.** When the manuscript cites a Hazal source (Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa), validate it via the Sefaria MCP tool (`mcp__claude_ai_Sefaria__get_text`). This is the **sole** validator — no fallback script. Citations that fail to verify get marked `[UNVERIFIED]` in the manuscript.
 5. **Production tracking.** All chapter-level state lives in `.book-producer/state.json`, written and read only by `production-manager`. Do not write to it from other agents.
@@ -83,7 +83,7 @@ Two file-system hooks run automatically:
 | Question | File |
 |---|---|
 | What's the next chapter to edit? | `.book-producer/state.json` |
-| What is the author's voice? | `AUTHOR_VOICE.md` |
+| What is the author's voice? | `.ctx/author-profile.md` (cached from CandleKeep at session start; IDs in `book.yaml: author_profile`) |
 | What did the user reject last time? | `.book-producer/memory.md` (last 50 lines) |
 | What is the author's running thesis / project notes? | `.ctx/thesis-notebook.md` (if `thesis_notebook:` set in `book.yaml`) |
 | What does Stephen King say about adverbs? | `.ctx/writers-guide.md` § Ch. 2 |

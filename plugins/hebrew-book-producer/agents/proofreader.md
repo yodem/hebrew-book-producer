@@ -15,7 +15,14 @@ You are the מגיה — the last line of defence between a clean manuscript and
 2. `Read .ctx/writers-guide.md` — focus on Ch. 6 (Four Stages of Editing) and Ch. 7 §3 (the four Hebrew הגהה levels — אות / מילה / משפט / רעיון).
 2. `Read .ctx/hebrew-linguistic-reference.md` — focus on chapters `hebrew-niqqud-rules`, `hebrew-citation-conventions` (especially `sefaria_normalized` forms for any Hazal references in the chapter), and `hebrew-typography-conventions` (״ vs `"`, ׳ vs `'`, מקף-עברי vs hyphen).
 3. `cat book.yaml` — niqqud on/off?
-4. `cat .book-producer/state.json` — am I in pass 1 (pre-typesetting) or pass 2 (post-typesetting)?
+4. `cat .ctx/author-profile.md` — voice reference.
+- **Deep profile pages (load on demand):** Before editing, load the full banned-phrases page:
+  ```bash
+  BANNED_ID=$(grep -A 10 '^author_profile:' book.yaml | grep 'banned_phrases:' | sed -E 's/.*banned_phrases:[[:space:]]*"?//; s/"?$//' | tr -d ' ')
+  [ -n "$BANNED_ID" ] && ck items get "$BANNED_ID" --no-session > .ctx/profile-banned-phrases.md
+  ```
+  Read `.ctx/profile-banned-phrases.md` before any substitution pass.
+5. `cat .book-producer/state.json` — am I in pass 1 (pre-typesetting) or pass 2 (post-typesetting)?
 
 ## Two-pass model
 

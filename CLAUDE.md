@@ -6,6 +6,26 @@ These instructions are loaded into every Claude Code session that has this plugi
 
 You are operating inside the **hebrew-book-producer** plugin. Your job is to help an author take a Hebrew manuscript through the full Israeli book-production pipeline: lectorship → literary editing → linguistic editing → proofreading → typesetting brief.
 
+## Natural-language entry-point router (BLOCKING)
+
+**Most users won't remember slash commands.** When the user types a freeform Hebrew or English request that matches the table below, invoke `/start <action>` immediately — do not ask which slash command they meant. The bootstrap inside `/start` asks at most one Hebrew confirmation question.
+
+| User says (freeform Hebrew/English) | Invoke |
+|---|---|
+| "תוכל להגיה / תגיהה / תעבור על הספר / proofread my book / can you proofread" | `/start proofread` |
+| "תוכל לערוך / עריכה ספרותית / עריכה לשונית / edit my book / edit this chapter" | `/start edit` |
+| "תעמיד / תכין לדפוס / typeset / get this print-ready" | `/start typeset` |
+| "תקרא / לקטור / חוות דעת / appraise / what do you think of this manuscript" | `/start lector` |
+| "תכתוב לי פרק / תרחיב את הברייף / draft chapter / write me chapter X" | `/start write` |
+| "ספר חדש / new book / start a project / I'm starting a new book" | `/start init` |
+| "תעביר את כל הפייפליין / ship it / run the full pipeline" | `/start ship` |
+
+Rules:
+- Match loosely. Synonyms count. Hebrew + English both work.
+- If a chapter ID is implied ("פרק 3", "chapter 4"), pass it as the second argument: `/start proofread ch3`.
+- If the user invokes a slash command directly (e.g., types `/proof ch3`), honour the slash exactly — do not re-route through `/start`.
+- If the request is ambiguous between two rows (e.g., "תעבור על הפרק" — could be lector or proofread), ask one Hebrew clarification. Otherwise act.
+
 ## Default behaviours
 
 1. **Language enforcement.** All editorial output, agent reports, and user-facing prose default to **Hebrew**. Sub-agent system prompts can be in English (developer-facing). Only switch to English when the user explicitly asks.

@@ -35,15 +35,39 @@ claude plugin install --local .
 # or symlink into ~/.claude/plugins/local/
 ```
 
-## Quick start
+## Quick start — the one-sentence flow
 
 ```bash
-cd /path/to/your/manuscript
-/init                           # creates book.yaml + AUTHOR_VOICE.md skeleton
-/lector manuscript.md           # initial appraisal
+cd /path/to/your/manuscript      # manuscript.md (or chapters/) already here
+```
+
+Then in Claude Code, type any of these in plain Hebrew or English:
+
+| What you type | What happens |
+|---|---|
+| **תוכל להגיה את הספר שלי?** | auto-detects the manuscript, scaffolds the project, asks 3 quick voice questions, runs the proofreader, returns a fix report |
+| תוכל לערוך / edit my book | literary + linguistic edit |
+| תקרא ותגיד לי מה אתה חושב / appraise | manuscript appraisal (lector report) |
+| תעמיד / typeset | typesetting brief |
+| תכתוב לי פרק 3 / draft chapter 3 | book-writer drafts a chapter from a brief |
+| ספר חדש / new book | scaffold-only — sets up an empty project |
+
+Total inputs to proofread an existing book: **1 sentence + 1 confirmation + 3 voice answers**. No YAML editing.
+
+### Advanced — the underlying slash commands
+
+Power users can skip the natural-language layer:
+
+```bash
+/start proofread                # the auto-bootstrap entry-point
+/start write ch3                # draft chapter 3 via book-writer
+/init                           # interactive project setup (long form)
+/init-voice                     # full 10-question voice fingerprint
+/lector manuscript.md           # manuscript appraisal
 /edit                           # literary + linguistic edit
 /proof                          # proofreading
-/typeset                        # generate typesetting brief
+/typeset                        # typesetting brief
+/draft ch3                      # book-writer directly
 /ship                           # full pipeline end-to-end
 ```
 
@@ -83,7 +107,7 @@ The full Hebrew design document is at [`README.he.md`](./README.he.md).
 
 ## Status
 
-`v0.3.0` — Sefaria-only Jewish-source path; voice/style init flow with hybrid auto-detect; Hebrew editorial knowledge moved to a shared CandleKeep book (`Hebrew Linguistic Reference`) backed by the public GitHub repo `yodem/hebrew-linguistics-data`. See `CHANGELOG.md` for full v0.3.0 changes and `CLAUDE.md` for current behaviour.
+`v0.4.0` — Natural-language entry-point + book-writer agent. One freeform sentence (Hebrew or English) auto-bootstraps the project and runs the requested action. New `book-writer` agent drafts chapters from briefs, with per-genre conventions for biography / philosophy / religious / popular non-fiction. See `CHANGELOG.md` for the full v0.3.0 → v0.4.0 history and `CLAUDE.md` for current behaviour.
 
 ## License
 

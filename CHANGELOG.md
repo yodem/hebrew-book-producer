@@ -5,6 +5,20 @@ All notable changes to `hebrew-book-producer` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] — 2026-05-01
+
+### Added (Stream A — natural-language entry-point)
+- **`/start` command** — single entry-point that auto-bootstraps a project (book.yaml, .book-producer/, AUTHOR_VOICE.md) and dispatches to proofread / edit / typeset / lector / write / init / ship. Total user inputs to proofread an existing book go from "create yaml + 10 voice questions + slash command" to **one sentence + one confirmation + three voice answers**.
+- **`book-bootstrap` skill** — manuscript detection (chapters/, ch*.md patterns, single manuscript.md, *.docx, *.pdf), genre-guess from content (Hazal density / first-person / argumentation markers), idempotent scaffolding. ONE Hebrew confirmation question — never seven.
+- **`express-voice` skill** — 3-question fast path (persona, register, one banned phrase) used when AUTHOR_VOICE.md is missing during bootstrap. The full `/init-voice` is still available for the heavy fingerprint.
+- **Natural-language router in CLAUDE.md** — table mapping freeform Hebrew/English requests ("תוכל להגיה את הספר שלי?", "edit my book", "draft chapter 3") directly to `/start <action>`. Loaded at session start; matches loosely; honours direct slash commands without rerouting.
+
+### Added (Stream B — book-writer agent)
+- **`book-writer` agent** (model: opus) — drafts a chapter from a brief (`chapters/<id>.brief.md`) respecting voice, genre conventions, and the Hebrew Linguistic Reference. Per-genre defaults: philosophy → dialectical, autobiography → scene-driven, religious → exposition with primary-source weave, popular-science → thematic with hooks.
+- **`/draft` command** — direct invocation of book-writer; or `/start write` runs it end-to-end with bootstrap.
+- **`chapters/<id>.brief.md` schema** — author-written input: target_words, shape, scenes, sources, the one non-negotiable beat. Writer never invents primary-source quotations; verifies all Jewish sources via Sefaria MCP.
+- **Decisions log** — every drafted chapter ships with a sibling `chapters/<id>.decisions.md` listing what scenes/sources/quotes were used, what was deferred, and what required interpretation.
+
 ## [0.3.0] — 2026-05-01
 
 ### Removed

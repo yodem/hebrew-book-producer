@@ -108,6 +108,17 @@ if [ -f "${PROJECT_ROOT}/book.yaml" ]; then
   fi
 fi
 
+# ── Author voice profile (optional, per-project) ────────────
+# Reads author_profile.overview from book.yaml and caches to .ctx/author-profile.md
+if [ -f "${PROJECT_ROOT}/book.yaml" ]; then
+  profile_overview_id=$(grep -A 10 '^author_profile:' "${PROJECT_ROOT}/book.yaml" \
+    | grep -E '^\s+overview:' | head -1 \
+    | sed -E 's/.*overview:[[:space:]]*//; s/[[:space:]]*#.*$//; s/^"//; s/"$//' | tr -d ' ')
+  if [ -n "${profile_overview_id}" ] && [ "${profile_overview_id}" != '""' ]; then
+    fetch_guide "${profile_overview_id}" "author-profile.md" "Author voice profile — overview"
+  fi
+fi
+
 echo
 echo "Done. Cached references in: ${CTX_DIR}/"
 echo

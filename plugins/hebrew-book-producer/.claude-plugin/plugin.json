@@ -20,5 +20,9 @@
     "candlekeep",
     "metaswarm",
     "superpowers"
-  ]
+  ],
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "hooks": "./hooks/"
 }

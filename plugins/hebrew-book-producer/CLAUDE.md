@@ -94,3 +94,25 @@ Two file-system hooks run automatically:
 | What font do we use? | `skills/hebrew-typography/references/fonts.md` |
 | How do I cite the Talmud? | `skills/cite-master/SKILL.md` (Hazal-style routine inside cite-master) |
 | Is "Berakhot 99z" a real reference? | Sefaria — call `mcp__claude_ai_Sefaria__get_text` (sole validator) |
+
+## Agent-specific instructions (CandleKeep)
+
+Per-agent operating instructions live in CandleKeep, not in the plugin source. This lets the author iterate on agent behavior without touching the plugin. Configure via `book.yaml`:
+
+```yaml
+agent_instructions:
+  lector_reader: <candlekeep-page-id>
+  lector_synthesizer: <candlekeep-page-id>
+  literary_reader: <candlekeep-page-id>
+  literary_synthesizer: <candlekeep-page-id>
+  linguistic_editor: <candlekeep-page-id>
+  proofreader: <candlekeep-page-id>
+```
+
+Each sub-agent loads its own page on session start via:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-agent-instructions.sh <agent_key>
+```
+
+The loader is idempotent — safe under parallel sub-agent invocation. If a key is missing or CandleKeep is unavailable, the loader writes a stub and the agent falls back to the session-cached references (`.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`).

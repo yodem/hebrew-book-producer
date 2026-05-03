@@ -36,17 +36,45 @@ manuscript
 
 ## Per-Agent Contract Table
 
-### lector
+### lector-reader
 
 | Field | Value |
 |---|---|
-| name | `lector` |
+| name | `lector-reader` |
+| model | sonnet |
+| tools | Read, Grep, Glob, Write |
+| reads (input artefacts) | `.book-producer/chunks/<id>.md`, `.book-producer/manuscript-index.json`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.ctx/author-profile.md`, `.ctx/lector-reader-instructions.md` |
+| writes (output artefacts) | `.book-producer/chapter-notes/<id>.json` (one per spawned instance) |
+| emits (state transitions) | None — readers feed the synthesizer; no direct state mutation |
+| hard rules | Read the assigned chunk fully; quote verbatim; one JSON out per instance; no verdict; never write `.book-producer/state.json` |
+
+---
+
+### lector-synthesizer
+
+| Field | Value |
+|---|---|
+| name | `lector-synthesizer` |
+| model | opus |
+| tools | Read, Grep, Glob, Write |
+| reads (input artefacts) | `.book-producer/chapter-notes/*.json`, `.book-producer/manuscript-index.json`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.ctx/author-profile.md`, `.ctx/lector-synthesizer-instructions.md` |
+| writes (output artefacts) | `LECTOR_REPORT.md` (project root, 7 sections in Hebrew) |
+| emits (state transitions) | None — lector is a one-shot gate, not a state-advancing agent |
+| hard rules | Read notes only — do NOT read raw chunks; quote verbatim from readers' AI/authorial markers; honest not flattering; one report per project |
+
+---
+
+### lector-legacy (escape hatch)
+
+| Field | Value |
+|---|---|
+| name | `lector-legacy` |
 | model | opus |
 | tools | Read, Grep, Glob |
-| reads (input artefacts) | `chapters/*.md`, `book.yaml`, `AUTHOR_VOICE.md`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md` |
-| writes (output artefacts) | `LECTOR_REPORT.md` (5-section appraisal, Hebrew) |
-| emits (state transitions) | None — lector is a one-shot gate, not a state-advancing agent |
-| hard rules | Be honest not flattering; read the entire manuscript before writing; one report per project; never write prose |
+| reads (input artefacts) | `chapters/*.md`, `book.yaml`, `.ctx/*` |
+| writes (output artefacts) | `LECTOR_REPORT.md` |
+| emits (state transitions) | None |
+| hard rules | Use only via `/lector --no-split`. Slow on long manuscripts. |
 
 ---
 

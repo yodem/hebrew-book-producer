@@ -28,8 +28,13 @@ user-invocable: false
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["file", "type", "rationale"],
+        "required": ["file", "type", "rationale", "change_id"],
         "properties": {
+          "change_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{12}$",
+            "description": "Stable hash. Computed via scripts/changes_id.py compute_change_id(file, line_start, before)."
+          },
           "file": {"type": "string"},
           "line_start": {"type": "integer"},
           "line_end": {"type": "integer"},
@@ -68,6 +73,19 @@ user-invocable: false
 }
 ```
 
+## change_id
+
+Every change object MUST include `change_id` — a 12-character hex hash uniquely identifying the change. Compute it with:
+
+```python
+from changes_id import compute_change_id
+cid = compute_change_id(file_path, line_start, before_text)
+```
+
+This ID is stable across re-runs of the same edit. The docx renderer embeds it as a hidden bookmark; `/apply` uses it to round-trip accept/reject decisions.
+
+For backwards-compatibility, production-manager migrates old `changes.json` files on read: if a change object lacks `change_id`, it computes the hash and writes it back.
+
 ## Change type reference
 
 | type | used by | meaning |
@@ -90,6 +108,7 @@ user-invocable: false
 
 ```json
 {
+  "change_id": "a1b2c3d4e5f6",
   "file": "chapters/ch03.md",
   "line_start": 120,
   "line_end": 135,
@@ -105,6 +124,7 @@ user-invocable: false
 
 ```json
 {
+  "change_id": "9a8b7c6d5e4f",
   "file": "chapters/ch05.md",
   "line_start": 44,
   "line_end": 44,
@@ -120,6 +140,7 @@ user-invocable: false
 
 ```json
 {
+  "change_id": "112233445566",
   "file": "chapters/ch02.md",
   "line_start": 78,
   "line_end": 78,

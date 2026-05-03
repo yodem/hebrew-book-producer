@@ -80,6 +80,119 @@ def split_folder(src: Path, out: Path) -> dict:
     }
 
 
+HEBREW_HEADING_RE = re.compile(
+    r"^(#{1,3}\s+.*|פרק\s+\S+.*|חלק\s+\S+.*|Chapter\s+\S+.*|Part\s+\S+.*)\s*$"
+)
+WORDCOUNT_TARGET = 3000
+
+
+def _detect_heading_offsets(text: str) -> list[tuple[int, str]]:
+    """Return [(offset, title), ...] for each heading line found."""
+    offsets = []
+    pos = 0
+    for line in text.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        if HEBREW_HEADING_RE.match(stripped):
+            title = re.sub(r"^#+\s+", "", stripped).strip()
+            offsets.append((pos, title))
+        pos += len(line)
+    return offsets
+
+
+def split_md(src: Path, out: Path) -> dict:
+    chunks_dir = out / "chunks"
+    if chunks_dir.exists():
+        shutil.rmtree(chunks_dir)
+    chunks_dir.mkdir(parents=True)
+
+    text = src.read_text(encoding="utf-8")
+    (out / "manuscript.md").write_text(text, encoding="utf-8")
+
+    headings = _detect_heading_offsets(text)
+    if len(headings) >= 2:
+        return _split_by_headings(text, headings, src, out, chunks_dir)
+    return _split_by_wordcount(text, src, out, chunks_dir)
+
+
+def _split_by_headings(
+    text: str, headings: list[tuple[int, str]], src: Path, out: Path, chunks_dir: Path
+) -> dict:
+    chunks = []
+    for i, (start, title) in enumerate(headings):
+        end = headings[i + 1][0] if i + 1 < len(headings) else len(text)
+        chunk_id = f"ch{i + 1:02d}"
+        chunk_text = text[start:end]
+        chunk_path = chunks_dir / f"{chunk_id}.md"
+        chunk_path.write_text(chunk_text, encoding="utf-8")
+        chunks.append(
+            {
+                "id": chunk_id,
+                "title": title,
+                "path": str(chunk_path.relative_to(out.parent)),
+                "start_offset": start,
+                "end_offset": end,
+                "word_count": _word_count(chunk_text),
+                "heading_level": 1,
+            }
+        )
+    return {
+        "$schema_version": SCHEMA_VERSION,
+        "source_file": str(src),
+        "source_format": "md",
+        "split_strategy": "headings",
+        "chunks": chunks,
+    }
+
+
+def _split_by_wordcount(text: str, src: Path, out: Path, chunks_dir: Path) -> dict:
+    paragraphs = text.split("\n\n")
+    chunks = []
+    buf: list[str] = []
+    buf_words = 0
+    chunk_idx = 1
+    chunk_start = 0
+
+    def _emit_chunk():
+        nonlocal chunk_idx, buf, buf_words, chunk_start
+        chunk_text = "\n\n".join(buf)
+        chunk_id = f"ch{chunk_idx:02d}"
+        chunk_path = chunks_dir / f"{chunk_id}.md"
+        chunk_path.write_text(chunk_text, encoding="utf-8")
+        chunks.append(
+            {
+                "id": chunk_id,
+                "title": f"Chunk {chunk_idx}",
+                "path": str(chunk_path.relative_to(out.parent)),
+                "start_offset": chunk_start,
+                "end_offset": chunk_start + len(chunk_text),
+                "word_count": buf_words,
+                "heading_level": 0,
+            }
+        )
+        chunk_idx += 1
+        chunk_start += len(chunk_text) + 2
+        buf = []
+        buf_words = 0
+
+    for para in paragraphs:
+        words = _word_count(para)
+        if buf_words + words > WORDCOUNT_TARGET and buf:
+            _emit_chunk()
+        buf.append(para)
+        buf_words += words
+
+    if buf:
+        _emit_chunk()
+
+    return {
+        "$schema_version": SCHEMA_VERSION,
+        "source_file": str(src),
+        "source_format": "md",
+        "split_strategy": "wordcount",
+        "chunks": chunks,
+    }
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("input", help="folder of .md, single .md, or .docx")
@@ -96,8 +209,10 @@ def main() -> int:
 
     if src.is_dir():
         index = split_folder(src, out)
+    elif src.suffix.lower() == ".md":
+        index = split_md(src, out)
     else:
-        sys.exit("non-folder inputs implemented in later tasks")
+        sys.exit(f"unsupported input: {src} (expected folder or .md)")
 
     (out / "manuscript-index.json").write_text(
         json.dumps(index, ensure_ascii=False, indent=2), encoding="utf-8"

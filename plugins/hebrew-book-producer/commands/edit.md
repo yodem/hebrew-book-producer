@@ -102,9 +102,67 @@ Print:
 המשך: לאחר שתסקרי, רוצי /apply לכל פרק.
 ```
 
-## Phase: Linguistic + Proofreader
+## Phase: Linguistic (parallel)
 
-(See Plan 4 for parallelizing these. For now, the existing linguistic-editor and proofreader paths run as before.)
+After the literary stage completes (or skipping straight here on `/edit linguistic`):
+
+### 0 — splitter
+
+Ensure `.book-producer/chunks/` exists (created by Plan 1's splitter). If not:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/split-manuscript.sh chapters/
+```
+
+### 1 — parallel linguistic-editors
+
+Generate `RUN_ID` (e.g., `$(date -u +%Y%m%d-%H%M%S)`).
+
+Spawn one `linguistic-editor` agent **per chunk in a single message**. For each chunk in `manuscript-index.json` chunks[], pass:
+
+```
+You are processing chunk <CHUNK_ID> for the linguistic edit.
+
+Inputs:
+  CHUNK_ID = <id>
+  CHUNK_PATH = <path>
+  RUN_ID = <run-id>
+  OUT_PATH = .book-producer/runs/<run-id>/linguistic-editor/<CHUNK_ID>.changes.json
+
+Follow your session-start checklist exactly.
+```
+
+Concurrency cap 8 (configurable via `splitter.max_parallel`). Wait for all to return.
+
+### 2 — merge per-chunk outputs
+
+```bash
+RUN_ID=<the run-id>
+mkdir -p .book-producer/runs/${RUN_ID}/linguistic-editor
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/merge_changes_per_chunk.py \
+  --chunks-dir .book-producer/runs/${RUN_ID}/linguistic-editor/ \
+  --out .book-producer/runs/${RUN_ID}/linguistic-editor/changes.json \
+  --agent linguistic-editor \
+  --run-id ${RUN_ID}
+```
+
+### 3 — render per-chapter docx
+
+```bash
+mkdir -p .book-producer/runs/${RUN_ID}/linguistic-editor/docx
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/render_suggestions_docx.py \
+  --changes .book-producer/runs/${RUN_ID}/linguistic-editor/changes.json \
+  --source chapters/ \
+  --out .book-producer/runs/${RUN_ID}/linguistic-editor/docx/
+```
+
+### 4 — Hebrew summary to user
+
+```
+שלב לשוני: <N> שינויים מוצעים בכל הספר.
+לסקירה ב-Word: chapters/chXX.suggestions.docx
+המשך: לאחר שתסקרי, רוצי /apply לכל פרק.
+```
 
 ## Argument
 

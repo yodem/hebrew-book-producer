@@ -11,10 +11,6 @@ Run the **typesetting-agent**.
 - All chapters must be at stage `typeset` (i.e. proofread pass 1 complete).
 - If any chapter is still at `linguistic` or earlier — refuse; tell the user to finish `/proof` first.
 
-## Gate
-
-Production-manager invokes Metaswarm `$design-review-gate` before the typesetting agent runs.
-
 ## What happens
 
 The typesetting-agent reads:

@@ -171,10 +171,6 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/render_suggestions_docx.py \
 - `linguistic` → only the linguistic stage.
 - A chapter ID (e.g. `ch04`) → constrain to that chapter only.
 
-## Gates
-
-Production-manager invokes Metaswarm `$plan-review-gate` before the literary stage if the gate is installed.
-
 ## Report
 
 A single summary at the end:

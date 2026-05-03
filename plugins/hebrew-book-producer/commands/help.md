@@ -60,8 +60,6 @@ Examples:
 
 - **CandleKeep** — author's curated knowledge layer (writer's guide, thesis notebook, craft extras). Plugin runs in degraded mode without it.
 - **Sefaria MCP** — canonical-text validator for every Hazal citation (sole validator). Citations that can't be validated get marked `[UNVERIFIED]`.
-- **Superpowers** — for plan-review-gate / design-review-gate.
-- **Metaswarm** — for multi-agent orchestration.
 
 ## Genre support
 

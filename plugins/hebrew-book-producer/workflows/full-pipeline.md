@@ -23,7 +23,7 @@ The end-to-end flow that `/ship` orchestrates. Used by production-manager and do
 │     edit        │  output: manuscript edited in place
 │                 │  + LITERARY_NOTES.md
 └────────┬────────┘
-         │   metaswarm: $plan-review-gate before this stage
+         │
          ▼
 ┌─────────────────┐  agent: linguistic-editor (sonnet)
 │  linguistic     │  uses: review-style, voice-preserver,
@@ -48,7 +48,6 @@ The end-to-end flow that `/ship` orchestrates. Used by production-manager and do
 │     brief       │  output: TYPESETTING_BRIEF.md
 │                 │  + TYPESETTING_NOTES.md
 └────────┬────────┘
-         │   metaswarm: $design-review-gate before this stage
          │   ⚡ user takes brief → InDesign / LaTeX → typeset proof
          ▼
 ┌─────────────────┐  agent: proofreader (sonnet)

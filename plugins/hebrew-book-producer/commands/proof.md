@@ -1,42 +1,80 @@
 ---
-description: Proofreading pass. Runs proofreader pass 1 (pre-typesetting) or pass 2 (post-typesetting) automatically based on .book-producer/state.json.
+description: Proofreading pass (parallel). Runs proofreader pass 1 (pre-typesetting) or pass 2 (post-typesetting) automatically based on .book-producer/state.json. Spawns N proofreader agents in parallel — one per chunk.
 argument-hint: [chapter-id]
 ---
 
-# /proof — proofreading
-
-Run the **proofreader** agent.
+# /proof — proofreading (parallel)
 
 ## Pre-flight
 
-- `book.yaml` must exist.
-- The chapter must be at stage `proofread-1` (after `/edit`) or `proofread-2-pending` (after `/typeset`).
+1. Verify `book.yaml` and `chapters/` exist.
+2. Determine pass: read `.book-producer/state.json`; if any chapter is at stage `typeset`, this is **pass 2**; otherwise **pass 1**.
+3. Splitter: ensure `.book-producer/chunks/`. If absent:
 
-## Pass detection
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/split-manuscript.sh chapters/
+```
 
-The proofreader detects which pass to run by reading `.book-producer/state.json`:
+## Parallel pipeline
 
-- Stage `proofread-1` → pass 1 (pre-typesetting). Catches typos, punctuation, hyphenation.
-- Stage `proofread-2-pending` → pass 2 (post-typesetting). Catches layout artefacts, broken quotation marks, RTL/LTR drift.
+Generate `RUN_ID` (e.g., `$(date -u +%Y%m%d-%H%M%S)`).
+Determine `PASS_DIR`: `proofreader-pass1` if pass 1, `proofreader-pass2` if pass 2.
+Determine `NEXT_STAGE`: pass 1 → `typeset`, pass 2 → `done`.
+
+Spawn one `proofreader` agent **per chunk in a single message**:
+
+```
+You are processing chunk <CHUNK_ID> for proofreading pass <PASS>.
+
+Inputs:
+  CHUNK_ID = <id>
+  CHUNK_PATH = <path>
+  RUN_ID = <run-id>
+  PASS = <1 or 2>
+  NEXT_STAGE = <typeset or done>
+  OUT_PATH = .book-producer/runs/<run-id>/<PASS_DIR>/<CHUNK_ID>.changes.json
+
+Follow your session-start checklist exactly. Two passes are non-negotiable; this is pass <PASS>.
+```
+
+Concurrency cap 8. Wait for all to return.
+
+## Merge
+
+```bash
+mkdir -p .book-producer/runs/${RUN_ID}/${PASS_DIR}
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/merge_changes_per_chunk.py \
+  --chunks-dir .book-producer/runs/${RUN_ID}/${PASS_DIR}/ \
+  --out .book-producer/runs/${RUN_ID}/${PASS_DIR}/changes.json \
+  --agent proofreader \
+  --run-id ${RUN_ID}
+```
+
+## Render docx
+
+```bash
+mkdir -p .book-producer/runs/${RUN_ID}/${PASS_DIR}/docx
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/render_suggestions_docx.py \
+  --changes .book-producer/runs/${RUN_ID}/${PASS_DIR}/changes.json \
+  --source chapters/ \
+  --out .book-producer/runs/${RUN_ID}/${PASS_DIR}/docx/
+```
 
 ## Conditional skills
 
-- If `book.yaml` has `niqqud: true` → run the `niqqud-pass` skill as a separate sweep AFTER the main proofread (never during).
-- If religious primary sources detected → verify each reference inline via `mcp__claude_ai_Sefaria__get_text`; tag `[UNVERIFIED]` on anything that fails to resolve.
+- If `book.yaml` has `niqqud: true` → run the `niqqud-pass` skill as a separate sweep AFTER the main parallel proofread (never during).
+- If religious primary sources detected → individual proofreader agents verify each reference inline via `mcp__claude_ai_Sefaria__get_text`; tag `[UNVERIFIED]` on anything that fails to resolve.
 
-## Output
+## Hebrew summary
 
-- The manuscript modified in place (typos fixed).
-- `PROOF_NOTES.md` updated with level-4 idea-flags (things the proofreader noticed but cannot auto-fix).
-- State updated:
-  - After pass 1 → `typeset` (next: `/typeset`).
-  - After pass 2 → `done`.
+```
+שלב הגהה (פסקה <PASS>): <N> תיקונים מוצעים.
+לסקירה: chapters/chXX.suggestions.docx
+המשך: /apply לכל פרק.
+```
 
-## Report
+## Hard rules
 
-Five-line summary:
-
-- Pass run (1 or 2).
-- Total fixes by level (אות / מילה / משפט / רעיון).
-- Niqqud pass run? Citations verified?
-- Next action.
+- **Two passes are non-negotiable.** Pass 1 before typesetting; pass 2 after typesetting (run `/proof` again).
+- **Idea-flags are NEVER auto-fixed.** They surface in the rendered docx as comments for human review.
+- **Never write to `.book-producer/state.json`** — production-manager owns that file.

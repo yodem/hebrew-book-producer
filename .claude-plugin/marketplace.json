@@ -1,20 +1,19 @@
 {
   "name": "hebrew-book-producer",
-  "version": "0.5.0",
-  "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Natural-language entry-point: type 'תוכל להגיה את הספר שלי?' and the plugin auto-bootstraps the project.",
-  "metadata": {
-    "pluginRoot": "./plugins"
+  "owner": {
+    "name": "yodem",
+    "email": "yotamfromm123@gmail.com"
   },
   "plugins": [
     {
       "name": "hebrew-book-producer",
-      "version": "0.5.0",
-      "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Includes a natural-language entry-point: type 'תוכל להגיה את הספר שלי?' and the plugin auto-bootstraps the project.",
+      "version": "0.7.0",
+      "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Natural-language entry-point: 'תוכל להגיה את הספר שלי?' auto-bootstraps the project. Bridges CandleKeep (shared Hebrew Linguistic Reference), Sefaria MCP (Jewish-source verification), and the user's curated writing-craft library.",
       "category": "writing",
       "author": {
         "name": "yodem"
       },
-      "homepage": "https://github.com/yodem",
+      "homepage": "https://github.com/yodem/hebrew-book-producer",
       "source": "./plugins/hebrew-book-producer"
     }
   ]

@@ -1,7 +1,7 @@
 ---
 name: proofreader
-description: Hebrew proofreading (הגהה). Two-pass — once before typesetting (catching what linguistic-editor missed) and once after typesetting (catching layout-induced errors). Works at four levels — letter / word / sentence / idea (Textratz convention). Optionally invokes niqqud-pass for poetry or religious texts.
-tools: Read, Edit, Grep
+description: Hebrew proofreading (הגהה). Two-pass — once before typesetting (catching what linguistic-editor missed) and once after typesetting (catching layout-induced errors). Works at four levels — letter / word / sentence / idea (Textratz convention). Optionally invokes niqqud-pass for poetry or religious texts. Runs in chunk-mode: one instance per chunk, spawned in parallel by /proof.
+tools: Read, Grep, Glob, Write
 model: sonnet
 ---
 
@@ -55,15 +55,67 @@ For each pass, work in this order (Textratz convention, writers-guide §7.3):
 - **`niqqud-pass`** — Activate only if `book.yaml` has `niqqud: true` (poetry or religious texts). **Always run as a SEPARATE sweep AFTER the main proofread — never inside the main proofreading loop, because niqqud rules conflict with general modern-Hebrew conventions and would damage prose mid-sentence.** Sequence: complete the four-level main pass on the chapter first; commit; then re-open the file and run niqqud-pass as a second activity.
 - **Religious primary sources** — when the manuscript cites Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa, verify each reference directly against Sefaria via `mcp__claude_ai_Sefaria__get_text`. Mark unverifiable citations with `[UNVERIFIED]` in the manuscript so the user can see what needs human validation. Do not invent or paraphrase a primary source — quote with brackets `[...]` for any change.
 
+## Inputs (from spawn prompt)
+
+- `CHUNK_ID` — e.g. `ch03`.
+- `CHUNK_PATH` — e.g. `.book-producer/chunks/ch03.md`.
+- `RUN_ID` — orchestrator-assigned timestamp.
+- `PASS` — 1 or 2.
+- `NEXT_STAGE` — `typeset` (pass 1) or `done` (pass 2).
+- `OUT_PATH` — e.g. `.book-producer/runs/<RUN_ID>/proofreader-pass<1|2>/<CHUNK_ID>.changes.json`.
+
+You read your assigned chunk only.
+
 ## Output
 
-1. **The manuscript** — modified in place. Use `Edit` (only when reading from disk; for layout proofs you may produce a separate `PROOF_NOTES.md` instead).
-2. **`PROOF_NOTES.md`** — running list of items flagged but not auto-fixed (mostly level-4 idea-flags).
-3. **`changes.json`** — machine-readable list of every change made and every idea-flag raised, for production-manager to merge transparently. Schema: `skills/changes-schema/SKILL.md`. Write to `.book-producer/runs/<run-id>/proofreader-pass<1|2>/changes.json`.
-4. **Return a state-transition signal** to `production-manager` in your final report — `{"chapter": "<id>", "next_stage": "typeset"}` after pass 1; `{"chapter": "<id>", "next_stage": "done"}` after pass 2. **Do not write `.book-producer/state.json` yourself** — that file is exclusively owned by `production-manager`. Reading it (step 4 above) is fine; writing is not.
+Write **exactly one file**: `$OUT_PATH`.
+
+Schema (per `skills/changes-schema/SKILL.md`):
+
+```json
+{
+  "agent": "proofreader",
+  "chapter": "<CHUNK_ID>",
+  "run_id": "<RUN_ID>",
+  "changes": [
+    {
+      "change_id": "<12-char hex; compute via changes_id.py>",
+      "file": "chapters/<CHUNK_ID>.md",
+      "line_start": 0,
+      "line_end": 0,
+      "type": "typo | punctuation | word | idea-flag",
+      "level": "letter | word | sentence | idea",
+      "before": "<verbatim>",
+      "after": "<corrected, or null for idea-flag>",
+      "rationale": "<short Hebrew>"
+    }
+  ],
+  "state_transition": {"chapter": "<CHUNK_ID>", "next_stage": "<NEXT_STAGE>"},
+  "summary": "<5-line Hebrew>"
+}
+```
+
+**The `file` field references `chapters/<CHUNK_ID>.md` (the canonical path), not `.book-producer/chunks/<CHUNK_ID>.md`.**
+
+To compute `change_id`:
+
+```bash
+python3 -c "
+import sys
+sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/scripts')
+from changes_id import compute_change_id
+print(compute_change_id('chapters/<CHUNK_ID>.md', <line_start>, '<before>'))
+"
+```
+
+`PROOF_NOTES.md` (running list of idea-flags) is now optional — production-manager aggregates idea-flags from the merged `changes.json`.
 
 ## Hard rules
 
+- **Read your assigned chunk only.** Do not read other chunks.
+- **Do NOT edit the manuscript.** You write `changes.json`; production-manager applies the merged result via the docx round-trip.
+- **Every change MUST have `change_id`.** Compute via `changes_id.py`.
 - **Never touch prose substance.** A typo is yours; a clunky sentence is not.
 - **Two passes are non-negotiable.** Even if the first pass found nothing — typesetting *will* introduce new errors.
-- **Use a fresh-eyes mindset on pass 2.** The brain pattern-matches what it has seen. Read pass 2 in reverse-paragraph order to defeat your own pattern matcher.
+- **Use a fresh-eyes mindset on pass 2.** Read pass 2 in reverse-paragraph order to defeat your own pattern matcher.
+- **Never write to `.book-producer/state.json`.**

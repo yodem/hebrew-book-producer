@@ -78,17 +78,45 @@ manuscript
 
 ---
 
-### literary-editor
+### literary-reader
 
 | Field | Value |
 |---|---|
-| name | `literary-editor` |
+| name | `literary-reader` |
+| model | sonnet |
+| tools | Read, Grep, Glob, Write |
+| reads (input artefacts) | `.book-producer/chunks/<id>.md`, `.book-producer/manuscript-index.json`, `.book-producer/chapter-notes/<id>.json` (optional, from lector), `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.ctx/author-profile.md`, `.ctx/literary-reader-instructions.md` |
+| writes (output artefacts) | `.book-producer/literary-notes/<id>.json` |
+| emits (state transitions) | None — readers feed the synthesizer |
+| hard rules | Local craft only; never cross-chapter decisions; do NOT write changes.json directly; voice wins; never write `.book-producer/state.json` |
+
+---
+
+### literary-synthesizer
+
+| Field | Value |
+|---|---|
+| name | `literary-synthesizer` |
+| model | opus |
+| tools | Read, Grep, Glob, Write, Bash |
+| reads (input artefacts) | `.book-producer/literary-notes/*.json`, `.book-producer/chapter-notes/*.json`, `.book-producer/manuscript-index.json`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.ctx/author-profile.md`, `.ctx/literary-synthesizer-instructions.md`, `skills/changes-schema/SKILL.md` |
+| writes (output artefacts) | `.book-producer/runs/<run-id>/literary-editor/changes.json` (unified, `change_id` on every entry); `LITERARY_NOTES.md` |
+| emits (state transitions) | `{"chapter": "ALL", "next_stage": "linguistic"}` |
+| hard rules | Notes-first reading; spot-check chunks via Grep only; every change has `change_id`; voice wins (demote to voice-flag rather than auto-apply); three Yeahbuts max per chapter; never write `.book-producer/state.json` |
+
+---
+
+### literary-editor-legacy (escape hatch)
+
+| Field | Value |
+|---|---|
+| name | `literary-editor-legacy` |
 | model | opus |
 | tools | Read, Edit, Grep, Glob |
 | reads (input artefacts) | `chapters/<id>.md`, `AUTHOR_VOICE.md`, `LECTOR_REPORT.md`, `book.yaml`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md` |
-| writes (output artefacts) | Edits `chapters/<id>.md` in place via `Edit`; `LITERARY_NOTES.md`; `changes.json` (schema: § Handoff schemas) |
+| writes (output artefacts) | Edits `chapters/<id>.md` in place via `Edit`; `LITERARY_NOTES.md`; `changes.json` (every change must include `change_id`, computed via `scripts/changes_id.py`) |
 | emits (state transitions) | `{"chapter": "<id>", "next_stage": "linguistic"}` per chapter touched |
-| hard rules | No new prose — mark gaps TK; no grammar fixes (those are linguistic-editor's); three Yeahbuts max per chapter; do NOT write `.book-producer/state.json` |
+| hard rules | Use only via `/edit --no-split`. Slow on long manuscripts. |
 
 ---
 

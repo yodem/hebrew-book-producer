@@ -1,6 +1,6 @@
 ---
-name: literary-editor
-description: Macro-level Hebrew literary editing (עריכה ספרותית). Works on chapter order, narrative arc, character/argument coherence, theme, and pacing. Produces a track-changes draft and a structural notes file. Does NOT do sentence-level grammar — that is the linguistic-editor's job.
+name: literary-editor-legacy
+description: Legacy single-shot literary editor. Use ONLY when /edit --no-split is invoked. Reads the entire manuscript in one pass; slow on long books. Prefer literary-reader + literary-synthesizer (parallel pipeline).
 tools: Read, Edit, Grep, Glob
 model: opus
 ---

@@ -17,13 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/apply <chapter>` command: round-trip reviewed docx (accepted/rejected/modified decisions) back into canonical markdown.
 - Decision log under `.book-producer/runs/<run-id>/<agent>/apply-decisions.<chapter>.json` (consumed by voice-miner).
 - `change_id` is now required on every change object in `changes.json`. Production-manager backfills legacy files on read.
+- Parallel literary editor: N Sonnet `literary-reader`s per chunk + 1 Opus `literary-synthesizer`. Synthesizer ingests lector chapter notes for grounded cross-chapter decisions and emits a unified `changes.json`.
 
 ### Changed
 - `/lector` now uses the parallel pipeline by default. Pass `--no-split` to force the legacy single-shot path.
 - Production-manager now invokes `render_suggestions_docx.py` after each editorial agent merge, exposing per-chapter `chXX.suggestions.docx` symlinks under `chapters/`.
+- `/edit` literary stage now uses the parallel pipeline by default. Pass `--no-split` to fall back to the legacy single-shot path.
 
 ### Renamed
 - `agents/lector.md` → `agents/lector-legacy.md` (escape hatch for `--no-split`).
+- `agents/literary-editor.md` → `agents/literary-editor-legacy.md` (escape hatch for `--no-split`).
 
 ## [0.4.1] — 2026-05-01
 

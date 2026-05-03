@@ -13,3 +13,4 @@ Thumbs.db
 
 # Test sandbox (created during plugin self-test, deleted afterwards)
 test-sandbox/
+__pycache__/

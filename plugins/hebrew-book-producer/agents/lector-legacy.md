@@ -1,6 +1,6 @@
 ---
-name: lector
-description: One-shot manuscript appraisal (קריאת לקטור). Reads the full manuscript, returns a structured LECTOR_REPORT.md covering market fit, structural soundness, voice signal, and a go/no-go on each chapter. Runs ONCE per project, before any editing.
+name: lector-legacy
+description: Legacy single-shot manuscript appraisal. Use ONLY when /lector --no-split is invoked. Reads the entire manuscript in one pass; slow on long books. Prefer lector-reader + lector-synthesizer (parallel pipeline).
 tools: Read, Grep, Glob
 model: opus
 ---

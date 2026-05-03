@@ -18,11 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Decision log under `.book-producer/runs/<run-id>/<agent>/apply-decisions.<chapter>.json` (consumed by voice-miner).
 - `change_id` is now required on every change object in `changes.json`. Production-manager backfills legacy files on read.
 - Parallel literary editor: N Sonnet `literary-reader`s per chunk + 1 Opus `literary-synthesizer`. Synthesizer ingests lector chapter notes for grounded cross-chapter decisions and emits a unified `changes.json`.
+- Parallel linguistic editor and parallel proofreader: N Sonnet agents per chunk, no synthesizer (changes are local). Merged via `scripts/merge_changes_per_chunk.py` (with `change_id` backfill).
 
 ### Changed
 - `/lector` now uses the parallel pipeline by default. Pass `--no-split` to force the legacy single-shot path.
 - Production-manager now invokes `render_suggestions_docx.py` after each editorial agent merge, exposing per-chapter `chXX.suggestions.docx` symlinks under `chapters/`.
 - `/edit` literary stage now uses the parallel pipeline by default. Pass `--no-split` to fall back to the legacy single-shot path.
+- `linguistic-editor` and `proofreader` agents now run in chunk-mode: they read `.book-producer/chunks/<id>.md` and write `.book-producer/runs/<run-id>/<agent>/<chunk-id>.changes.json` instead of editing the manuscript in place.
+- `/edit linguistic` and `/proof` commands now spawn N parallel agents.
 
 ### Renamed
 - `agents/lector.md` → `agents/lector-legacy.md` (escape hatch for `--no-split`).

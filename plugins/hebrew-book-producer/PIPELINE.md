@@ -120,31 +120,31 @@ manuscript
 
 ---
 
-### linguistic-editor
+### linguistic-editor (chunk-mode parallel)
 
 | Field | Value |
 |---|---|
 | name | `linguistic-editor` |
 | model | sonnet |
-| tools | Read, Edit, Grep |
-| reads (input artefacts) | `chapters/<id>.md`, `AUTHOR_VOICE.md`, `LITERARY_NOTES.md`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.book-producer/memory.md` (last 50 lines) |
-| writes (output artefacts) | Edits `chapters/<id>.md` in place via `Edit`; `LINGUISTIC_NOTES.md`; `changes.json` |
-| emits (state transitions) | `{"chapter": "<id>", "next_stage": "proofread-1"}` per chapter touched |
-| hard rules | Never silently rewrite a paragraph; voice wins over correctness; the 10% formula is NOT yours; do NOT write `.book-producer/state.json` |
+| tools | Read, Grep, Glob, Write |
+| reads (input artefacts) | `.book-producer/chunks/<id>.md`, `AUTHOR_VOICE.md`, `LITERARY_NOTES.md`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.book-producer/memory.md` (last 50 lines) |
+| writes (output artefacts) | `.book-producer/runs/<run-id>/linguistic-editor/<chunk-id>.changes.json` (per-chunk; merged by `merge_changes_per_chunk.py` into a single `changes.json`) |
+| emits (state transitions) | `{"chapter": "<chunk-id>", "next_stage": "proofread-1"}` per chunk |
+| hard rules | Runs in parallel chunk-mode (one instance per chunk); never edits the manuscript directly; every change must include `change_id`; never silently rewrite a paragraph; voice wins; the 10% formula is NOT yours; do NOT write `.book-producer/state.json` |
 
 ---
 
-### proofreader
+### proofreader (chunk-mode parallel)
 
 | Field | Value |
 |---|---|
 | name | `proofreader` |
 | model | sonnet |
-| tools | Read, Edit, Grep |
-| reads (input artefacts) | `chapters/<id>.md`, `book.yaml`, `.book-producer/state.json` (to determine pass 1 or pass 2), `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md` |
-| writes (output artefacts) | Edits `chapters/<id>.md` in place via `Edit`; `PROOF_NOTES.md`; `changes.json` |
-| emits (state transitions) | Pass 1: `{"chapter": "<id>", "next_stage": "typeset"}`; Pass 2: `{"chapter": "<id>", "next_stage": "done"}` |
-| hard rules | Two passes are non-negotiable; never touch prose substance; run niqqud-pass ONLY when `book.yaml: niqqud: true` and only AFTER the main pass; do NOT write `.book-producer/state.json` |
+| tools | Read, Grep, Glob, Write |
+| reads (input artefacts) | `.book-producer/chunks/<id>.md`, `book.yaml`, `.book-producer/state.json` (read-only, to determine pass 1 or pass 2), `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md` |
+| writes (output artefacts) | `.book-producer/runs/<run-id>/proofreader-pass[1|2]/<chunk-id>.changes.json` (per-chunk; merged into a single `changes.json`) |
+| emits (state transitions) | Pass 1: `{"chapter": "<chunk-id>", "next_stage": "typeset"}`; Pass 2: `{"chapter": "<chunk-id>", "next_stage": "done"}` |
+| hard rules | Runs in parallel chunk-mode (one instance per chunk); never edits the manuscript directly; every change must include `change_id`; two passes non-negotiable; never touch prose substance; run niqqud-pass ONLY when `book.yaml: niqqud: true` and only AFTER the main pass; do NOT write `.book-producer/state.json` |
 
 ---
 

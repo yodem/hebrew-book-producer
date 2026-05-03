@@ -81,3 +81,25 @@ def test_single_md_falls_back_to_wordcount_when_no_headings(tmp_path: Path) -> N
     idx = json.loads((tmp_path / ".book-producer/manuscript-index.json").read_text(encoding="utf-8"))
     assert idx["split_strategy"] == "wordcount"
     assert 2 <= len(idx["chunks"]) <= 4
+
+
+def test_docx_input_converts_via_pandoc_then_splits(tmp_path: Path) -> None:
+    """Smoke test: produce a .docx from markdown via pandoc, then split it."""
+    md_src = tmp_path / "manuscript.md"
+    md_src.write_text(
+        "# פרק 1: התחלה\n\nשלום.\n\n"
+        "# פרק 2: סוף\n\nוסיימנו.\n",
+        encoding="utf-8",
+    )
+    docx_src = tmp_path / "manuscript.docx"
+    subprocess.run(
+        ["pandoc", "-f", "markdown", "-t", "docx", str(md_src), "-o", str(docx_src)],
+        check=True,
+    )
+
+    result = run_splitter(str(docx_src), "--out", str(tmp_path / ".book-producer"), cwd=tmp_path)
+    assert result.returncode == 0, result.stderr
+
+    idx = json.loads((tmp_path / ".book-producer/manuscript-index.json").read_text(encoding="utf-8"))
+    assert idx["source_format"] == "docx"
+    assert len(idx["chunks"]) == 2

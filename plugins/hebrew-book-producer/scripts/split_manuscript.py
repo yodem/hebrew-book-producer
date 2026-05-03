@@ -14,6 +14,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -193,6 +194,32 @@ def _split_by_wordcount(text: str, src: Path, out: Path, chunks_dir: Path) -> di
     }
 
 
+def split_docx(src: Path, out: Path) -> dict:
+    md_path = out / "manuscript.md"
+    proc = subprocess.run(
+        [
+            "pandoc",
+            "-f",
+            "docx",
+            "-t",
+            "markdown",
+            "--wrap=none",
+            str(src),
+            "-o",
+            str(md_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        sys.exit(f"pandoc conversion failed: {proc.stderr}")
+
+    index = split_md(md_path, out)
+    index["source_file"] = str(src)
+    index["source_format"] = "docx"
+    return index
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("input", help="folder of .md, single .md, or .docx")
@@ -211,8 +238,10 @@ def main() -> int:
         index = split_folder(src, out)
     elif src.suffix.lower() == ".md":
         index = split_md(src, out)
+    elif src.suffix.lower() == ".docx":
+        index = split_docx(src, out)
     else:
-        sys.exit(f"unsupported input: {src} (expected folder or .md)")
+        sys.exit(f"unsupported input: {src} (expected folder, .md, or .docx)")
 
     (out / "manuscript-index.json").write_text(
         json.dumps(index, ensure_ascii=False, indent=2), encoding="utf-8"

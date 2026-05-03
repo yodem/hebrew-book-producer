@@ -13,9 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Per-agent CandleKeep instruction loader (`scripts/load-agent-instructions.sh`).
 - `agent_instructions` block in `book.yaml` for per-role CandleKeep page IDs.
 - `lector-reader` (Sonnet) and `lector-synthesizer` (Opus) agents.
+- Docx suggestion mode: editorial agents' `changes.json` renders to `chXX.suggestions.docx` with Word tracked changes (`w:ins`/`w:del`) + `chg_<id>` bookmarks + inline rationale.
+- `/apply <chapter>` command: round-trip reviewed docx (accepted/rejected/modified decisions) back into canonical markdown.
+- Decision log under `.book-producer/runs/<run-id>/<agent>/apply-decisions.<chapter>.json` (consumed by voice-miner).
+- `change_id` is now required on every change object in `changes.json`. Production-manager backfills legacy files on read.
 
 ### Changed
 - `/lector` now uses the parallel pipeline by default. Pass `--no-split` to force the legacy single-shot path.
+- Production-manager now invokes `render_suggestions_docx.py` after each editorial agent merge, exposing per-chapter `chXX.suggestions.docx` symlinks under `chapters/`.
 
 ### Renamed
 - `agents/lector.md` → `agents/lector-legacy.md` (escape hatch for `--no-split`).

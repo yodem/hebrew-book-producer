@@ -5,6 +5,21 @@ All notable changes to `hebrew-book-producer` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Parallel lector pipeline: splitter + N Sonnet readers + 1 Opus synthesizer.
+- Manuscript splitter (`scripts/split-manuscript.sh` + `scripts/split_manuscript.py`) supporting `.docx`, `.md`, and folder inputs.
+- Per-agent CandleKeep instruction loader (`scripts/load-agent-instructions.sh`).
+- `agent_instructions` block in `book.yaml` for per-role CandleKeep page IDs.
+- `lector-reader` (Sonnet) and `lector-synthesizer` (Opus) agents.
+
+### Changed
+- `/lector` now uses the parallel pipeline by default. Pass `--no-split` to force the legacy single-shot path.
+
+### Renamed
+- `agents/lector.md` → `agents/lector-legacy.md` (escape hatch for `--no-split`).
+
 ## [0.4.1] — 2026-05-01
 
 ### Fixed (P0 audit findings)

@@ -48,6 +48,50 @@ You are the **production manager**. In an Israeli publishing house your human co
 
 Each spawn of a sub-agent writes its structured output to `.book-producer/runs/<run-id>/<agent>/changes.json` (and `.md` for human-readable notes). You merge by reading `changes.json` from each sub-agent and applying changes to the manuscript. This makes runs auditable and resumable.
 
+### change_id backfill (one-time migration)
+
+When reading a sub-agent's `changes.json`, check whether each change object has a `change_id` field. If any are missing:
+
+1. Compute it via:
+   ```bash
+   python3 -c "
+   import sys, json
+   sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/scripts')
+   from changes_id import compute_change_id
+   data = json.load(open('<path-to-changes.json>'))
+   for c in data['changes']:
+       if 'change_id' not in c:
+           c['change_id'] = compute_change_id(c['file'], c.get('line_start', 0), c.get('before', ''))
+   json.dump(data, open('<path-to-changes.json>', 'w'), ensure_ascii=False, indent=2)
+   "
+   ```
+2. Continue with the merge.
+
+The migration is idempotent — already-migrated files are no-ops.
+
+### Docx suggestion rendering
+
+After successfully reading and merging a sub-agent's `changes.json`, render a docx with tracked changes for the author to review in Word:
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/render_suggestions_docx.py \
+  --changes .book-producer/runs/<run-id>/<agent>/changes.json \
+  --source chapters/ \
+  --out .book-producer/runs/<run-id>/<agent>/docx/
+```
+
+For author convenience, also expose the latest docx per chapter as a symlink:
+
+```bash
+mkdir -p chapters
+for f in .book-producer/runs/<run-id>/<agent>/docx/*.suggestions.docx; do
+  rel=$(python3 -c "import os,sys; print(os.path.relpath(sys.argv[1], 'chapters'))" "$f")
+  ln -sf "$rel" "chapters/$(basename "$f")"
+done
+```
+
+If the renderer exits non-zero, log to `.book-producer/runs/<run-id>/errors.log` and proceed — the docx is a convenience layer, not a blocker for the canonical markdown merge.
+
 ### Malformed-report recovery
 
 Read each sub-agent's `changes.json`. If JSON parse fails:

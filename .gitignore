@@ -5,6 +5,10 @@
 *.swp
 *.swo
 
+# Voice profile build artifacts (only AUTHOR_VOICE.md is tracked)
+.voice/*
+!.voice/.gitkeep
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

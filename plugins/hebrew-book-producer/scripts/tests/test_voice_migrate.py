@@ -57,7 +57,9 @@ def test_migrate_hebrew_book_producer_legacy_author_voice(tmp_path):
 
 
 def test_migrate_no_legacy_records_marker(tmp_path):
-    """When there are no legacy artifacts, migrate exits 0 and records the marker."""
+    """When the project has a plugin sentinel but no legacy artifacts, migrate exits 0 and records the marker."""
+    # Satisfy profile-scope guard: a book.yaml makes this a recognised plugin project
+    (tmp_path / "book.yaml").write_text("author: Test\n")
     r = subprocess.run([str(SCRIPT)], cwd=str(tmp_path), capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     marker = tmp_path / ".voice" / ".migrated"

@@ -5,6 +5,14 @@
 set -euo pipefail
 
 root="${VOICE_PROJECT_ROOT:-$(pwd)}"
+
+# Profile scope: only run in projects that actually use one of the plugins
+if [[ ! -f "$root/.academic-writer/profile.json" \
+   && ! -f "$root/AUTHOR_VOICE.md" \
+   && ! -f "$root/book.yaml" ]]; then
+  exit 0
+fi
+
 voice_dir="$root/.voice"
 mkdir -p "$voice_dir/legacy" "$voice_dir/interview"
 marker="$voice_dir/.migrated"
@@ -21,7 +29,7 @@ seeded=0
 aw_profile="$root/.academic-writer/profile.json"
 if [[ -f "$aw_profile" ]]; then
   cp "$aw_profile" "$voice_dir/legacy/profile.json"
-  python3 - <<PYEOF "$aw_profile" "$profile"
+  python3 - <<'PYEOF' "$aw_profile" "$profile"
 import json, sys, datetime
 src, dst = sys.argv[1], sys.argv[2]
 with open(src) as f:

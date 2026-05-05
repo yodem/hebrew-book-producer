@@ -37,10 +37,22 @@ ensure_id() {
     cat "$id_cache"
     return 0
   fi
-  # Title fallback
+  # Title fallback — pass title via env var to avoid shell injection
   id=$(ck books list --json 2>/dev/null \
-    | python3 -c "import sys,json; d=json.load(sys.stdin); print(next((b['id'] for b in d if b.get('title')=='$title'),''))" \
-    || true)
+    | VOICE_TITLE="$title" python3 -c "
+import sys, json, os
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+t = os.environ['VOICE_TITLE']
+if not isinstance(d, list):
+    sys.exit(0)
+for b in d:
+    if isinstance(b, dict) and b.get('title') == t:
+        print(b.get('id', ''))
+        sys.exit(0)
+" || true)
   if [[ -n "$id" ]]; then
     mkdir -p "$voice_dir"
     echo "$id" > "$id_cache"
@@ -78,7 +90,14 @@ case "$action" in
     id=$(ensure_id)
     if [[ -z "$id" ]]; then
       id=$(ck books create --title "$title" --format md --content "$profile" --json 2>/dev/null \
-        | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])" 2>/dev/null || true)
+        | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    print(d.get('id', ''))
+except Exception:
+    pass
+" 2>/dev/null || true)
       if [[ -n "$id" ]]; then
         mkdir -p "$voice_dir"
         echo "$id" > "$id_cache"

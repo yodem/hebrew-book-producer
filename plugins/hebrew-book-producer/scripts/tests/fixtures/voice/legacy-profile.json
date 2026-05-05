@@ -1,0 +1,14 @@
+{
+  "writer_name": "Test Writer",
+  "field": "Talmud",
+  "citation_style": "Inline Parenthetical",
+  "voice": {
+    "register": "academic",
+    "banned_words": ["furthermore", "moreover"],
+    "phrase_bank": ["מבחינה זו", "אבחנה זו"]
+  },
+  "style_fingerprint": {
+    "avg_sentence_len": 18,
+    "preferred_connectives": ["אך", "ובכל זאת"]
+  }
+}

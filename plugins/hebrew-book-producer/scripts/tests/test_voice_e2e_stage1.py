@@ -23,7 +23,13 @@ def test_stage1_seeds_author_voice(tmp_path):
     chapters = tmp_path / "chapters"
     shutil.copytree(FIXTURE, chapters)
 
-    # Run migration first (no legacy artifacts → marker only, no-op on content)
+    # Set up a legacy AUTHOR_VOICE.md (HBP legacy artifact) so migration has input
+    # and the profile-scope guard is satisfied
+    (tmp_path / "AUTHOR_VOICE.md").write_text(
+        "# Voice Profile — Test Author HBP\n\nSome legacy content.\n"
+    )
+
+    # Run migration — should reformat legacy AUTHOR_VOICE.md to four-section structure
     r_migrate = subprocess.run(
         ["bash", str(REPO_ROOT / "plugins/hebrew-book-producer/skills/voice/voice-migrate.sh")],
         cwd=str(tmp_path),
@@ -59,10 +65,9 @@ def test_stage1_seeds_author_voice(tmp_path):
     )
     assert r_sync.returncode == 0
 
-    # AUTHOR_VOICE.md should exist (created by migrate or we create a stub)
+    # AUTHOR_VOICE.md should have been migrated to the four-section structure — not seeded by test
     avo = tmp_path / "AUTHOR_VOICE.md"
-    if not avo.exists():
-        avo.write_text(
-            "> Updated 2026-05-05 by hebrew-book-producer\n\n# Voice Profile — test\n"
-        )
-    assert avo.exists()
+    assert avo.exists(), "AUTHOR_VOICE.md should be created by migration"
+    content = avo.read_text()
+    assert "Voice Profile" in content
+    assert "Test Author HBP" in content

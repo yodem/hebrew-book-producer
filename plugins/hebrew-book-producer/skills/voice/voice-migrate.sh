@@ -95,7 +95,7 @@ if all(s in text for s in ("## Core voice", "## Terminology",
     sys.exit(0)
 # Otherwise, wrap legacy content under "## Non-fiction-book-specific"
 writer = "<unknown>"
-m = re.search(r"#\s*Voice Profile\s*—\s*(.+)", text)
+m = re.search(r"#\s*(?:Voice Profile|AUTHOR_VOICE)\s*[—\-]\s*(.+)", text)
 if m: writer = m.group(1).strip()
 new = f"""> Updated {today} by hebrew-book-producer (migrated from legacy AUTHOR_VOICE.md)
 

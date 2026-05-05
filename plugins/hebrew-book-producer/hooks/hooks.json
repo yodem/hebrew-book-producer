@@ -9,6 +9,24 @@
             "statusMessage": "Loading hebrew-book-producer references..."
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/voice-pull.sh",
+            "statusMessage": "Syncing voice profile from CandleKeep..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/skills/voice/voice-migrate.sh",
+            "statusMessage": "Running voice profile migration (idempotent)..."
+          }
+        ]
       }
     ],
     "PreToolUse": [

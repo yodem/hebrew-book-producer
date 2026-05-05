@@ -182,12 +182,34 @@ Silent auto-migration on first session start after this ships:
 | CandleKeep sync | Mock `ck` CLI → assert pull-merge-push order, conflict markers on divergence, no-op on missing CLI. |
 | End-to-end | Full Stage 1 + Stage 2 (3 sessions) on fixture project; assert profile valid, audit has score, no orphaned transcripts. |
 
-## 15. Open questions for implementation
+## 15. Resolved implementation parameters
 
-- Exact wording / count distribution of questions per session in `questions-academic.md` and `questions-non-fiction.md` (drafted during plan, reviewed during build).
-- Audit score thresholds for "good" / "weak category" / "needs more data" — calibrate against fixture corpus.
-- CandleKeep book ID resolution: lookup by title, or store ID in `.voice/.candlekeep-id`?
-- Whether to auto-pull from CandleKeep on every plugin session start (chatty) or only when local profile is older than N hours.
+**Question bank distribution (per session)**: adaptive 12–18 questions, soft floor 12 / hard cap 18. Seed distribution is category-weighted across three layers (voice / terminology / plugin-specific): Beliefs and Aesthetics lean voice-heavy; Structure and Refusals lean plugin-specific-heavy; Terminology gets a small dedicated subsection (~3 questions) in every session. Interviewer may drop or extend within a session to chase a productive thread, respecting the cap.
+
+**Audit score thresholds (separate axes)**:
+- A (generation match) good ≥ 6.5 / weak < 5
+- C (rule coverage) good ≥ 8 / weak < 6
+- "Needs more data" short-circuit: corpus has < 3 articles OR < 1500 total words OR < 800 words per article on average; auditor writes a "needs corpus" note instead of scoring.
+- Below-threshold on either axis surfaces the offending category to the calibrator; the lower-scoring axis is named in the user-facing offer.
+
+**CandleKeep book ID resolution**: ID-with-title-fallback. First push creates the book and saves the ID to `.voice/.candlekeep-id` (gitignored, per-machine cache). Subsequent calls go straight to the ID. On 404 or missing cache file, fall back to title lookup (`Voice Profile — <writer name>`); on hit, repopulate the ID file; on miss, create new and save.
+
+**CandleKeep refresh cadence**:
+- **Pull** once at the start of any write/edit run (the first hook in `/...:write`, `/...:edit`, `/...:lector`, `/...:proof`, etc.). One `ck` call per writing session, not per section.
+- **Push** only on `:voice` sub-actions that mutate `profile.md` (calibrator patch, recompress, audit-driven update).
+- **Plugin session start**: no automatic pull. Cheap, uncluttered.
+- **`:voice status`**: explicit pull-and-diff, no write.
+
+**Loading model — what each agent reads**:
+- Section writers (per-paragraph, per-section) read `.voice/profile.md` only. Whole file fits in every subagent prompt; no division of the profile into separate files.
+- `voice-interviewer` reads `fingerprint.md` (to seed questions) and any prior `profile.md` sections.
+- `voice-compressor` reads transcripts under `.voice/interview/`.
+- `voice-merger` reads `profile.md` + new draft section + CandleKeep latest (via 3-way with `.last-synced.md`).
+- `voice-auditor` reads `profile.md` + corpus.
+- `voice-calibrator` reads `profile.md` + corpus + the just-finished session transcript.
+- Section writers never read `fingerprint.md`, `audit.md`, transcripts, or any internal cache files.
+
+**CandleKeep contents**: only `profile.md` is synced. The other `.voice/*` files are local rebuild-from-transcripts artifacts, not shared state.
 
 ## 16. Out of scope (deferred)
 

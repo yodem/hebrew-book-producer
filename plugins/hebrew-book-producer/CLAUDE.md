@@ -42,10 +42,10 @@ Rules:
 
 | Genre | Always-on | Conditional |
 |---|---|---|
-| `philosophy` | review-style, voice-preserver, cite-master, connectives | niqqud-pass off |
-| `autobiography` | review-style, voice-preserver, connectives | niqqud-pass off |
-| `religious` | review-style, voice-preserver, niqqud-pass | connectives |
-| `popular-science` | review-style, voice-preserver, cite-master, connectives | niqqud-pass off |
+| `philosophy` | review-style, cite-master, connectives | niqqud-pass off |
+| `autobiography` | review-style, connectives | niqqud-pass off |
+| `religious` | review-style, niqqud-pass | connectives |
+| `popular-science` | review-style, cite-master, connectives | niqqud-pass off |
 
 ## Anti-AI-marker rules
 

@@ -26,9 +26,8 @@ The end-to-end flow that `/ship` orchestrates. Used by production-manager and do
          │
          ▼
 ┌─────────────────┐  agent: linguistic-editor (sonnet)
-│  linguistic     │  uses: review-style, voice-preserver,
-│      edit       │        connectives, cite-master
-│                 │  reads: AUTHOR_VOICE.md, .book-producer/memory.md
+│  linguistic     │  uses: review-style, connectives, cite-master
+│      edit       │  reads: AUTHOR_VOICE.md, .book-producer/memory.md
 │                 │  output: manuscript edited in place
 │                 │  + LINGUISTIC_NOTES.md
 └────────┬────────┘

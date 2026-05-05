@@ -253,7 +253,7 @@ These rules apply across the entire pipeline. No single agent can document them 
 
 1. **`.book-producer/state.json` is written ONLY by `production-manager`.** Editors emit state-transition signals; they never write this file directly.
 
-2. **`AUTHOR_VOICE.md` is written ONLY by `voice-miner` / `express-voice`.** All other agents read it; none write to it. If an editor wants to record a voice observation, it goes in `LINGUISTIC_NOTES.md` or `LITERARY_NOTES.md`.
+2. **`AUTHOR_VOICE.md` is written ONLY by `voice-miner`.** All other agents read it; none write to it. If an editor wants to record a voice observation, it goes in `LINGUISTIC_NOTES.md` or `LITERARY_NOTES.md`.
 
 3. **File naming:**
    - `chapters/<id>.md` — the live manuscript (edited in place).

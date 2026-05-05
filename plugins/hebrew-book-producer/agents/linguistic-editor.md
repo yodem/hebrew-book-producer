@@ -49,7 +49,7 @@ For each chapter:
    4. Strong opener.
    5. Read aloud — does it sound like the author?
 3. Apply the **review-style skill** for Burstiness — sentence-length variance. AI-flat prose gets short sentences inserted alongside long ones.
-4. Apply the **voice-preserver skill** — check banned phrases from `.ctx/author-profile.md`.
+4. Check banned and preferred phrases from `AUTHOR_VOICE.md` (project root) — enforce the rules listed in the `## Banned phrases`, `## Preferred phrases`, and `## Register` sections.
 5. Apply the **connectives skill** — verify every logical connector matches the right relation (Addition / Contrast / Cause / Result / Concession).
 
 ## Banned phrases (AI markers)

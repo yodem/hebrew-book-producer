@@ -1,5 +1,5 @@
 ---
-description: Single entry-point that auto-bootstraps a book project (book.yaml, .book-producer/, AUTHOR_VOICE.md via express-voice) and dispatches to the requested action — proofread / edit / typeset / lector / write / init / ship. Used by the natural-language router in CLAUDE.md so the user never has to remember slash commands.
+description: Single entry-point that auto-bootstraps a book project (book.yaml, .book-producer/, AUTHOR_VOICE.md via voice-miner) and dispatches to the requested action — proofread / edit / typeset / lector / write / init / ship. Used by the natural-language router in CLAUDE.md so the user never has to remember slash commands.
 argument-hint: <action> [target]
 ---
 
@@ -59,13 +59,9 @@ For a freshly-onboarded user running `/start proofread`:
 זיהיתי 3 פרקים, סוגה: פילוסופיה, ניקוד: כבוי, יעד: 45,000 מילה. נכון? (כן / שנה / ביטול)
 > כן
 
-[express-voice]
-1/3 — במשפט אחד, מי המספר של הספר הזה ולמי הוא מדבר?
-> ...
-2/3 — באיזה משלב? אקדמי, ספרותי, יומיומי, או מעורב?
-> ...
-3/3 — ביטוי אחד שאתה לא תכתוב לעולם?
-> ...
+[voice-miner — light path]
+מריץ voice-miner על 3 פרקים לדוגמה. ייצור AUTHOR_VOICE.md ויכתוב מזהי CandleKeep ל-book.yaml.
+(הרץ /hebrew-book-producer:voice init לראיון עמוק בן 7 סשנים.)
 
 [proof]
 פרק 1: 23 תיקונים (אות 14 / מילה 6 / משפט 2 / רעיון 1)

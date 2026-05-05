@@ -43,7 +43,7 @@ Create a new book project in the current directory.
 
    a. Check if `book.yaml` already has a non-empty `author_profile.overview` ID (the author has an existing profile from a previous project):
       - If yes: fetch it with `ck items get <id> --no-session > .ctx/author-profile.md`. Skip the skeleton and skip the voice interview. Tell the author (in Hebrew): "מצאתי פרופיל קולי קיים — נטענתי ממנו. אין צורך למלא AUTHOR_VOICE.md."
-      - If no: create a blank `author_profile` block in `book.yaml` (all values empty string, as shown in step 3). Tell the author: "לא מצאתי פרופיל קולי קיים. לאחר הגדרת הפרויקט, הרץ /voice כדי לבנות את הפרופיל מהספרים שלך."
+      - If no: create a blank `author_profile` block in `book.yaml` (all values empty string, as shown in step 3). Tell the author: "לא מצאתי פרופיל קולי קיים. לאחר הגדרת הפרויקט, הרץ /hebrew-book-producer:voice כדי לבנות את הפרופיל מהספרים שלך."
 
    b. **Never create a blank AUTHOR_VOICE.md skeleton.** The profile lives in CandleKeep, not in a local file.
 

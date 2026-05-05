@@ -10,7 +10,7 @@ Hand off to the **book-writer** agent.
 ## Pre-flight
 
 - `book.yaml` must exist. If not → run `/start init` first.
-- `AUTHOR_VOICE.md` must exist. If not → run `/init-voice` (or let `/start` handle it via express-voice).
+- `AUTHOR_VOICE.md` must exist. If not → run `/hebrew-book-producer:voice init` (or let `/start` handle it via voice-miner).
 - For the default form: `chapters/<id>.brief.md` must exist. The brief is the input; the agent expands it.
 
 ## Two forms

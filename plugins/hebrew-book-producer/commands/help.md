@@ -22,14 +22,14 @@ Examples:
 | Command | Purpose |
 |---|---|
 | `/init` | Interactive long-form project bootstrap (`/start init` is the short form) |
-| `/init-voice` | Full 10-question voice fingerprint (`/start` uses the 3-question express path) |
+| `/hebrew-book-producer:voice init` | Full voice interview — builds AUTHOR_VOICE.md via multi-session fingerprint |
 | `/lector <file>` | Manuscript appraisal — produces LECTOR_REPORT.md |
 | `/edit [chapter]` | Literary + linguistic edit |
 | `/proof [chapter]` | Proofreading (pass 1 or 2 — auto-detected) |
 | `/typeset` | Typesetting brief (Frank Ruhl Libre, RTL, גיליון דפוס) |
 | `/draft <chapter>` | Book-writer drafts a chapter from a brief |
 | `/ship <file>` | Full pipeline with checkpoints |
-| `/voice` | Update AUTHOR_VOICE.md from accumulated feedback |
+| `/hebrew-book-producer:voice` | Manage author voice profile (init / continue / audit / sync / status) |
 | `/thesis [append\|show\|refresh]` | Manage the author's CandleKeep thesis notebook for this book |
 | `/help` | This help |
 
@@ -47,9 +47,7 @@ Examples:
 ## Skills
 
 - book-bootstrap — auto-detects manuscript and scaffolds a project. Used by `/start`.
-- express-voice — 3-question fast voice fingerprint (vs `/init-voice`'s 10).
 - review-style — Burstiness, AI-marker detection.
-- voice-preserver — enforces AUTHOR_VOICE.md rules.
 - cite-master — citation consistency (Chicago / APA / Hazal). Includes inline Sefaria-MCP verification routine for religious primary sources.
 - hebrew-connectives — logical connector reference.
 - hebrew-typography — fonts, margins, layout.

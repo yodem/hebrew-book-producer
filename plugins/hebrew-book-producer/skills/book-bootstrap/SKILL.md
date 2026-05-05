@@ -1,6 +1,6 @@
 ---
 name: book-bootstrap
-description: Auto-detect a Hebrew manuscript and scaffold the project — book.yaml, .book-producer/, AUTHOR_VOICE.md (via express-voice if missing). Invoked by /start before any terminal action; idempotent on already-scaffolded projects. Do NOT use as a standalone CLI — it has no terminal output of its own; it returns a JSON result to the caller.
+description: Auto-detect a Hebrew manuscript and scaffold the project — book.yaml, .book-producer/, AUTHOR_VOICE.md (via voice-miner if missing). Invoked by /start before any terminal action; idempotent on already-scaffolded projects. Do NOT use as a standalone CLI — it has no terminal output of its own; it returns a JSON result to the caller.
 user-invocable: false
 ---
 
@@ -80,13 +80,18 @@ If missing:
 
 Update `.gitignore` to add `.book-producer/snapshots/`, `.book-producer/memory.md`, `.book-producer/state.json`, `.ctx/`, `chapters/*.draft*.md`, `chapters/*.decisions.md` if not already present.
 
-### Step 5 — AUTHOR_VOICE.md
+### Step 5 — Voice fingerprint (Stage 1)
 
-If missing:
-- Run the **`express-voice`** sub-skill (3 questions). It writes `AUTHOR_VOICE.md` and a sparse `.book-producer/profile.json`.
-- Add a final stub line to `AUTHOR_VOICE.md`: *"_להעמקת הקול הרץ /init-voice בכל זמן._"*
+If `AUTHOR_VOICE.md` is missing:
 
-If present:
+1. Run `voice-miner` agent on the corpus (`chapters/**/*.md` or `manuscript.md`). Output: `.voice/fingerprint.md`.
+2. Run `voice-distiller --from-fingerprint` to seed the four-section `AUTHOR_VOICE.md` at root.
+3. Run `voice-sync push`.
+4. Print: "✓ Voice fingerprint created. Run `/hebrew-book-producer:voice` for a deeper profile (recommended)."
+
+The user is not required to run Stage 2 (full multi-session interview).
+
+If `AUTHOR_VOICE.md` is already present:
 - Leave it alone. Read it for downstream consumers.
 
 ### Step 6 — Cache the CandleKeep references
@@ -130,10 +135,10 @@ After all the auto-creates, summarise in a single sentence and ask one question:
 - **Never overwrite an existing `book.yaml` or `AUTHOR_VOICE.md`.** If both already exist, skip steps 3 and 5 silently and proceed.
 - **The git config name fallback** — if `git config user.name` returns empty, set `author: ""` and surface that in the confirmation summary so the user knows to fill it.
 - **DOCX/PDF extraction is best-effort.** If extraction yields garbage (Hebrew ratio < 0.5), abort with a Hebrew message asking the user to provide a `.md` instead.
-- **No new dependencies.** Reuse pdfplumber/python-docx already used by `extract-voice-fingerprint.py`.
+- **No new dependencies.** Reuse pdfplumber/python-docx already used by the existing scripts.
 
 ## What this skill does NOT do
 
 - It does not run `/proof`, `/edit`, etc. — that's the caller's job.
 - It does not modify a manuscript's prose. Read-only on the user's content; write-only on metadata files.
-- It does not run a full `/init-voice`. Only `express-voice` (3 questions). The author can run `/init-voice` later for the heavy fingerprint.
+- It does not run a full voice interview. Only the voice-miner light path (corpus fingerprint). The author can run `/hebrew-book-producer:voice init` later for the deep multi-session interview.

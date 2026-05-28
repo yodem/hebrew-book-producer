@@ -40,7 +40,7 @@ const SPEC_DEFAULTS: Record<ToolName, ModelDefaults> = {
   write_section: { model: 'gemini-2.5-flash', thinking_budget: 4096 },
   synthesize: { model: 'gemini-2.5-flash', thinking_budget: 2048 },
   edit: { model: 'gemini-2.5-flash', thinking_budget: 2048 },
-  calibrate_sample: { model: 'gemini-2.5-flash', thinking_budget: 2048 },
+  calibrate_sample: { model: 'gemini-2.5-flash', thinking_budget: 1024 },
   raw: { model: 'gemini-2.5-pro', thinking_budget: -1 },
 };
 
@@ -242,7 +242,13 @@ export async function generate(args: GenerateArgs): Promise<GenerateResult> {
     thinkingConfig,
   };
   if (typeof args.max_output_tokens === 'number') {
-    config['maxOutputTokens'] = args.max_output_tokens;
+    // Gemini 2.5 counts thinking tokens against maxOutputTokens. Tight budgets
+    // can leave zero room for visible text. Ensure at least ~1024 tokens of
+    // output headroom beyond the thinking budget.
+    const tb = args.thinking_budget;
+    const minHeadroom = 1024;
+    const minRequired = tb > 0 ? tb + minHeadroom : minHeadroom;
+    config['maxOutputTokens'] = Math.max(args.max_output_tokens, minRequired);
   }
   if (args.response_mime_type) {
     config['responseMimeType'] = args.response_mime_type;

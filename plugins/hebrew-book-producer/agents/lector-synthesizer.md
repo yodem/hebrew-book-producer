@@ -1,7 +1,7 @@
 ---
 name: lector-synthesizer
-description: Reads chapter notes from the parallel lector-readers and produces the unified LECTOR_REPORT.md verdict. Sees notes only, never the raw manuscript. Single-instance, runs after all readers finish. When AUTHOR_VOICE.md sets writer.provider=gemini, Gemini writes the prose for each of the 7 appraisal sections; Claude analyzes and reviews for coherence.
-tools: Read, Grep, Glob, Write, Bash
+description: Reads chapter notes from the parallel lector-readers and produces the unified LECTOR_REPORT.md verdict. Sees notes only, never the raw manuscript. Single-instance, runs after all readers finish. When AUTHOR_VOICE.md sets writer.provider=gemini, Gemini writes the prose for each of the 7 appraisal sections (via the bundled MCP server's gemini_raw tool); Claude analyzes and reviews for coherence.
+tools: Read, Grep, Glob, Write, Bash, mcp__gemini-api__gemini_raw
 model: opus
 ---
 
@@ -19,40 +19,36 @@ After reading `AUTHOR_VOICE.md`, parse the `## Writer Configuration` section for
 
 **Role split:** Claude (Opus) analyzes the readers' notes, structures each section, and reviews the final prose for coherence. Gemini writes the Hebrew prose for each section.
 
+The lector appraisal generates new prose from notes (there is no existing draft to polish or edit). Use the MCP server's `gemini_raw` escape-hatch tool with a Claude-assembled system prompt per section.
+
 For each of the 7 appraisal sections:
 
-1. Claude analyzes the relevant notes and prepares a structured outline for the section (bullet points, key observations, verbatim quotes from readers' notes as needed).
+1. Claude analyzes the relevant chapter notes and prepares a structured outline (bullet points, key observations, verbatim quotes from readers' notes as needed).
 
-2. Build a draft context JSON from this outline:
-   ```bash
-   SECTION_CTX=$(mktemp /tmp/lector-section-ctx-XXXXXX.json)
-   cat > "$SECTION_CTX" << 'ENDJSON'
-   {
-     "chapter_brief": "<section outline and key observations in Hebrew>",
-     "sefaria_sources": [],
-     "section_index": <N>,
-     "word_ceiling": 400,
-     "language": "he"
-   }
-   ENDJSON
+2. Claude assembles a section system prompt by concatenating:
+   - The `AUTHOR_VOICE.md` body (project root)
+   - The section-specific instruction (e.g. "You are writing section 4 of a Hebrew lector report: voice analysis. Be specific, cite chunk IDs and verbatim AI-marker sentences from the notes. ~400 words. Hebrew non-fiction register, matching the writer's voice for personal correspondence.")
+
+3. Call Gemini via the MCP raw tool:
+   ```
+   mcp__gemini-api__gemini_raw({
+     system: "<system prompt assembled in step 2>",
+     prompt: "<the structured outline from step 1, including verbatim quotes from readers' notes>",
+     model: "gemini-2.5-flash"
+   })
    ```
 
-3. Call Gemini:
-   ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/gemini_book_writer.py \
-     --mode draft \
-     --voice AUTHOR_VOICE.md \
-     --context "$SECTION_CTX"
-   rm -f "$SECTION_CTX"
-   ```
+4. Capture `text` from the response as the section prose.
 
-4. Claude reviews the Gemini output for:
+5. Claude reviews the Gemini output for:
    - Coherence with the notes
-   - Correct verbatim quotes (they must match the readers' notes exactly)
+   - Correct verbatim quotes (they must match the readers' notes exactly — no paraphrase)
    - Appropriate register
 
-5. **Fallback rule:** If the Gemini output fails coherence review, retry once with more explicit instructions. After 1 failed retry, Claude drafts the section directly.
-   Log each fallback: `[FALLBACK] Section <N> (<section name>): Gemini failed coherence review. Claude drafted.`
+6. **Error / fallback rule:**
+   - `no_credentials` → Claude drafts directly; log `[FALLBACK] Section <N>: Gemini key missing.`
+   - `transient` → retry once.
+   - If the output fails coherence review, retry once with sharper instructions. After 1 failed retry, Claude drafts the section directly. Log: `[FALLBACK] Section <N> (<section name>): Gemini failed coherence review. Claude drafted.`
 
 ### Claude mode (default)
 

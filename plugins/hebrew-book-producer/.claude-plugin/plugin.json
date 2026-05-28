@@ -1,7 +1,7 @@
 {
   "name": "hebrew-book-producer",
-  "version": "0.8.0",
-  "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Supports Gemini 2.5 Flash as configurable Hebrew writer backend. Natural-language entry-point: 'תוכל להגיה את הספר שלי?' auto-bootstraps the project. Bridges CandleKeep (shared Hebrew Linguistic Reference), Sefaria MCP (Jewish-source verification), and the user's curated writing-craft library.",
+  "version": "0.9.0",
+  "description": "Hebrew non-fiction book production pipeline — lectorship, literary editing, linguistic editing, proofreading, typesetting, and a book-writer agent. Bundled MCP server (mcp/gemini-server) routes prose phases to Gemini 2.5 Flash. Natural-language entry-point: 'תוכל להגיה את הספר שלי?' auto-bootstraps the project. Bridges CandleKeep (shared Hebrew Linguistic Reference), Sefaria MCP (Jewish-source verification), and the user's curated writing-craft library.",
   "author": {
     "name": "yodem"
   },
@@ -21,5 +21,17 @@
     "gemini"
   ],
   "skills": "./skills/",
-  "commands": "./commands/"
+  "commands": "./commands/",
+  "mcpServers": {
+    "gemini-api": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/gemini-server/dist/index.js"],
+      "env": {
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "CLAUDE_PROJECT_DIR": "${CLAUDE_PROJECT_DIR}",
+        "CLAUDE_PLUGIN_ROOT": "${CLAUDE_PLUGIN_ROOT}"
+      }
+    }
+  }
 }

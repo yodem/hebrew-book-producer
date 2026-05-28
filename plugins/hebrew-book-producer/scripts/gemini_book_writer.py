@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
+# DEPRECATED: replaced by bundled MCP server at mcp/gemini-server/. Will be
+# removed in a future version. New agents should call the
+# `mcp__gemini-api__gemini_write_section` / `gemini_edit` / `gemini_synthesize`
+# tools instead of shelling out to this script. Retained temporarily so users
+# can compare outputs or roll back if needed.
 """
 Gemini API writer for hebrew-book-producer plugin.
+
+DEPRECATED — see header comment.
 
 Two modes:
 

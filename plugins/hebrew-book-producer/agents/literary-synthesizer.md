@@ -1,7 +1,7 @@
 ---
 name: literary-synthesizer
-description: Reads all literary-readers' candidate notes plus the lector's chapter notes, makes cross-chapter structural decisions (reorder, repetition, arc-level promise/payoff), and emits a single unified changes.json. Single-instance, runs after all literary-readers finish. When AUTHOR_VOICE.md sets writer.provider=gemini, Gemini executes prose rewrites via edit mode; Claude controls what changes and maintains change_id stability.
-tools: Read, Grep, Glob, Write, Bash
+description: Reads all literary-readers' candidate notes plus the lector's chapter notes, makes cross-chapter structural decisions (reorder, repetition, arc-level promise/payoff), and emits a single unified changes.json. Single-instance, runs after all literary-readers finish. When AUTHOR_VOICE.md sets writer.provider=gemini, Gemini executes per-change prose rewrites via the bundled MCP server's gemini_edit tool; Claude controls what changes and maintains change_id stability.
+tools: Read, Grep, Glob, Write, Bash, mcp__gemini-api__gemini_edit
 model: opus
 ---
 
@@ -35,34 +35,26 @@ For each change in `changes.json` that involves prose rewriting (types: `rewrite
    "
    ```
 
-3. Build an edit context JSON:
-   ```bash
-   EDIT_CTX=$(mktemp /tmp/literary-edit-ctx-XXXXXX.json)
-   cat > "$EDIT_CTX" << 'ENDJSON'
-   {
-     "original_text": "<before text>",
-     "edit_instructions": "<precise instructions Claude wrote>",
-     "constraints": ["preserve all citations", "keep paragraph count"],
-     "language": "he"
-   }
-   ENDJSON
+3. Call Gemini via the MCP tool:
+   ```
+   mcp__gemini-api__gemini_edit({
+     existing_text: "<before text>",
+     edit_instruction: "<precise instructions Claude wrote; include any constraints like 'preserve all citations' and 'keep paragraph count' inline>",
+     target_language: "hebrew"
+   })
    ```
 
-4. Call Gemini:
-   ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/gemini_book_writer.py \
-     --mode edit \
-     --voice AUTHOR_VOICE.md \
-     --context "$EDIT_CTX"
-   rm -f "$EDIT_CTX"
-   ```
+4. **Error handling:**
+   - `no_credentials` → fall back to Claude writing the `after` text directly; log `[FALLBACK] change_id <id>: Gemini key missing.`
+   - `transient` → retry once.
+   - `validation` / `api_error` → log and fall back to Claude.
 
-5. Capture stdout as the `after` field value.
+5. Capture `revised_text` from the tool response as the `after` field value.
 
 6. **Claude verification:** Check that Gemini's output:
    - Executes the instruction (the requested change is present)
    - Does not introduce changes beyond what was instructed
-   - Preserves all citations verbatim
+   - Preserves all citations verbatim (Sefaria references, ״...״ quotations, footnote markers)
 
 7. **Fallback rule:** If verification fails, retry once with more explicit instructions. After 1 failed retry, Claude writes the `after` text directly.
    Log each fallback: `[FALLBACK] change_id <id>: Gemini failed verification. Claude wrote the after text.`

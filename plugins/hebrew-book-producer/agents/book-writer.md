@@ -1,7 +1,7 @@
 ---
 name: book-writer
-description: Drafts a Hebrew book chapter from a brief. Reads chapters/<id>.brief.md (target words, scenes, sources, the one non-negotiable beat), .ctx/author-profile.md, book.yaml, and the relevant chapters of the Hebrew Linguistic Reference. Produces chapters/<id>.draft.md plus a sibling decisions.md log. Per-genre defaults — biography is scene-driven, philosophy is dialectical, religious weaves verified primary sources, popular non-fiction opens with hooks. Never generates from blank. When AUTHOR_VOICE.md sets writer.provider=gemini, delegates prose generation to Gemini 2.5 Flash and verifies Sefaria citations after each section.
-tools: Read, Write, Grep, Glob, Bash
+description: Drafts a Hebrew book chapter from a brief. Reads chapters/<id>.brief.md (target words, scenes, sources, the one non-negotiable beat), .ctx/author-profile.md, book.yaml, and the relevant chapters of the Hebrew Linguistic Reference. Produces chapters/<id>.draft.md plus a sibling decisions.md log. Per-genre defaults — biography is scene-driven, philosophy is dialectical, religious weaves verified primary sources, popular non-fiction opens with hooks. Never generates from blank. When AUTHOR_VOICE.md sets writer.provider=gemini, delegates prose generation to Gemini 2.5 Flash via the bundled MCP server (mcp__gemini-api__gemini_write_section) and verifies Sefaria citations after each section.
+tools: Read, Write, Grep, Glob, Bash, mcp__gemini-api__gemini_write_section
 model: opus
 ---
 
@@ -21,50 +21,62 @@ After reading `AUTHOR_VOICE.md`, parse the `## Writer Configuration` section for
 
 For each section identified in Step 1 (structural outline):
 
-1. Collect context for this section:
-   - `chapter_brief`: the brief's summary + this section's scenes/ideas (as Hebrew prose)
-   - `sefaria_sources`: the verified sources (ref + verbatim text) for this section only
-   - `section_index`: 0-based index of this section in the chapter
-   - `word_ceiling`: word budget for this section (from Step 1's allocation)
-   - `language`: `"he"`
+1. Build the section brief in Hebrew prose, including:
+   - The chapter's overall thesis and this section's place in the arc
+   - The non-negotiable beat from `chapters/<id>.brief.md`
+   - The author's voice cues that matter for this section (drawn from `.ctx/author-profile.md`)
+   - The relevant Hebrew anti-AI rules from `.ctx/hebrew-linguistic-reference.md` (paste the banned-opener list and the capped connectives — the MCP bundle ships AUTHOR VOICE and the connectives table; the anti-AI markers come from your brief)
 
-2. Write the context JSON to a temp file:
-   ```bash
-   SECTION_CTX=$(mktemp /tmp/book-section-ctx-XXXXXX.json)
-   cat > "$SECTION_CTX" << 'ENDJSON'
-   {
-     "chapter_brief": "<brief text>",
-     "sefaria_sources": [...],
-     "section_index": <N>,
-     "word_ceiling": <N>,
-     "language": "he"
-   }
-   ENDJSON
+2. Build the `sources` array — one entry per verified Sefaria/Western reference for this section. Use the shape:
+   ```json
+   [
+     { "source_id": "bavli-shabbat-31a", "author": "תלמוד בבלי", "year": "", "page": "ל\"א ע\"א", "excerpt": "<verbatim Hebrew from Sefaria>" }
+   ]
    ```
 
-3. Call Gemini:
-   ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/gemini_book_writer.py \
-     --mode draft \
-     --voice AUTHOR_VOICE.md \
-     --context "$SECTION_CTX"
-   rm -f "$SECTION_CTX"
+3. Build `evidence_ownership` — a trivial mapping listing the source_ids each paragraph slot is allowed to use:
+   ```json
+   { "paragraphs": ["bavli-shabbat-31a", "rambam-teshuva-2-1"] }
    ```
 
-4. Capture stdout as the section prose.
+4. Call Gemini via the MCP tool:
+   ```
+   mcp__gemini-api__gemini_write_section({
+     section_brief: "<the brief from step 1>",
+     sources: [...],
+     evidence_ownership: { "paragraphs": ["..."] },
+     banned_terms: [{ "term": "בעולם המשתנה של היום", "reason": "AI marker" }, ...],
+     target_language: "hebrew",
+     prior_sections_summary: "<3-sentence Hebrew summary of sections already drafted>",
+     citation_style: "inline-parenthetical"
+   })
+   ```
 
-5. **Post-generation Sefaria citation check:** Scan the generated prose for every citation. For each:
+5. **Error handling:**
+   - If the tool returns `{ error: { code: "no_credentials" } }`: notify the user that Gemini key is missing, then fall back to Claude-drafted prose.
+   - If `{ error: { code: "transient" } }`: retry once after a short delay.
+   - If `{ error: { code: "validation" } }` or `api_error`: log to decisions.md and fall back to Claude.
+
+6. The response is `{ paragraphs: [{ text, citations, self_review_scores }, ...] }`. Concatenate `text` fields with paragraph breaks to form the section prose. The `self_review_scores` are diagnostic — store the lowest dimension in decisions.md but do not use them as a hard gate (the 5-dimension anti-AI check in Step 4 below is the real gate).
+
+7. **Post-generation Sefaria citation check:** Scan the generated prose for every citation. For each:
    - Call `mcp__claude_ai_Sefaria__get_text` with the normalised reference.
    - If found → mark verified.
    - If not found → tag `[UNVERIFIED]` in the prose and note in decisions log. Do NOT remove the citation silently.
 
-6. **Fallback rule:** If Sefaria verification fails for 2 or more citations in the same section AND Gemini regenerates with a different instruction but still fails, write a fallback note to the decisions log:
+8. **Fallback rule:** If Sefaria verification fails for 2 or more citations in the same section AND Gemini regenerates with a different brief but still fails, write a fallback note to the decisions log:
    ```
    [FALLBACK] Section <N>: Gemini failed Sefaria verification twice. Claude drafted this section.
    ```
    Then draft the section yourself (Claude) using the standard prose rules below.
 
-7. Continue to the next section.
+9. **Post-draft deterministic skills (always run, both Gemini and Claude mode).** After the section's prose is in hand, run these quality skills as today:
+   - `hebrew-typography` — fix ״ / ״ , ׳ / ', and מקף-עברי drift.
+   - `niqqud-pass` — only if `book.yaml: niqqud: true`.
+   - `hebrew-connectives` — enforce connective rotation + caps.
+   - `review-style` — burstiness check.
+
+10. Continue to the next section.
 
 ### Gemini mode — tone and quality gates
 

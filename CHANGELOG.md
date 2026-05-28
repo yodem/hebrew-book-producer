@@ -5,6 +5,32 @@ All notable changes to `hebrew-book-producer` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] — 2026-05-28
+
+### Added
+- **Bundled Gemini MCP server** at `plugins/hebrew-book-producer/mcp/gemini-server/` — TypeScript / `@google/genai` SDK, esbuild-bundled, registered via `mcpServers.gemini-api` in `plugin.json`. Replaces the standalone `scripts/gemini_book_writer.py` flow with an in-process MCP tool surface available to all agents.
+- Five MCP tools (uniform contract with academic-writer's gemini-mcp; defaults differ):
+  - `mcp__gemini-api__gemini_write_section` — full-section drafting with built-in self-review (default: Gemini 2.5 Flash, thinking budget 4096).
+  - `mcp__gemini-api__gemini_synthesize` — cross-chapter polish pass.
+  - `mcp__gemini-api__gemini_edit` — single-instruction passage rewrite, used by literary-synthesizer, linguistic-editor, proofreader for per-change `after` text.
+  - `mcp__gemini-api__gemini_calibrate_sample` — one-paragraph generator for voice-calibrator side-by-side comparison.
+  - `mcp__gemini-api__gemini_raw` — escape-hatch with arbitrary system/prompt (used by lector-synthesizer's notes-to-prose appraisal sections; default Gemini 2.5 Pro).
+- Calibration bundle loader reads `AUTHOR_VOICE.md` (project root) + `skills/hebrew-connectives/references/connectives-table.md` (plugin) and caches per `target_language` for the session.
+- `voice-calibrator` agent gains `--compare-models {language}` mode — generates a Claude paragraph and a Gemini paragraph from the same topic brief, displays side-by-side, asks for approval, and on approval flips `writer.provider` to `gemini` in `AUTHOR_VOICE.md`.
+- `scripts/build-mcp.sh` — builds and installs MCP server dependencies; produces `mcp/gemini-server/dist/index.js`.
+
+### Changed
+- `book-writer` agent now uses `mcp__gemini-api__gemini_write_section` in Gemini mode instead of shelling to `python3 scripts/gemini_book_writer.py`. Post-draft deterministic skills (hebrew-typography, niqqud-pass, hebrew-connectives, review-style) and the 5-dimension anti-AI self-check still run as before.
+- `literary-synthesizer` calls `gemini_edit` per change for `after` text; Claude still owns `change_id`, `before`, and `edit_instruction`.
+- `lector-synthesizer` calls `gemini_raw` per appraisal section (the 7-section verdict generates new prose from notes — no existing draft to polish).
+- `linguistic-editor` and `proofreader` may optionally call `gemini_edit` for sentence-level rewrites; letter/word/punctuation fixes stay Claude-only.
+- API key resolution: prefers `GOOGLE_API_KEY`, falls back to `GEMINI_API_KEY` (back-compat with the legacy Python script), then to `.book-producer/secrets.json`.
+- Plugin manifest version bumped to `0.9.0`; description updated to reference the bundled MCP server.
+- `.gitignore` excludes `plugins/hebrew-book-producer/mcp/gemini-server/dist/` and `node_modules/`.
+
+### Deprecated
+- `scripts/gemini_book_writer.py` and `tests/test_gemini_book_writer.py` — retained for rollback / comparison; will be removed in a future version. Header comment marks them deprecated.
+
 ## [Unreleased]
 
 ### Added

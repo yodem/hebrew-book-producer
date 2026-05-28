@@ -18,3 +18,16 @@ _Empty._
 ## Non-fiction-book-specific
 
 _Empty._
+
+## Writer Configuration
+
+_Empty. Set during voice setup._
+
+<!--
+writer:
+  provider: "gemini"
+  model: "gemini-2.5-flash"
+  temperature: 0.7
+  max_tokens: 3000
+-->
+

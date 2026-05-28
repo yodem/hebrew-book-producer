@@ -77,3 +77,5 @@ or specified explicitly.
 - Sessions 1, 2, 4, 5, 6 invoke distiller but NOT calibrator.
 - Sync is push-only on writes; explicit `:voice sync` is the only place that pulls.
 - Quick mode is reversible: `:voice continue --upgrade` runs the missed sessions.
+- **Preserve `writer:` section.** The `## Writer Configuration` section and its `writer:` YAML block MUST be preserved during every distillation, recompression, and sync operation. Never strip or overwrite it. The `voice-distiller` and `voice-calibrator` agents must carry it forward verbatim.
+- **`:voice init` — provider prompt.** During `:voice init`, after confirming session time, ask: "Which writer provider should be used for prose generation? (gemini / claude, default: claude)". If the user answers "gemini", uncomment the `writer:` block in `AUTHOR_VOICE.md` and set `provider: "gemini"`. If the user answers "claude" or presses Enter, leave the block commented out (default = claude).

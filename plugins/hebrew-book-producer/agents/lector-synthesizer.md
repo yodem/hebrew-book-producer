@@ -13,7 +13,15 @@ Read `AUTHOR_VOICE.md` from project root at the start of every run. The whole fi
 
 ## Provider check (Gemini integration)
 
-After reading `AUTHOR_VOICE.md`, parse the `## Writer Configuration` section for the `writer:` block. If `provider: "gemini"` is set (and the block is NOT inside an HTML comment), activate Gemini mode for appraisal prose.
+After reading `AUTHOR_VOICE.md`, parse the `## Writer Configuration` section for the `writer:` block. If `provider: "gemini"` is set (and the block is NOT inside an HTML comment), check whether the Gemini tool is actually available before activating Gemini mode:
+
+**Tool-availability check (do this BEFORE committing to Gemini mode):** Inspect your available toolset. If `mcp__gemini-api__gemini_raw` is NOT present in your toolset — regardless of what `provider:` says — treat this as if `provider: "claude"` was set and proceed in Claude mode. Log at the top of `LECTOR_REPORT.md` (before the main content):
+```
+[FALLBACK] lector-synthesizer: mcp__gemini-api__gemini_raw not in toolset — running in Claude mode.
+```
+Do NOT attempt to call the tool and do NOT wait for an error response.
+
+If `provider: "gemini"` is set AND the tool is present in your toolset, activate Gemini mode for appraisal prose.
 
 ### Gemini mode — 7-section appraisal flow
 

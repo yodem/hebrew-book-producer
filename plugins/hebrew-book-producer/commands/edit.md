@@ -114,6 +114,15 @@ Ensure `.book-producer/chunks/` exists (created by Plan 1's splitter). If not:
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/split-manuscript.sh chapters/
 ```
 
+### 0b — Gemini availability pre-flight (linguistic stage)
+
+Before spawning linguistic-editors, determine run-wide Gemini availability ONCE:
+
+1. Read `AUTHOR_VOICE.md`. If `provider: "gemini"` is set (uncommented) AND `mcp__gemini-api__gemini_edit` is present in your toolset, set `GEMINI_AVAILABLE=true`; otherwise set `GEMINI_AVAILABLE=false`.
+2. If `GEMINI_AVAILABLE=false` but `provider: "gemini"` was set, notify the user once:
+   > "Gemini tool not available for this session — linguistic-editor will run in Claude mode for all chunks."
+3. Pass `GEMINI_AVAILABLE` to every spawn prompt below. This commits the engine choice before any agent runs, preventing mixed-engine output across chunks.
+
 ### 1 — parallel linguistic-editors
 
 Generate `RUN_ID` (e.g., `$(date -u +%Y%m%d-%H%M%S)`).
@@ -128,6 +137,7 @@ Inputs:
   CHUNK_PATH = <path>
   RUN_ID = <run-id>
   OUT_PATH = .book-producer/runs/<run-id>/linguistic-editor/<CHUNK_ID>.changes.json
+  GEMINI_AVAILABLE = <true|false>   ← from pre-flight above; if false, skip provider check and use Claude mode
 
 Follow your session-start checklist exactly.
 ```

@@ -15,6 +15,15 @@ argument-hint: [chapter-id]
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/split-manuscript.sh chapters/
 ```
 
+## Gemini availability pre-flight
+
+Before spawning proofreaders, determine run-wide Gemini availability ONCE:
+
+1. Read `AUTHOR_VOICE.md`. If `provider: "gemini"` is set (uncommented) AND `mcp__gemini-api__gemini_edit` is present in your toolset, set `GEMINI_AVAILABLE=true`; otherwise set `GEMINI_AVAILABLE=false`.
+2. If `GEMINI_AVAILABLE=false` but `provider: "gemini"` was set, notify the user once:
+   > "Gemini tool not available for this session — proofreader will run in Claude mode for all chunks."
+3. Pass `GEMINI_AVAILABLE` to every spawn prompt below. This commits the engine choice before any agent runs, preventing mixed-engine output across chunks.
+
 ## Parallel pipeline
 
 Generate `RUN_ID` (e.g., `$(date -u +%Y%m%d-%H%M%S)`).
@@ -33,6 +42,7 @@ Inputs:
   PASS = <1 or 2>
   NEXT_STAGE = <typeset or done>
   OUT_PATH = .book-producer/runs/<run-id>/<PASS_DIR>/<CHUNK_ID>.changes.json
+  GEMINI_AVAILABLE = <true|false>   ← from pre-flight above; if false, skip provider check and use Claude mode
 
 Follow your session-start checklist exactly. Two passes are non-negotiable; this is pass <PASS>.
 ```

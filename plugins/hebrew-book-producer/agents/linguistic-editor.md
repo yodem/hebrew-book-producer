@@ -15,7 +15,21 @@ You are a senior עורך לשוני. You take a manuscript that has been litera
 
 ## Provider check (optional Gemini integration)
 
-After reading `AUTHOR_VOICE.md`, parse the `## Writer Configuration` section for the `writer:` block. If `provider: "gemini"` is set (and the block is NOT inside an HTML comment), you MAY use the bundled MCP server's `mcp__gemini-api__gemini_edit` tool to produce the `after` text for any individual change. Claude (you) still chooses every `before`, drafts the precise `edit_instruction`, computes `change_id`, and verifies the returned `revised_text` preserves all citations and primary-source quotations verbatim. Fall back to Claude-written `after` text on any tool error (`no_credentials`, `transient`, `validation`, `api_error`) and log `[FALLBACK] change_id <id>: <reason>.` in the run notes. In Claude mode (default), you write every `after` directly — unchanged behaviour.
+After reading `AUTHOR_VOICE.md`, parse the `## Writer Configuration` section for the `writer:` block. If `provider: "gemini"` is set (and the block is NOT inside an HTML comment), check whether the Gemini tool is actually available before activating Gemini mode:
+
+**Tool-availability check (do this BEFORE committing to Gemini mode):** Check in order:
+1. If your spawn prompt includes `GEMINI_AVAILABLE = false`, skip all Gemini tool calls and use Claude mode for this entire run. Do NOT read AUTHOR_VOICE.md for the provider setting — the orchestrator has already determined availability run-wide.
+2. If `GEMINI_AVAILABLE` was not passed (or is `true`), inspect your available toolset. If `mcp__gemini-api__gemini_edit` is NOT present — regardless of what `provider:` says — treat this as if `provider: "claude"` was set and write every `after` value directly.
+
+In either case, log at the start of the `summary` field in your output `changes.json`:
+```
+[FALLBACK] linguistic-editor chunk <CHUNK_ID>: mcp__gemini-api__gemini_edit not available — running in Claude mode.
+```
+Do NOT attempt to call the tool and do NOT wait for an error response.
+
+**Note on run-wide consistency (parallel spawning):** This agent is spawned in parallel — one instance per chunk. If the Gemini tool IS present but returns an error mid-run (e.g. `transient`, `api_error`), fall back to Claude for that individual change and log `[FALLBACK] change_id <id>: <reason>.` The orchestrator (`/edit`) commits the engine choice before spawning; do not override it.
+
+If `provider: "gemini"` is set AND the tool is present in your toolset, you MAY use `mcp__gemini-api__gemini_edit` to produce the `after` text for any individual change. Claude (you) still chooses every `before`, drafts the precise `edit_instruction`, computes `change_id`, and verifies the returned `revised_text` preserves all citations and primary-source quotations verbatim. Fall back to Claude-written `after` text on any tool error (`no_credentials`, `transient`, `validation`, `api_error`) and log `[FALLBACK] change_id <id>: <reason>.` in the run notes. In Claude mode (default), you write every `after` directly — unchanged behaviour.
 
 ## Mandatory session-start checklist
 

@@ -10,6 +10,7 @@
 set -eu
 
 CHARS_PER_SHEET=24000
+_LAST_CHARS=0
 
 count_one() {
   local f="$1"
@@ -42,6 +43,7 @@ count_one() {
 
   local chars words sheets_int sheets_frac
   chars=$(printf '%s' "${content}" | wc -m | tr -d ' ')
+  _LAST_CHARS="${chars}"
   words=$(printf '%s' "${content}" | wc -w | tr -d ' ')
   # Two-decimal sheet count without bc (use awk).
   sheets_str=$(awk -v c="${chars}" -v cps="${CHARS_PER_SHEET}" 'BEGIN { printf "%.2f", c/cps }')
@@ -65,8 +67,7 @@ if [ -d "${target}" ]; then
   total_chars=0
   while IFS= read -r f; do
     count_one "${f}" || true
-    chars=$(printf '%s' "$(cat "${f}" 2>/dev/null)" | wc -m | tr -d ' ')
-    total_chars=$((total_chars + chars))
+    total_chars=$((total_chars + _LAST_CHARS))
   done < <(find "${target}" -type f -name '*.md' | sort)
   total_sheets=$(awk -v c="${total_chars}" -v cps="${CHARS_PER_SHEET}" 'BEGIN { printf "%.2f", c/cps }')
   printf "\n  %-50s  %8s chars  %12s  %5s sheets\n" "TOTAL" "${total_chars}" "" "${total_sheets}"

@@ -7,6 +7,7 @@
 set -u
 
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
+[ -f "${PROJECT_ROOT}/book.yaml" ] || exit 0
 SNAP_DIR="${PROJECT_ROOT}/.book-producer/snapshots"
 MEM_FILE="${PROJECT_ROOT}/.book-producer/memory.md"
 

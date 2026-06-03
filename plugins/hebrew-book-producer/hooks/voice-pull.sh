@@ -5,7 +5,8 @@ set -euo pipefail
 
 root="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 [[ -f "$root/book.yaml" ]] || exit 0
-[[ -x "$root/plugins/hebrew-book-producer/skills/voice/voice-sync.sh" ]] || exit 0
+sync="${CLAUDE_PLUGIN_ROOT:-}/skills/voice/voice-sync.sh"
+[[ -x "$sync" ]] || exit 0
 
 profile="$root/AUTHOR_VOICE.md"
 
@@ -21,7 +22,7 @@ if [[ -f "$profile" ]]; then
 fi
 
 # Perform the pull (last-write-wins by > Updated stamp)
-VOICE_PROJECT_ROOT="$root" bash "$root/plugins/hebrew-book-producer/skills/voice/voice-sync.sh" pull \
+VOICE_PROJECT_ROOT="$root" bash "$sync" pull \
   || echo "[voice-pull] non-fatal: $?" >&2
 
 # If pull succeeded and post-pull file lacks ## Writer Configuration, re-merge local section

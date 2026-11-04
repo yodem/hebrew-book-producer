@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # load-candlekeep-guide.sh — fetch the user's curated writing-craft knowledge
-# from CandleKeep and cache under .ctx/ in the project root.
+# from Trove (formerly Trove; the file keeps its old name so hooks and
+# docs that call it keep working) and cache under .ctx/ in the project root.
 #
-# Design principle: CandleKeep is for the AUTHOR'S KNOWLEDGE LAYER —
+# Design principle: Trove is for the AUTHOR'S KNOWLEDGE LAYER —
 # craft books, the author's own evolving thesis notebook, voice fingerprints,
 # anti-AI patterns the author has flagged before, tone/style observations.
 # It is NOT for canonical primary texts (Tanakh, Talmud, Rambam, etc.) —
@@ -14,17 +15,19 @@
 #   cmnudfue5003rmy0zlxt7ioa1  → .ctx/agent-team-guide.md    (Building Your Agent Team)
 #
 # Optional, controlled by book.yaml:
-#   thesis_notebook: <ck-id>          → .ctx/thesis-notebook.md
-#         The author's own CandleKeep notebook for THIS book — running thesis,
+#   thesis_notebook: <trove-id>       → .ctx/thesis-notebook.md
+#         The author's own Trove notebook for THIS book — running thesis,
 #         chapter ideas, voice observations, things they want to come back to.
-#         Created by the author with `ck items create` outside this plugin.
+#         Created by the author with `trove items create` outside this plugin.
 #
-#   craft_extras: [<ck-id>, ...]      → .ctx/craft-extras/<id>.md
+#   craft_extras: [<trove-id>, ...]      → .ctx/craft-extras/<id>.md
 #         Additional craft references the author has curated — e.g. another
 #         writing book, a style guide, a translation theory text, an idiolect
 #         analysis from a previous project.
 #
-# Fail-open: if CandleKeep is unavailable, write a stub for missing items
+# The Hebrew Linguistic Reference is looked up by exact title (ids can drift).
+#
+# Fail-open: if Trove is unavailable, write a stub for missing items
 # and exit 0. Idempotent: re-fetches only if cached file is older than 12h.
 #
 # Citation lookups (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, Shulchan Arukh)
@@ -33,6 +36,9 @@
 
 set -u
 
+# shellcheck source=trove-lib.sh
+. "${BASH_SOURCE[0]%/*}/trove-lib.sh"
+
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 CTX_DIR="${PROJECT_ROOT}/.ctx"
 mkdir -p "${CTX_DIR}/craft-extras"
@@ -40,7 +46,7 @@ mkdir -p "${CTX_DIR}/craft-extras"
 # Always-on writing-craft references (verified against the user's library).
 GUIDE_ID_WRITERS="cmok9h0m10ahik30zt8yt0lt2"        # The Writer's Guide
 GUIDE_ID_AGENT_TEAM="cmnudfue5003rmy0zlxt7ioa1"     # Building Your Agent Team
-GUIDE_ID_HE_LINGUISTICS="cmomjonvy0fdmk30zwef79c48" # Hebrew Linguistic Reference (yodem/hebrew-linguistics-data)
+HE_LINGUISTICS_TITLE="Hebrew Linguistic Reference" # yodem/hebrew-linguistics-data; looked up by title
 
 # fetch_guide <ID> <output-path-under-.ctx> <description>
 fetch_guide() {
@@ -56,8 +62,8 @@ fetch_guide() {
     fi
   fi
 
-  if command -v ck >/dev/null 2>&1; then
-    if ck items get "${id}" > "${out}" 2>/dev/null; then
+  if [ -n "${id}" ]; then
+    if trove_fetch "${id}" "${out}"; then
       local chars
       chars=$(wc -m < "${out}" | tr -d ' ')
       if [ "${chars}" -gt 100 ]; then
@@ -70,21 +76,23 @@ fetch_guide() {
   cat > "${out}" <<STUB
 # ${desc} — UNAVAILABLE
 
-CandleKeep item \`${id}\` could not be loaded.
-Either ck CLI is not installed, or this item is not accessible.
+Trove item \`${id:-<not found>}\` could not be loaded.
+Either the trove CLI is not installed or signed in, or this item is not accessible.
 
 [UNVERIFIED — agents may not assume content from this reference is loaded]
 STUB
   echo "  STUB (unavailable)  ${desc}"
 }
 
-echo "Loading CandleKeep references — author knowledge layer"
+echo "Loading Trove references — author knowledge layer"
 echo
 
 # ── Always-on craft references ──────────────────────────────
 fetch_guide "${GUIDE_ID_WRITERS}"        "writers-guide.md"                 "The Writer's Guide (craft)"
 fetch_guide "${GUIDE_ID_AGENT_TEAM}"     "agent-team-guide.md"              "Building Your Agent Team (multi-agent design)"
-fetch_guide "${GUIDE_ID_HE_LINGUISTICS}" "hebrew-linguistic-reference.md"   "Hebrew Linguistic Reference (Academy + curated blogs; shared with academic-writer)"
+HE_LINGUISTICS_ID=$(trove_find_by_title "${HE_LINGUISTICS_TITLE}" || true)
+[ -n "${HE_LINGUISTICS_ID}" ] || echo "  could not find a readable Trove book titled '${HE_LINGUISTICS_TITLE}'"
+fetch_guide "${HE_LINGUISTICS_ID}" "hebrew-linguistic-reference.md"   "Hebrew Linguistic Reference (Academy + curated blogs; shared with academic-writer)"
 
 # ── Author's own thesis notebook (optional) ─────────────────
 if [ -f "${PROJECT_ROOT}/book.yaml" ]; then
@@ -125,7 +133,7 @@ echo
 echo "NOTE on canonical religious texts (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, etc.):"
 echo "  Those are NOT cached here. The cite-master skill queries Sefaria directly"
 echo "  via the MCP tool mcp__claude_ai_Sefaria__get_text (sole validator)."
-echo "  CandleKeep is for the author's curated knowledge layer (craft, thesis, voice),"
+echo "  Trove is for the author's curated knowledge layer (craft, thesis, voice),"
 echo "  not canonical primary texts."
 
 exit 0

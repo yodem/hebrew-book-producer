@@ -29,8 +29,8 @@ Rules:
 ## Default behaviours
 
 1. **Language.** Editorial output, agent reports, and user-facing prose default to **Hebrew**. Sub-agent system prompts can be in English. Switch to English only on explicit request.
-2. **Voice preservation is non-negotiable.** At session start, read `.ctx/author-profile.md` (cached by the SessionStart hook) and the last 50 lines of `.book-producer/memory.md` if it exists. If `.ctx/author-profile.md` is missing, check `book.yaml: author_profile.overview` and fetch it with `ck items get <id> --no-session > .ctx/author-profile.md`. The author's voice always wins over a "more correct" rephrasing.
-3. **CandleKeep — author knowledge layer.** The `SessionStart` hook automatically caches references at `.ctx/writers-guide.md`, `.ctx/agent-team-guide.md`, `.ctx/hebrew-linguistic-reference.md`. If `.ctx/` is missing or stale, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`. **CandleKeep is NOT for canonical religious texts** — those go through Sefaria.
+2. **Voice preservation is non-negotiable.** At session start, read `.ctx/author-profile.md` (cached by the SessionStart hook) and the last 50 lines of `.book-producer/memory.md` if it exists. If `.ctx/author-profile.md` is missing, check `book.yaml: author_profile.overview` and fetch it with `bash "${CLAUDE_PLUGIN_ROOT}/scripts/trove-fetch.sh" <id> .ctx/author-profile.md`. The author's voice always wins over a "more correct" rephrasing.
+3. **Trove — author knowledge layer.** The `SessionStart` hook automatically caches references at `.ctx/writers-guide.md`, `.ctx/agent-team-guide.md`, `.ctx/hebrew-linguistic-reference.md`. If `.ctx/` is missing or stale, run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`. **Trove is NOT for canonical religious texts** — those go through Sefaria.
 4. **Sefaria for canonical religious texts.** When the manuscript cites Hazal (Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa), validate via `mcp__claude_ai_Sefaria__get_text`. Sole validator. Citations that fail to verify get marked `[UNVERIFIED]`.
 5. **Production tracking.** All chapter-level state lives in `.book-producer/state.json`, written and read only by `production-manager`.
 6. **No prose from the orchestrator.** `production-manager` schedules and merges. Sub-agents write prose.
@@ -92,18 +92,18 @@ Replace with concrete openers: a question, a fact, a scene, a citation.
 | Citing the Talmud? | `skills/cite-master/SKILL.md` |
 | Is "Berakhot 99z" real? | `mcp__claude_ai_Sefaria__get_text` |
 
-## Per-agent CandleKeep instructions
+## Per-agent Trove instructions
 
-Per-agent operating instructions live in CandleKeep, not in the plugin source. Configure via `book.yaml`:
+Per-agent operating instructions live in Trove, not in the plugin source. Configure via `book.yaml`:
 
 ```yaml
 agent_instructions:
-  lector_reader: <candlekeep-page-id>
-  lector_synthesizer: <candlekeep-page-id>
-  literary_reader: <candlekeep-page-id>
-  literary_synthesizer: <candlekeep-page-id>
-  linguistic_editor: <candlekeep-page-id>
-  proofreader: <candlekeep-page-id>
+  lector_reader: <trove-item-id>
+  lector_synthesizer: <trove-item-id>
+  literary_reader: <trove-item-id>
+  literary_synthesizer: <trove-item-id>
+  linguistic_editor: <trove-item-id>
+  proofreader: <trove-item-id>
 ```
 
 Each sub-agent loads its page on session start via:
@@ -112,4 +112,4 @@ Each sub-agent loads its page on session start via:
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-agent-instructions.sh <agent_key>
 ```
 
-The loader is idempotent. If a key is missing or CandleKeep is unavailable, the loader writes a stub and the agent falls back to `.ctx/writers-guide.md` and `.ctx/hebrew-linguistic-reference.md`.
+The loader is idempotent. If a key is missing or Trove is unavailable, the loader writes a stub and the agent falls back to `.ctx/writers-guide.md` and `.ctx/hebrew-linguistic-reference.md`.

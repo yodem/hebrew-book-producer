@@ -94,7 +94,7 @@ The user is not required to run Stage 2 (full multi-session interview).
 If `AUTHOR_VOICE.md` is already present:
 - Leave it alone. Read it for downstream consumers.
 
-### Step 6 — Cache the CandleKeep references
+### Step 6 — Cache the Trove references
 
 Normally the plugin's `SessionStart` hook has already cached `writers-guide.md`, `agent-team-guide.md`, and `hebrew-linguistic-reference.md` under `.ctx/`. If any of those files is missing, fall back to:
 
@@ -130,7 +130,7 @@ After all the auto-creates, summarise in a single sentence and ask one question:
 
 ## Hard rules
 
-- **Idempotent.** Re-running on a fully scaffolded project must succeed without changing anything (other than possibly refreshing the CandleKeep cache).
+- **Idempotent.** Re-running on a fully scaffolded project must succeed without changing anything (other than possibly refreshing the Trove cache).
 - **One confirmation question.** Never more than one. Bootstrap is for users who don't want to think.
 - **Never overwrite an existing `book.yaml` or `AUTHOR_VOICE.md`.** If both already exist, skip steps 3 and 5 silently and proceed.
 - **The git config name fallback** — if `git config user.name` returns empty, set `author: ""` and surface that in the confirmation summary so the user knows to fill it.

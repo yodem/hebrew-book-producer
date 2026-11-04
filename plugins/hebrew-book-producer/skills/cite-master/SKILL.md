@@ -8,10 +8,12 @@ user-invocable: false
 
 ## Knowledge source
 
-Authoritative formatting and Sefaria-API-mapping data lives in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-citation-conventions`. Read at activation:
+Authoritative formatting and Sefaria-API-mapping data lives in the **Trove book "Hebrew Linguistic Reference"**, chapter `hebrew-citation-conventions`. Read at activation:
+
+Read the `hebrew-citation-conventions` chapter in `.ctx/hebrew-linguistic-reference.md`, which the SessionStart hook caches from Trove. If the file is missing, load it first:
 
 ```bash
-ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-citation-conventions
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh"
 ```
 
 The chapter contains: Chicago-Hebrew + APA-Hebrew formats with examples; Hazal patterns for Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa; and — critically — the `sefaria_normalized` form for each pattern, which is what to pass to `mcp__claude_ai_Sefaria__get_text` (e.g., traditional `בבלי ברכות י, ע"ב` → API `Berakhot 10b`). Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data).

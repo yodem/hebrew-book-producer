@@ -60,7 +60,7 @@ For a freshly-onboarded user running `/start proofread`:
 > כן
 
 [voice-miner — light path]
-מריץ voice-miner על 3 פרקים לדוגמה. ייצור AUTHOR_VOICE.md ויכתוב מזהי CandleKeep ל-book.yaml.
+מריץ voice-miner על 3 פרקים לדוגמה. ייצור AUTHOR_VOICE.md ויכתוב מזהי Trove ל-book.yaml.
 (הרץ /hebrew-book-producer:voice init לראיון עמוק בן 7 סשנים.)
 
 [proof]

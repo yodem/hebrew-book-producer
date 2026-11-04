@@ -65,9 +65,8 @@ echo ".claude/" >> .gitignore
 ### תלויות ריצה (אופציונליות)
 
 ```bash
-# CandleKeep CLI — שכבת הידע (מדריך כתיבה + Hebrew Linguistic Reference)
-curl -fsSL https://candlekeep.dev/install.sh | sh
-ck auth login
+# Trove CLI (https://heytrove.ai) — שכבת הידע (מדריך כתיבה + Hebrew Linguistic Reference)
+trove auth login
 
 # Python — לחילוץ טביעת אצבע סגנונית במסלול הכבד של /init-voice
 pip install pdfplumber python-docx
@@ -108,7 +107,7 @@ Sefaria MCP מגיע עם הכלים של claude.ai; רק לאשר כשמבקש�
 
 הפלאגין נשען על שני רכיבים אופציונליים. ללא אף אחד מהם הוא עדיין עובד במצב יחיד־סוכן.
 
-1. **CandleKeep — שכבת הידע של המחבר.** מאחסן את הידע המאוצר של המחבר: מדריך הכתיבה (King/Zinsser/Penn/Shapiro — `cmok9h0m10ahik30zt8yt0lt2`), מדריך לבניית צוות סוכנים (`cmnudfue5003rmy0zlxt7ioa1`), מחברת תזה פרטית לספר זה (`book.yaml: thesis_notebook`), ומדריכי כתיבה נוספים (`craft_extras: [...]`). **לא משמש לאחסון מקורות דתיים קנוניים** — אלו עוברים דרך Sefaria.
+1. **Trove (לשעבר CandleKeep) — שכבת הידע של המחבר.** מאחסן את הידע המאוצר של המחבר: מדריך הכתיבה (King/Zinsser/Penn/Shapiro — `cmok9h0m10ahik30zt8yt0lt2`), מדריך לבניית צוות סוכנים (`cmnudfue5003rmy0zlxt7ioa1`), מחברת תזה פרטית לספר זה (`book.yaml: thesis_notebook`), ומדריכי כתיבה נוספים (`craft_extras: [...]`). **לא משמש לאחסון מקורות דתיים קנוניים** — אלו עוברים דרך Sefaria.
 2. **Sefaria — אימות מקורות.** כל ציטוט מחז"ל / תנ"ך / בבלי / ירושלמי / מדרש / רמב"ם / שולחן ערוך מאומת מול Sefaria דרך כלי MCP (`mcp__claude_ai_Sefaria__get_text`). זה המאמת היחיד. ציטוטים שלא ניתן לאמת מסומנים `[UNVERIFIED]`.
 
 ## התאמה לסוגות

@@ -20,7 +20,7 @@ You read **one chunk** of a manuscript (typically one chapter) and produce a str
    - `.ctx/writers-guide.md`
    - `.ctx/hebrew-linguistic-reference.md`
    - `.ctx/author-profile.md`
-3. Load role-specific instructions from CandleKeep:
+3. Load role-specific instructions from Trove:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-agent-instructions.sh lector_reader
    ```

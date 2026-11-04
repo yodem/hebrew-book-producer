@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# voice-pull.sh — SessionStart hook: pull AUTHOR_VOICE.md from CandleKeep.
+# voice-pull.sh — SessionStart hook: pull AUTHOR_VOICE.md from Trove (via voice-sync.sh).
 # Preserves the local `writer:` section if the remote copy does not contain it.
 set -euo pipefail
 

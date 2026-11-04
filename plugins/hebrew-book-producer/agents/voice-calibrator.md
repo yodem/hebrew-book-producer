@@ -127,7 +127,7 @@ The standard session-3 / session-7 calibration behavior below is **unchanged** b
    - 6.0–7.9 → warn user, list flagged rules, offer "remove or supply evidence?" prompt
    - < 6 → block recompress; require user to remove or evidence flagged rules before continuing
 
-6. **Sync to CandleKeep.** Call `voice-sync push`. If `ck` is missing, warn once and continue.
+6. **Sync to Trove.** Call `voice-sync push`. If `trove` is missing, warn once and continue.
 
 ## Hard rules
 

@@ -8,10 +8,12 @@ user-invocable: false
 
 ## Knowledge source
 
-The full Academy ruleset for niqqud (כללי הניקוד 1996 + updates), shwa-na'/shwa-nach rules, dagesh kal/chazak rules, and the common-mistakes table live in the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-niqqud-rules`. Read at activation:
+The full Academy ruleset for niqqud (כללי הניקוד 1996 + updates), shwa-na'/shwa-nach rules, dagesh kal/chazak rules, and the common-mistakes table live in the **Trove book "Hebrew Linguistic Reference"**, chapter `hebrew-niqqud-rules`. Read at activation:
+
+Read the `hebrew-niqqud-rules` chapter in `.ctx/hebrew-linguistic-reference.md`, which the SessionStart hook caches from Trove. If the file is missing, load it first:
 
 ```bash
-ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-niqqud-rules
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh"
 ```
 
 Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data).

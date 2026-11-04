@@ -15,7 +15,7 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/voice-pull.sh",
-            "statusMessage": "Syncing voice profile from CandleKeep..."
+            "statusMessage": "Syncing voice profile from Trove..."
           }
         ]
       },

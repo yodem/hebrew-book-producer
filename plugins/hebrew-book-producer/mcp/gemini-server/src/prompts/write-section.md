@@ -6,7 +6,7 @@ You will draft each paragraph, then self-review against the dimensions below, th
 
 {{calibration_bundle}}
 
-> The canonical Hebrew anti-AI markers (~30 banned openers, capped connectives, register classifications) live in CandleKeep's `hebrew-anti-ai-markers` chapter. The calling agent injects the relevant rules into the section brief below. Treat anything in the brief tagged "ANTI-AI" or "BANNED" as hard constraints.
+> The canonical Hebrew anti-AI markers (~30 banned openers, capped connectives, register classifications) live in Trove's `hebrew-anti-ai-markers` chapter. The calling agent injects the relevant rules into the section brief below. Treat anything in the brief tagged "ANTI-AI" or "BANNED" as hard constraints.
 
 ## Section Brief
 

@@ -1,5 +1,5 @@
 ---
-description: Bootstrap a new Hebrew book project — create book.yaml, resolve CandleKeep author profile, .book-producer/ directory.
+description: Bootstrap a new Hebrew book project — create book.yaml, resolve Trove author profile, .book-producer/ directory.
 ---
 
 # /init — bootstrap project
@@ -28,7 +28,7 @@ Create a new book project in the current directory.
    niqqud: false
    deadline: 2026-12-31
    created: 2026-04-29
-   author_profile:          # CandleKeep item IDs — populated by voice-miner; empty = no profile yet
+   author_profile:          # Trove item IDs — populated by voice-miner; empty = no profile yet
      overview: ""
      banned_phrases: ""
      preferred_phrases: ""
@@ -42,10 +42,10 @@ Create a new book project in the current directory.
 4. **Resolve author profile — existing or new:**
 
    a. Check if `book.yaml` already has a non-empty `author_profile.overview` ID (the author has an existing profile from a previous project):
-      - If yes: fetch it with `ck items get <id> --no-session > .ctx/author-profile.md`. Skip the skeleton and skip the voice interview. Tell the author (in Hebrew): "מצאתי פרופיל קולי קיים — נטענתי ממנו. אין צורך למלא AUTHOR_VOICE.md."
+      - If yes: fetch it with `bash "${CLAUDE_PLUGIN_ROOT}/scripts/trove-fetch.sh" <id> .ctx/author-profile.md`. Skip the skeleton and skip the voice interview. Tell the author (in Hebrew): "מצאתי פרופיל קולי קיים — נטענתי ממנו. אין צורך למלא AUTHOR_VOICE.md."
       - If no: create a blank `author_profile` block in `book.yaml` (all values empty string, as shown in step 3). Tell the author: "לא מצאתי פרופיל קולי קיים. לאחר הגדרת הפרויקט, הרץ /hebrew-book-producer:voice כדי לבנות את הפרופיל מהספרים שלך."
 
-   b. **Never create a blank AUTHOR_VOICE.md skeleton.** The profile lives in CandleKeep, not in a local file.
+   b. **Never create a blank AUTHOR_VOICE.md skeleton.** The profile lives in Trove, not in a local file.
 
 5. **Create `.book-producer/` directory** with:
    - `state.json` — empty `{ "chapters": [], "last_update": "<now>" }`
@@ -60,7 +60,7 @@ Create a new book project in the current directory.
    .ctx/
    ```
 
-7. **Verify CandleKeep references are cached.** The plugin's `SessionStart` hook should already have populated `.ctx/`. If not, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
+7. **Verify Trove references are cached.** The plugin's `SessionStart` hook should already have populated `.ctx/`. If not, fall back to `bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh`.
 
 8. **Final report** — summary of files created, next-action recommendation (`run /lector <manuscript-file>` once the author has draft text).
 

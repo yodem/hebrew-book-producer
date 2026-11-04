@@ -5,6 +5,19 @@ All notable changes to `hebrew-book-producer` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **CandleKeep `ck` replaced by the `trove` CLI everywhere.** New `scripts/trove-lib.sh` (title lookup over both `trove items list --json` shapes, locked books skipped; whole-book reads that follow Trove's "Next:" continuation lines; header/page-marker stripping) and `scripts/trove-fetch.sh`. The session loader, the per-agent instruction loader, `voice-sync.sh`, agents, commands and skills now use them.
+- The Hebrew Linguistic Reference is looked up by its exact title instead of a fixed id.
+- Skills read Hebrew reference chapters from the session cache (`.ctx/hebrew-linguistic-reference.md`); `trove` has no `--chapter` flag.
+- `voice-sync` caches the book id in `.voice/.trove-id` (an old `.candlekeep-id` is migrated).
+- README / USER_GUIDE name the agents that exist (`lector-reader`/`-synthesizer`, `literary-reader`/`-synthesizer`, `-legacy` fallbacks).
+
+### Fixed
+- marketplace.json version aligned with plugin.json (0.9.0).
+- Tests no longer need `ck`; the bats test no longer hard-codes a repo path.
+
 ## [0.9.0] — 2026-05-28
 
 ### Added

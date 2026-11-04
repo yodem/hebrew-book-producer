@@ -13,10 +13,12 @@ user-invocable: false
 
 ## Knowledge source
 
-Single source of truth: the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-connectives-modern-usage`. Read it at activation:
+Single source of truth: the **Trove book "Hebrew Linguistic Reference"**, chapter `hebrew-connectives-modern-usage`. Read it at activation:
+
+Read the `hebrew-connectives-modern-usage` chapter in `.ctx/hebrew-linguistic-reference.md`, which the SessionStart hook caches from Trove. If the file is missing, load it first:
 
 ```bash
-ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-connectives-modern-usage
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh"
 ```
 
 The chapter contains: a Hebrew prose explainer of the five logical relations; a JSON `connectives` table with ~80 entries across `addition / contrast / cause / result / concession / exemplification`, each tagged with a `register` field (`colloquial / journalistic / neutral / literary / high / very_high`) and a `note` for AI-overuse traps; usage rules. Source is mirrored on GitHub at [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data) — do not edit the local `references/connectives-table.md`, it is frozen for back-compat.

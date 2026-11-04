@@ -4,7 +4,7 @@
 setup() {
   TMP="$(mktemp -d)"
   cd "${TMP}"
-  REPO="/Users/yotamfromm/dev/hebrew-book-producer"
+  REPO="$(cd "${BATS_TEST_DIRNAME}/../../../.." && pwd)"
   LOADER="${REPO}/plugins/hebrew-book-producer/scripts/load-agent-instructions.sh"
   mkdir -p .ctx
 }
@@ -36,8 +36,9 @@ teardown() {
   [ "${before_mtime}" -eq "${after_mtime}" ]
 }
 
-@test "valid id: fetches from CandleKeep and caches" {
-  # Use a real, known-public CandleKeep ID — the writer's guide.
+@test "valid id: fetches from Trove and caches" {
+  command -v trove >/dev/null 2>&1 || skip "trove CLI not installed"
+  # Use a real Trove ID — the writer's guide.
   printf 'agent_instructions:\n  test_role: "cmok9h0m10ahik30zt8yt0lt2"\n' > book.yaml
   run bash "${LOADER}" test_role
   [ "${status}" -eq 0 ]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # load-candlekeep-guide.sh — fetch the user's curated writing-craft knowledge
-# from Trove (formerly Trove; the file keeps its old name so hooks and
+# from Trove (formerly CandleKeep; the file keeps its old name so hooks and
 # docs that call it keep working) and cache under .ctx/ in the project root.
 #
 # Design principle: Trove is for the AUTHOR'S KNOWLEDGE LAYER —

@@ -17,11 +17,11 @@ Runs (delegated to `scripts/load-candlekeep-guide.sh`):
 
 ```bash
 mkdir -p .ctx
-. scripts/trove-lib.sh   # trove_find_by_title, trove_fetch
-bash scripts/trove-fetch.sh cmok9h0m10ahik30zt8yt0lt2 .ctx/writers-guide.md
-bash scripts/trove-fetch.sh cmnudfue5003rmy0zlxt7ioa1 .ctx/agent-team-guide.md
+. "${CLAUDE_PLUGIN_ROOT}/scripts/trove-lib.sh"   # trove_find_by_title, trove_fetch
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/trove-fetch.sh" cmok9h0m10ahik30zt8yt0lt2 .ctx/writers-guide.md
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/trove-fetch.sh" cmnudfue5003rmy0zlxt7ioa1 .ctx/agent-team-guide.md
 # the Hebrew Linguistic Reference is found by exact title, not a fixed id:
-bash scripts/trove-fetch.sh "$(trove_find_by_title 'Hebrew Linguistic Reference')" .ctx/hebrew-linguistic-reference.md
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/trove-fetch.sh" "$(trove_find_by_title 'Hebrew Linguistic Reference')" .ctx/hebrew-linguistic-reference.md
 ```
 
 The third item is the shared **Hebrew Linguistic Reference** book (looked up by its exact title) — synced from the public GitHub repo [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data). It is also consumed by the `academic-writer` plugin so the two plugins share one source of truth for Hebrew editorial knowledge.

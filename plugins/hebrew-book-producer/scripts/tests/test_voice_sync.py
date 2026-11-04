@@ -27,5 +27,13 @@ def test_status_reports_no_id_cache(tmp_path):
     env = os.environ.copy()
     env["VOICE_PROJECT_ROOT"] = str(tmp_path)
     (tmp_path / ".voice").mkdir()
+    # status runs only when a ck binary is on PATH; give it a stub so the test
+    # does not depend on a real ck install (status itself never calls ck).
+    stub_bin = tmp_path / "bin"
+    stub_bin.mkdir()
+    stub = stub_bin / "ck"
+    stub.write_text("#!/bin/sh\nexit 1\n")
+    stub.chmod(0o755)
+    env["PATH"] = f"{stub_bin}{os.pathsep}{env.get('PATH', '')}"
     r = subprocess.run([str(SCRIPT), "status"], env=env, capture_output=True, text=True)
     assert "no cached candlekeep id" in (r.stdout + r.stderr).lower()

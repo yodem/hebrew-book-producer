@@ -8,8 +8,8 @@ A Claude Code plugin that takes a Hebrew manuscript through the full Israeli boo
 
 | Stage | Hebrew name | Agent | Output |
 |---|---|---|---|
-| Manuscript appraisal | קריאת לקטור | `lector` | `LECTOR_REPORT.md` |
-| Literary editing | עריכה ספרותית | `literary-editor` | Tracked-changes draft + structural notes |
+| Manuscript appraisal | קריאת לקטור | `lector-reader` ×N + `lector-synthesizer` (single-shot fallback: `lector-legacy`) | `LECTOR_REPORT.md` |
+| Literary editing | עריכה ספרותית | `literary-reader` ×N + `literary-synthesizer` (single-shot fallback: `literary-editor-legacy`) | Tracked-changes draft + structural notes |
 | Linguistic editing | עריכה לשונית | `linguistic-editor` | Sentence-level Hebrew edits |
 | Proofreading | הגהה | `proofreader` | Two passes — pre- and post-typesetting |
 | Typesetting brief | עימוד | `typesetting-agent` | InDesign / LaTeX brief (Frank Ruhl Libre, RTL) |
@@ -19,7 +19,7 @@ A Claude Code plugin that takes a Hebrew manuscript through the full Israeli boo
 
 The plugin **does not bundle** these — they are optional. Without them the plugin still runs in degraded single-agent mode.
 
-1. **CandleKeep** (`ck` CLI) — *the author's curated knowledge layer.* Loaded at session start: the Writer's Guide, the Hebrew Linguistic Reference, an optional per-project thesis notebook, and any `craft_extras` listed in `book.yaml`. Not used for canonical religious texts.
+1. **CandleKeep** (`ck` CLI; the service is now called Trove, but this plugin's loader still calls `ck`) — *the author's curated knowledge layer.* Loaded at session start: the Writer's Guide, the Hebrew Linguistic Reference, an optional per-project thesis notebook, and any `craft_extras` listed in `book.yaml`. Not used for canonical religious texts.
 2. **Sefaria MCP** (`mcp__claude_ai_Sefaria__get_text`) — *canonical-text validator.* Every Hazal citation is verified against Sefaria. Unverifiable citations are flagged `[UNVERIFIED]` in the manuscript.
 
 ## Install — per-project (recommended)

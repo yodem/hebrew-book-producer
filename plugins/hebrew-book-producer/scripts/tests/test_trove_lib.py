@@ -12,17 +12,19 @@ LIB = Path(__file__).resolve().parents[1] / "trove-lib.sh"
 pytestmark = pytest.mark.skipif(shutil.which("jq") is None, reason="jq not installed")
 
 ITEMS = [
-    {"id": "cmlocked", "title": "Hebrew Linguistic Reference", "locked": True},
-    {"id": "cmreal", "title": "Hebrew Linguistic Reference", "locked": False},
-    {"id": "cmother", "title": "Other", "locked": False},
+    {"id": "cmlockedbook00000000001", "title": "Hebrew Linguistic Reference", "locked": True},
+    {"id": "cmrealbook0000000000001", "title": "Hebrew Linguistic Reference", "locked": False},
+    {"id": "cmotherbook000000000001", "title": "Other", "locked": False},
+    {"id": "cmdupbook00000000000001", "title": "Dup", "locked": False},
+    {"id": "cmdupbook00000000000002", "title": "Dup", "locked": False},
 ]
 
 STUB = r'''#!/bin/bash
-# stub trove: list prints $STUB_LIST; read serves two parts of book cmreal
+# stub trove: list prints $STUB_LIST; read serves two parts of book cmrealbook0000000000001
 if [ "$2" = "list" ]; then cat "$STUB_LIST"; exit 0; fi
 if [ "$2" = "read" ]; then
   case "$*" in
-    *"--pages all"*) printf '%s\n' "────" "Book" "ID: cmreal | 2 pages" "Version: 1" "────" "" "── Page 1 ──" "" "# One" "first" "" "Stopped after page 1 to stay under 20,000 bytes. Next: trove items read cmreal --pages 2-2" ;;
+    *"--pages all"*) printf '%s\n' "────" "Book" "ID: cmrealbook0000000000001 | 2 pages" "Version: 1" "────" "" "── Page 1 ──" "" "# One" "first" "" "Stopped after page 1 to stay under 20,000 bytes. Next: trove items read cmrealbook0000000000001 --pages 2-2" ;;
     *"--pages 2-2"*) printf '%s\n' "── Page 2 ──" "" "# Two" "second" ;;
     *) exit 1 ;;
   esac
@@ -48,7 +50,7 @@ def _run(tmp_path, shape, script):
 def test_find_by_title_skips_locked(tmp_path, shape):
     r = _run(tmp_path, shape, 'trove_find_by_title "Hebrew Linguistic Reference"')
     assert r.returncode == 0, r.stderr
-    assert r.stdout.strip() == "cmreal"
+    assert r.stdout.strip() == "cmrealbook0000000000001"
 
 
 def test_find_by_title_missing(tmp_path):
@@ -57,8 +59,18 @@ def test_find_by_title_missing(tmp_path):
 
 
 def test_fetch_follows_next_and_body_strips_header(tmp_path):
-    r = _run(tmp_path, "object", 'trove_fetch cmreal raw.md && trove_body raw.md body.md')
+    r = _run(tmp_path, "object", 'trove_fetch cmrealbook0000000000001 raw.md && trove_body raw.md body.md')
     assert r.returncode == 0, r.stderr
     raw = (tmp_path / "raw.md").read_text()
     assert "Next: trove" not in raw and "second" in raw
     assert (tmp_path / "body.md").read_text() == "# One\nfirst\n\n# Two\nsecond\n"
+
+
+def test_fetch_refuses_bad_id(tmp_path):
+    r = _run(tmp_path, "object", 'trove_fetch "x;rm -rf /" raw.md')
+    assert r.returncode != 0 and not (tmp_path / "raw.md").exists()
+
+
+def test_find_by_title_refuses_ambiguous(tmp_path):
+    r = _run(tmp_path, "object", 'trove_find_by_title "Dup"')
+    assert r.returncode != 0

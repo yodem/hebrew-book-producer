@@ -7,6 +7,9 @@
 #
 # Both return non-zero on any failure and never print secrets.
 
+# Trove ids are lowercase alphanumeric; anything else is refused before it reaches a command.
+trove_valid_id() { [[ "${1:-}" =~ ^[a-z0-9]{10,40}$ ]]; }
+
 # `trove items list --json` returns {"items": [...]}; older builds returned a bare array.
 # Locked books stay in the list but cannot be read, so they are skipped.
 trove_find_by_title() {
@@ -18,9 +21,11 @@ trove_find_by_title() {
     '[(if type == "object" then .items else . end)[] | select(.title == $t and (.locked != true)) | .id] | sort | .[]' 2>/dev/null) || return 1
   [ -n "$ids" ] || return 1
   if [ "$(printf '%s\n' "$ids" | wc -l | tr -d ' ')" -gt 1 ]; then
-    echo "WARN: several Trove books titled '$title'; using the lowest id" >&2
+    echo "WARN: several readable Trove books are titled '$title'; refusing to guess. Rename or remove the extra copies." >&2
+    return 1
   fi
-  printf '%s\n' "$ids" | head -1
+  trove_valid_id "$ids" || return 1
+  printf '%s\n' "$ids"
 }
 
 # _trove_read_retry <out> <id> <args...>: one read, retried up to 3 times on "Too many requests".
@@ -36,7 +41,8 @@ _trove_read_retry() {
 }
 
 trove_fetch() {
-  local id="$1" out="$2" tmp part last next
+  local id="$1" out="$2" tmp part last next prefix
+  trove_valid_id "$id" || { echo "WARN: not a Trove id: '$id'" >&2; return 1; }
   command -v trove >/dev/null 2>&1 || return 1
   tmp=$(mktemp) || return 1
   part=$(mktemp) || { rm -f "$tmp"; return 1; }
@@ -48,7 +54,14 @@ trove_fetch() {
     fi
     last=$(grep -v '^[[:space:]]*$' "$part" | tail -1)
     # Only the last line counts, and it must name this book.
-    next=$(printf '%s\n' "$last" | sed -nE "s/.*Next: trove items read ${id} (--pages [^ ]+( --part [0-9]+)?)[[:space:]]*$/\1/p")
+    # Accept only a strict page spec for this same id; book text is never parsed as a command.
+    next=""
+    prefix="Next: trove items read ${id} "
+    if [[ "$last" == *"$prefix"* ]]; then
+      next="${last##*"$prefix"}"
+      next="${next%"${next##*[![:space:]]}"}"
+      [[ "$next" =~ ^--pages\ ([0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*|all)(\ --part\ [0-9]+)?$ ]] || next=""
+    fi
     if [ -z "$next" ]; then
       cat "$part" >> "$tmp"
       mv "$tmp" "$out"; rm -f "$part"

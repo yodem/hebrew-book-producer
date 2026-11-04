@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
-# load-agent-instructions.sh — fetch a per-agent instruction page from CandleKeep.
+# load-agent-instructions.sh — fetch a per-agent instruction page from Trove (formerly CandleKeep).
 #
 # Usage: load-agent-instructions.sh <agent_key>
 #
-# Reads book.yaml -> agent_instructions.<agent_key>, fetches the CandleKeep
-# page by ID, writes to .ctx/<agent-key-dashed>-instructions.md.
+# Reads book.yaml -> agent_instructions.<agent_key>, fetches the Trove
+# item by ID, writes to .ctx/<agent-key-dashed>-instructions.md.
 #
 # No-op if:
 #   - book.yaml is missing
 #   - agent_instructions.<agent_key> is missing or null
 #   - the cache file already exists (idempotent for parallel sub-agents)
 #
-# Fail-open: on CandleKeep error, write a stub and exit 0.
+# Fail-open: on Trove error, write a stub and exit 0.
 
 set -u
+
+# shellcheck source=trove-lib.sh
+. "${BASH_SOURCE[0]%/*}/trove-lib.sh"
 
 AGENT_KEY="${1:-}"
 if [ -z "${AGENT_KEY}" ]; then
@@ -47,23 +50,23 @@ fi
 
 mkdir -p .ctx
 
-if ! command -v ck >/dev/null 2>&1; then
-  echo "WARN: ck CLI not installed; writing stub for ${AGENT_KEY}" >&2
+if ! command -v trove >/dev/null 2>&1; then
+  echo "WARN: trove CLI not installed; writing stub for ${AGENT_KEY}" >&2
   cat > "${CACHE_FILE}" <<STUB
 # ${AGENT_KEY} instructions — UNAVAILABLE
 
-ck CLI is not installed; CandleKeep page \`${INSTR_ID}\` could not be fetched.
+trove CLI is not installed; Trove item \`${INSTR_ID}\` could not be fetched.
 [UNVERIFIED — agent should fall back to general session-cached references]
 STUB
   exit 0
 fi
 
-if ! ck items get "${INSTR_ID}" --no-session > "${CACHE_FILE}" 2>/dev/null; then
-  echo "WARN: ck items get ${INSTR_ID} failed; writing stub" >&2
+if ! trove_fetch "${INSTR_ID}" "${CACHE_FILE}"; then
+  echo "WARN: trove read of ${INSTR_ID} failed; writing stub" >&2
   cat > "${CACHE_FILE}" <<STUB
 # ${AGENT_KEY} instructions — UNAVAILABLE
 
-CandleKeep page \`${INSTR_ID}\` could not be fetched.
+Trove item \`${INSTR_ID}\` could not be fetched.
 [UNVERIFIED — agent should fall back to general session-cached references]
 STUB
   exit 0

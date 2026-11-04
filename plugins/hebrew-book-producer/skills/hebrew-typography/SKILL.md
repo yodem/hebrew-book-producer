@@ -1,6 +1,6 @@
 ---
 name: hebrew-typography
-description: Hebrew book typography reference for typesetting-agent — Frank Ruhl Libre, RTL margin rules, even-page chapter starts, גיליון דפוס math. Invoke when generating TYPESETTING_BRIEF.md or computing printing-sheet counts. Do NOT use for character-level rules (quotation marks, niqqud, bidi) — those live in the shared CandleKeep Hebrew Linguistic Reference.
+description: Hebrew book typography reference for typesetting-agent — Frank Ruhl Libre, RTL margin rules, even-page chapter starts, גיליון דפוס math. Invoke when generating TYPESETTING_BRIEF.md or computing printing-sheet counts. Do NOT use for character-level rules (quotation marks, niqqud, bidi) — those live in the shared Trove Hebrew Linguistic Reference.
 user-invocable: false
 ---
 
@@ -19,10 +19,12 @@ user-invocable: false
 
 ## Knowledge source — Hebrew character & punctuation conventions
 
-For everything character-level (`״` vs `"`, `׳` vs `'`, en-dash vs מקף עברי, RTL/LTR controls, numerals, quotation rules), read the **CandleKeep book "Hebrew Linguistic Reference"**, chapter `hebrew-typography-conventions`:
+For everything character-level (`״` vs `"`, `׳` vs `'`, en-dash vs מקף עברי, RTL/LTR controls, numerals, quotation rules), read the **Trove book "Hebrew Linguistic Reference"**, chapter `hebrew-typography-conventions`:
+
+Read the `hebrew-typography-conventions` chapter in `.ctx/hebrew-linguistic-reference.md`, which the SessionStart hook caches from Trove. If the file is missing, load it first:
 
 ```bash
-ck items read cmomjonvy0fdmk30zwef79c48 --chapter hebrew-typography-conventions
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/load-candlekeep-guide.sh"
 ```
 
 The chapter has the full Unicode-codepoint table, abbreviation rules (גרש vs גרשיים), and the bidi pitfalls in mixed-language passages. Source on GitHub: [yodem/hebrew-linguistics-data](https://github.com/yodem/hebrew-linguistics-data). The local `references/` folder stays for typesetting-machine specifics that are not shared cross-plugin.

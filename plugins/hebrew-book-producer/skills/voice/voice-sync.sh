@@ -1,5 +1,5 @@
 #!/bin/bash
-# voice-sync.sh — pull/push AUTHOR_VOICE.md to/from CandleKeep
+# voice-sync.sh — pull/push AUTHOR_VOICE.md to/from Trove
 # Usage: voice-sync.sh {pull|push|status}
 # Env:
 #   VOICE_PROJECT_ROOT — overrides $(pwd) for testing
@@ -11,7 +11,14 @@ action=${1:-status}
 root="${VOICE_PROJECT_ROOT:-$(pwd)}"
 profile="$root/AUTHOR_VOICE.md"
 voice_dir="$root/.voice"
-id_cache="$voice_dir/.candlekeep-id"
+id_cache="$voice_dir/.trove-id"
+legacy_id_cache="$voice_dir/.candlekeep-id"  # read once, then migrated
+if [[ ! -f "$id_cache" && -f "$legacy_id_cache" ]]; then
+  mkdir -p "$voice_dir"; cp "$legacy_id_cache" "$id_cache"
+fi
+
+# shellcheck source=../../scripts/trove-lib.sh
+. "${BASH_SOURCE[0]%/*}/../../scripts/trove-lib.sh"
 
 # Resolve writer name (best-effort; empty is fine)
 writer="${VOICE_WRITER_NAME:-}"
@@ -27,8 +34,8 @@ fi
 [[ -z "$writer" ]] && writer="<unknown>"
 title="Voice Profile — $writer"
 
-if ! command -v ck >/dev/null 2>&1; then
-  echo "voice-sync: ck not available — local-only mode"
+if ! command -v trove >/dev/null 2>&1; then
+  echo "voice-sync: trove not available — local-only mode"
   exit 0
 fi
 
@@ -37,22 +44,14 @@ ensure_id() {
     cat "$id_cache"
     return 0
   fi
-  # Title fallback — pass title via env var to avoid shell injection
-  id=$(ck books list --json 2>/dev/null \
-    | VOICE_TITLE="$title" python3 -c "
-import sys, json, os
-try:
-    d = json.load(sys.stdin)
-except Exception:
-    sys.exit(0)
-t = os.environ['VOICE_TITLE']
-if not isinstance(d, list):
-    sys.exit(0)
-for b in d:
-    if isinstance(b, dict) and b.get('title') == t:
-        print(b.get('id', ''))
-        sys.exit(0)
-" || true)
+  # Title fallback (exact title; handles both list JSON shapes, skips locked books)
+  # Lookup errors and ambiguous titles stop here so a push never creates a duplicate.
+  local rc=0
+  id=$(trove_find_by_title "$title") || rc=$?
+  if [[ $rc -eq 2 ]]; then
+    echo "voice-sync: could not look up '$title' in Trove (error or several matches)" >&2
+    return 2
+  fi
   if [[ -n "$id" ]]; then
     mkdir -p "$voice_dir"
     echo "$id" > "$id_cache"
@@ -65,16 +64,23 @@ case "$action" in
     if [[ -f "$id_cache" ]]; then
       echo "voice-sync status: cached id=$(cat "$id_cache"), title=$title"
     else
-      echo "voice-sync status: no cached candlekeep id"
+      echo "voice-sync status: no cached trove id"
     fi
     ;;
   pull)
-    id=$(ensure_id)
+    id=$(ensure_id) || { echo "voice-sync pull: Trove lookup failed — kept local"; exit 0; }
     if [[ -z "$id" ]]; then
       echo "voice-sync pull: no remote book yet (run push to create)"
       exit 0
     fi
-    ck books read "$id" --format md > "$profile.tmp"
+    raw=$(mktemp)
+    if ! trove_fetch "$id" "$raw"; then
+      rm -f "$raw"
+      echo "voice-sync pull: trove read failed — kept local"
+      exit 0
+    fi
+    trove_body "$raw" "$profile.tmp"
+    rm -f "$raw"
     # Last-write-wins by `> Updated` stamp comparison
     local_stamp=$(grep -m1 '^> Updated' "$profile" 2>/dev/null | sed -E 's/^> Updated ([0-9-]+).*/\1/' || echo "0")
     remote_stamp=$(grep -m1 '^> Updated' "$profile.tmp" 2>/dev/null | sed -E 's/^> Updated ([0-9-]+).*/\1/' || echo "0")
@@ -87,28 +93,25 @@ case "$action" in
     fi
     ;;
   push)
-    id=$(ensure_id)
+    command -v jq >/dev/null 2>&1 || { echo "voice-sync push: jq not installed — local-only mode"; exit 0; }
+    id=$(ensure_id) || { echo "voice-sync push: Trove lookup failed — local-only mode, nothing created"; exit 0; }
     if [[ -z "$id" ]]; then
-      id=$(ck books create --title "$title" --format md --content "$profile" --json 2>/dev/null \
-        | python3 -c "
-import sys, json
-try:
-    d = json.load(sys.stdin)
-    print(d.get('id', ''))
-except Exception:
-    pass
-" 2>/dev/null || true)
+      id=$(trove items create "$title" --file "$profile" --json --no-session 2>/dev/null \
+        | jq -r '.id // .item.id // empty' 2>/dev/null || true)
       if [[ -n "$id" ]]; then
         mkdir -p "$voice_dir"
         echo "$id" > "$id_cache"
         echo "voice-sync push: created remote book id=$id"
       else
-        echo "voice-sync push: ck unavailable or books subcommand unsupported — local-only mode"
+        echo "voice-sync push: trove create failed — local-only mode"
       fi
     else
-      ck books update "$id" --content "$profile" 2>/dev/null || \
-        echo "voice-sync push: ck update failed — local-only mode"
-      echo "voice-sync push: updated remote book id=$id"
+      v=$(trove items history "$id" --json --no-session 2>/dev/null | jq -r '.currentVersion // empty' 2>/dev/null || true)
+      if [[ -n "$v" ]] && trove items put "$id" --file "$profile" --expect-version "$v" --no-session >/dev/null 2>&1; then
+        echo "voice-sync push: updated remote book id=$id"
+      else
+        echo "voice-sync push: trove update failed — local-only mode"
+      fi
     fi
     ;;
   *)

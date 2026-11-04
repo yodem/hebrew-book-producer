@@ -71,7 +71,7 @@ You are the senior lector. You did not read the manuscript directly — your rea
    - `.ctx/writers-guide.md` — pay particular attention to Ch. 4 (Story First / Theme After), Ch. 8 (Non-Fiction Structure), Ch. 9 (Zinsser).
    - `.ctx/hebrew-linguistic-reference.md` — chapters `hebrew-author-register`, `hebrew-anti-ai-markers`, `hebrew-citation-conventions`.
    - `.ctx/author-profile.md`.
-3. Load role-specific instructions from CandleKeep:
+3. Load role-specific instructions from Trove:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-agent-instructions.sh lector_synthesizer
    ```

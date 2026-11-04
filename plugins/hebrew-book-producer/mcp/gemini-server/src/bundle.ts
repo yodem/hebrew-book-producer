@@ -13,7 +13,7 @@
  *     a fenced JSON fingerprint block. We leave `fingerprint = ''` so the
  *     bundle renderer simply omits the section.
  *   - No anti-AI markdown reference under skills/*\/references/: the canonical
- *     Hebrew anti-AI rules live in CandleKeep's `hebrew-anti-ai-markers`
+ *     Hebrew anti-AI rules live in Trove's `hebrew-anti-ai-markers`
  *     chapter, cached by the SessionStart hook under `.ctx/`. The calling
  *     agent injects that material into the section/chapter brief; the MCP
  *     server doesn't bundle it.

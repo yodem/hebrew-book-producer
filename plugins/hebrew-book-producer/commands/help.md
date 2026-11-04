@@ -30,7 +30,7 @@ Examples:
 | `/draft <chapter>` | Book-writer drafts a chapter from a brief |
 | `/ship <file>` | Full pipeline with checkpoints |
 | `/hebrew-book-producer:voice` | Manage author voice profile (init / continue / audit / sync / status) |
-| `/thesis [append\|show\|refresh]` | Manage the author's CandleKeep thesis notebook for this book |
+| `/thesis [append\|show\|refresh]` | Manage the author's Trove thesis notebook for this book |
 | `/help` | This help |
 
 ## Agents
@@ -56,7 +56,7 @@ Examples:
 
 ## Runtime dependencies
 
-- **CandleKeep** — author's curated knowledge layer (writer's guide, thesis notebook, craft extras). Plugin runs in degraded mode without it.
+- **Trove** — author's curated knowledge layer (writer's guide, thesis notebook, craft extras). Plugin runs in degraded mode without it.
 - **Sefaria MCP** — canonical-text validator for every Hazal citation (sole validator). Citations that can't be validated get marked `[UNVERIFIED]`.
 
 ## Genre support

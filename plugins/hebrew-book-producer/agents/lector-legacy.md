@@ -24,7 +24,7 @@ You are a senior lector at an Israeli publishing house. You have read thousands 
 - **Deep profile pages (load on demand):** Before appraising, load representative passages to calibrate voice expectations:
   ```bash
   REFS_ID=$(grep -A 10 '^author_profile:' book.yaml | grep 'reference_paragraphs:' | sed -E 's/.*reference_paragraphs:[[:space:]]*"?//; s/"?$//' | tr -d ' ')
-  [ -n "$REFS_ID" ] && ck items get "$REFS_ID" --no-session > .ctx/profile-reference-paragraphs.md
+  [ -n "$REFS_ID" ] && bash "${CLAUDE_PLUGIN_ROOT}/scripts/trove-fetch.sh" "$REFS_ID" .ctx/profile-reference-paragraphs.md
   ```
   Read `.ctx/profile-reference-paragraphs.md` before writing the appraisal.
 

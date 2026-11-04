@@ -46,16 +46,16 @@ def test_stage1_seeds_author_voice(tmp_path):
         "# Fingerprint\n- Corpus summary: 3 chapters, 900 words, Hebrew.\n"
     )
 
-    # Inject a stub `ck` that exits 127 so voice-sync treats push as a no-op.
+    # Inject a stub `trove` that exits 127 so voice-sync's push fails soft (local-only).
     stub_bin = tmp_path / ".stub-bin"
     stub_bin.mkdir()
-    stub_ck = stub_bin / "ck"
-    stub_ck.write_text("#!/bin/bash\n# stub ck — not available\nexit 127\n")
-    stub_ck.chmod(0o755)
+    stub_trove = stub_bin / "trove"
+    stub_trove.write_text("#!/bin/bash\n# stub trove — not available\nexit 127\n")
+    stub_trove.chmod(0o755)
     env = os.environ.copy()
     env["PATH"] = str(stub_bin) + ":" + env["PATH"]
 
-    # Run sync push (stub ck exits 127 → script sees ck missing → no-op)
+    # Run sync push (stub trove exits 127 → lookup and create fail → local-only, exit 0)
     r_sync = subprocess.run(
         ["bash", str(REPO_ROOT / "plugins/hebrew-book-producer/skills/voice/voice-sync.sh"), "push"],
         cwd=str(tmp_path),

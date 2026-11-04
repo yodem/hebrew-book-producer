@@ -40,7 +40,7 @@ If `provider: "gemini"` is set AND the tool is present in your toolset, you MAY 
 - **Deep profile pages (load on demand):** Before editing, load the full banned-phrases page:
   ```bash
   BANNED_ID=$(grep -A 10 '^author_profile:' book.yaml | grep 'banned_phrases:' | sed -E 's/.*banned_phrases:[[:space:]]*"?//; s/"?$//' | tr -d ' ')
-  [ -n "$BANNED_ID" ] && ck items get "$BANNED_ID" --no-session > .ctx/profile-banned-phrases.md
+  [ -n "$BANNED_ID" ] && bash "${CLAUDE_PLUGIN_ROOT}/scripts/trove-fetch.sh" "$BANNED_ID" .ctx/profile-banned-phrases.md
   ```
   Read `.ctx/profile-banned-phrases.md` before any substitution pass.
 4. `cat .book-producer/memory.md` (last 50 lines) — what has the author rejected before?

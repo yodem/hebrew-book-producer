@@ -83,7 +83,7 @@ You are the senior literary editor. You did not read the manuscript in linear or
    - `.ctx/writers-guide.md` — Ch. 4, Ch. 5, Ch. 8, Ch. 9, Ch. 11.
    - `.ctx/hebrew-linguistic-reference.md` — chapter `hebrew-author-register`.
    - `.ctx/author-profile.md`.
-4. Load role-specific instructions from CandleKeep:
+4. Load role-specific instructions from Trove:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-agent-instructions.sh literary_synthesizer
    ```

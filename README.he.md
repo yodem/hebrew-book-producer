@@ -65,9 +65,9 @@ echo ".claude/" >> .gitignore
 ### תלויות ריצה (אופציונליות)
 
 ```bash
-# CandleKeep CLI — שכבת הידע (מדריך כתיבה + Hebrew Linguistic Reference)
-curl -fsSL https://candlekeep.dev/install.sh | sh
-ck auth login
+# Trove CLI (https://heytrove.ai) — שכבת הידע (מדריך כתיבה + Hebrew Linguistic Reference)
+trove auth login
+# נדרש גם jq (חיפוש לפי כותרת וסנכרון קול): brew install jq / apt install jq
 
 # Python — לחילוץ טביעת אצבע סגנונית במסלול הכבד של /init-voice
 pip install pdfplumber python-docx
@@ -96,8 +96,8 @@ Sefaria MCP מגיע עם הכלים של claude.ai; רק לאשר כשמבקש�
 
 | שלב | תפקיד מקצועי | סוכן | אחריות |
 |---|---|---|---|
-| הערכה וייעוץ | עורך ראשי / לקטור | `lector` + `production-manager` | קביעת מסלול, ניהול לוחות זמנים |
-| נרטיב ומבנה | עורך ספרותי | `literary-editor` | חידוד דמויות וטיעונים, ארגון פרקים |
+| הערכה וייעוץ | עורך ראשי / לקטור | `lector-reader` + `lector-synthesizer` (גיבוי: `lector-legacy`) + `production-manager` | קביעת מסלול, ניהול לוחות זמנים |
+| נרטיב ומבנה | עורך ספרותי | `literary-reader` + `literary-synthesizer` (גיבוי: `literary-editor-legacy`) | חידוד דמויות וטיעונים, ארגון פרקים |
 | לשון וסגנון | עורך לשוני | `linguistic-editor` | האחדת משלב, קריאות, מניעת חזרות |
 | ליטוש סופי | מגיה | `proofreader` | תיקון שגיאות, פיסוק, האחדת כתיב |
 | עיצוב הטקסט | מעמד / גרפיקאי | `typesetting-agent` | טיפוגרפיה, שוליים, כותרות רצות |
@@ -108,7 +108,7 @@ Sefaria MCP מגיע עם הכלים של claude.ai; רק לאשר כשמבקש�
 
 הפלאגין נשען על שני רכיבים אופציונליים. ללא אף אחד מהם הוא עדיין עובד במצב יחיד־סוכן.
 
-1. **CandleKeep — שכבת הידע של המחבר.** מאחסן את הידע המאוצר של המחבר: מדריך הכתיבה (King/Zinsser/Penn/Shapiro — `cmok9h0m10ahik30zt8yt0lt2`), מדריך לבניית צוות סוכנים (`cmnudfue5003rmy0zlxt7ioa1`), מחברת תזה פרטית לספר זה (`book.yaml: thesis_notebook`), ומדריכי כתיבה נוספים (`craft_extras: [...]`). **לא משמש לאחסון מקורות דתיים קנוניים** — אלו עוברים דרך Sefaria.
+1. **Trove (לשעבר CandleKeep) — שכבת הידע של המחבר.** מאחסן את הידע המאוצר של המחבר: מדריך הכתיבה (King/Zinsser/Penn/Shapiro — `cmok9h0m10ahik30zt8yt0lt2`), מדריך לבניית צוות סוכנים (`cmnudfue5003rmy0zlxt7ioa1`), מחברת תזה פרטית לספר זה (`book.yaml: thesis_notebook`), ומדריכי כתיבה נוספים (`craft_extras: [...]`). **לא משמש לאחסון מקורות דתיים קנוניים** — אלו עוברים דרך Sefaria.
 2. **Sefaria — אימות מקורות.** כל ציטוט מחז"ל / תנ"ך / בבלי / ירושלמי / מדרש / רמב"ם / שולחן ערוך מאומת מול Sefaria דרך כלי MCP (`mcp__claude_ai_Sefaria__get_text`). זה המאמת היחיד. ציטוטים שלא ניתן לאמת מסומנים `[UNVERIFIED]`.
 
 ## התאמה לסוגות
@@ -119,7 +119,7 @@ Sefaria MCP מגיע עם הכלים של claude.ai; רק לאשר כשמבקש�
 
 ### אוטוביוגרפיה וסיפורי חיים
 
-שיפור הנרטיב תוך שמירה על אותנטיות. `literary-editor` בודק עיצוב דמויות, ציר זמן עקבי, ובניית עולם.
+שיפור הנרטיב תוך שמירה על אותנטיות. `literary-synthesizer` בודק עיצוב דמויות, ציר זמן עקבי, ובניית עולם.
 
 ### טקסטים דתיים וספרי קודש
 

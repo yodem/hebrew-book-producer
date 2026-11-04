@@ -20,7 +20,7 @@ You read **one chunk** and produce **candidate** literary edits — local craft 
    - `.ctx/writers-guide.md` — Ch. 4 (Story First/Theme After), Ch. 5 (Two-Draft Method), Ch. 8 (Non-Fiction Structure), Ch. 11 (Shapiro).
    - `.ctx/hebrew-linguistic-reference.md` — chapter `hebrew-author-register`.
    - `.ctx/author-profile.md`.
-3. Load role-specific instructions from CandleKeep:
+3. Load role-specific instructions from Trove:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/scripts/load-agent-instructions.sh literary_reader
    ```

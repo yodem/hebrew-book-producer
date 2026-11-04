@@ -21,7 +21,7 @@ or specified explicitly.
 - `:voice audit` — run rule-coverage check against the corpus
 - `:voice quick` — adaptive short path (skips sessions 4 and 7, caps at 8 questions per session,
   one calibration at end, ~43 prompts total)
-- `:voice sync` — push local `AUTHOR_VOICE.md` to CandleKeep (pulls first to avoid clobber)
+- `:voice sync` — push local `AUTHOR_VOICE.md` to Trove (pulls first to avoid clobber)
 - `:voice status` — list completed sessions, last calibration score, last sync stamp
 
 ## Workflow
@@ -69,7 +69,7 @@ or specified explicitly.
 1. List `.voice/interview/0N-*.md` with completion markers.
 2. Show `.voice/audit.md` head if present.
 3. Show last `> Updated` stamp from `AUTHOR_VOICE.md`.
-4. Show `.voice/.candlekeep-id` presence.
+4. Show `.voice/.trove-id` presence (an old `.voice/.candlekeep-id` is migrated on first run).
 
 ## Hard rules
 

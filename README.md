@@ -8,8 +8,8 @@ A Claude Code plugin that takes a Hebrew manuscript through the full Israeli boo
 
 | Stage | Hebrew name | Agent | Output |
 |---|---|---|---|
-| Manuscript appraisal | קריאת לקטור | `lector` | `LECTOR_REPORT.md` |
-| Literary editing | עריכה ספרותית | `literary-editor` | Tracked-changes draft + structural notes |
+| Manuscript appraisal | קריאת לקטור | `lector-reader` ×N + `lector-synthesizer` (single-shot fallback: `lector-legacy`) | `LECTOR_REPORT.md` |
+| Literary editing | עריכה ספרותית | `literary-reader` ×N + `literary-synthesizer` (single-shot fallback: `literary-editor-legacy`) | Tracked-changes draft + structural notes |
 | Linguistic editing | עריכה לשונית | `linguistic-editor` | Sentence-level Hebrew edits |
 | Proofreading | הגהה | `proofreader` | Two passes — pre- and post-typesetting |
 | Typesetting brief | עימוד | `typesetting-agent` | InDesign / LaTeX brief (Frank Ruhl Libre, RTL) |
@@ -19,7 +19,7 @@ A Claude Code plugin that takes a Hebrew manuscript through the full Israeli boo
 
 The plugin **does not bundle** these — they are optional. Without them the plugin still runs in degraded single-agent mode.
 
-1. **CandleKeep** (`ck` CLI) — *the author's curated knowledge layer.* Loaded at session start: the Writer's Guide, the Hebrew Linguistic Reference, an optional per-project thesis notebook, and any `craft_extras` listed in `book.yaml`. Not used for canonical religious texts.
+1. **Trove** (`trove` CLI, formerly CandleKeep) — *the author's curated knowledge layer.* Loaded at session start: the Writer's Guide, the Hebrew Linguistic Reference (looked up by its exact title), an optional per-project thesis notebook, and any `craft_extras` listed in `book.yaml`. Not used for canonical religious texts.
 2. **Sefaria MCP** (`mcp__claude_ai_Sefaria__get_text`) — *canonical-text validator.* Every Hazal citation is verified against Sefaria. Unverifiable citations are flagged `[UNVERIFIED]` in the manuscript.
 
 ## Install — per-project (recommended)
@@ -87,9 +87,9 @@ echo ".claude/" >> .gitignore
 ### Optional setup
 
 ```bash
-# CandleKeep CLI — for the shared writing-craft + Hebrew Linguistic Reference layer
-curl -fsSL https://candlekeep.dev/install.sh | sh
-ck auth login
+# Trove CLI (https://heytrove.ai) — for the shared writing-craft + Hebrew Linguistic Reference layer
+trove auth login
+# jq is required for the title lookup and voice sync (brew install jq / apt install jq)
 
 # Python deps for the heavy /init-voice path
 pip install pdfplumber python-docx
@@ -135,19 +135,20 @@ Total inputs to proofread an existing book: **1 sentence + 1 confirmation + 3 vo
 
 | File | Purpose | In git? |
 |---|---|---|
-| `book.yaml` | Project metadata: title, author, genre, citation style, word target, niqqud, optional `thesis_notebook` and `craft_extras` (CandleKeep IDs) | yes |
+| `book.yaml` | Project metadata: title, author, genre, citation style, word target, niqqud, optional `thesis_notebook` and `craft_extras` (Trove IDs) | yes |
 | `AUTHOR_VOICE.md` | Voice fingerprint — example paragraphs, preferred/banned phrases, register | yes |
 | `.book-producer/state.json` | Pipeline state per chapter | no |
 | `.book-producer/memory.md` | Rolling log of user corrections | no |
 | `.book-producer/runs/<id>/` | Per-run sub-agent outputs (changes.json, notes.md, log.txt) | no |
 | `.book-producer/snapshots/` | Pre-edit file snapshots (rollback safety) | no |
 
-### CandleKeep (cross-project, cached under `.ctx/`)
+### Trove (cross-project, cached under `.ctx/`)
 
 | File | Source | Purpose |
 |---|---|---|
 | `writers-guide.md` | `cmok9h0m10ahik30zt8yt0lt2` | Writer's Guide (King/Zinsser/Penn/Shapiro) |
 | `agent-team-guide.md` | `cmnudfue5003rmy0zlxt7ioa1` | Building Your Agent Team |
+| `hebrew-linguistic-reference.md` | title `Hebrew Linguistic Reference` | Shared Hebrew editorial reference (yodem/hebrew-linguistics-data) |
 | `thesis-notebook.md` | `book.yaml: thesis_notebook` | Author's running notes for this book |
 | `craft-extras/<id>.md` | `book.yaml: craft_extras` | Additional craft references |
 

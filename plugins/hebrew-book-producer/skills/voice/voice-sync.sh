@@ -45,7 +45,13 @@ ensure_id() {
     return 0
   fi
   # Title fallback (exact title; handles both list JSON shapes, skips locked books)
-  id=$(trove_find_by_title "$title" || true)
+  # Lookup errors and ambiguous titles stop here so a push never creates a duplicate.
+  local rc=0
+  id=$(trove_find_by_title "$title") || rc=$?
+  if [[ $rc -eq 2 ]]; then
+    echo "voice-sync: could not look up '$title' in Trove (error or several matches)" >&2
+    return 2
+  fi
   if [[ -n "$id" ]]; then
     mkdir -p "$voice_dir"
     echo "$id" > "$id_cache"
@@ -62,7 +68,7 @@ case "$action" in
     fi
     ;;
   pull)
-    id=$(ensure_id)
+    id=$(ensure_id) || { echo "voice-sync pull: Trove lookup failed — kept local"; exit 0; }
     if [[ -z "$id" ]]; then
       echo "voice-sync pull: no remote book yet (run push to create)"
       exit 0
@@ -87,7 +93,8 @@ case "$action" in
     fi
     ;;
   push)
-    id=$(ensure_id)
+    command -v jq >/dev/null 2>&1 || { echo "voice-sync push: jq not installed — local-only mode"; exit 0; }
+    id=$(ensure_id) || { echo "voice-sync push: Trove lookup failed — local-only mode, nothing created"; exit 0; }
     if [[ -z "$id" ]]; then
       id=$(trove items create "$title" --file "$profile" --json --no-session 2>/dev/null \
         | jq -r '.id // .item.id // empty' 2>/dev/null || true)

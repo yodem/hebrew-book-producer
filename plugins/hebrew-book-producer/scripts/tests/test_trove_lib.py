@@ -25,7 +25,7 @@ if [ "$2" = "list" ]; then cat "$STUB_LIST"; exit 0; fi
 if [ "$2" = "read" ]; then
   case "$*" in
     *"--pages all"*) printf '%s\n' "────" "Book" "ID: cmrealbook0000000000001 | 2 pages" "Version: 1" "────" "" "── Page 1 ──" "" "# One" "first" "" "Stopped after page 1 to stay under 20,000 bytes. Next: trove items read cmrealbook0000000000001 --pages 2-2" ;;
-    *"--pages 2-2"*) printf '%s\n' "── Page 2 ──" "" "# Two" "second" ;;
+    *"--pages 2-2"*) printf '%s\n' "────" "Book" "ID: cmrealbook0000000000001 | 2 pages" "Version: 1" "────" "" "── Page 2 ──" "" "# Two" "second" ;;
     *) exit 1 ;;
   esac
   exit 0
@@ -63,6 +63,7 @@ def test_fetch_follows_next_and_body_strips_header(tmp_path):
     assert r.returncode == 0, r.stderr
     raw = (tmp_path / "raw.md").read_text()
     assert "Next: trove" not in raw and "second" in raw
+    assert raw.count("Version: 1") == 1, "continuation header must be stripped"
     assert (tmp_path / "body.md").read_text() == "# One\nfirst\n\n# Two\nsecond\n"
 
 
@@ -74,3 +75,9 @@ def test_fetch_refuses_bad_id(tmp_path):
 def test_find_by_title_refuses_ambiguous(tmp_path):
     r = _run(tmp_path, "object", 'trove_find_by_title "Dup"')
     assert r.returncode != 0
+
+
+def test_find_by_title_error_is_distinct_from_missing(tmp_path):
+    missing = _run(tmp_path, "object", 'trove_find_by_title "Nope"; echo "rc=$?"')
+    ambiguous = _run(tmp_path, "object", 'trove_find_by_title "Dup"; echo "rc=$?"')
+    assert "rc=1" in missing.stdout and "rc=2" in ambiguous.stdout

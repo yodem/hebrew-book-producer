@@ -69,7 +69,7 @@ or specified explicitly.
 1. List `.voice/interview/0N-*.md` with completion markers.
 2. Show `.voice/audit.md` head if present.
 3. Show last `> Updated` stamp from `AUTHOR_VOICE.md`.
-4. Show `.voice/.candlekeep-id` presence.
+4. Show `.voice/.trove-id` presence (an old `.voice/.candlekeep-id` is migrated on first run).
 
 ## Hard rules
 

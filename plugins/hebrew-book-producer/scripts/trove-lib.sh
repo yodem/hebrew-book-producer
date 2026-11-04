@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # trove-lib.sh: shared Trove helpers for the loaders. Source it; do not run it.
 #
-#   trove_find_by_title <exact title>   prints the id of the one readable book with that title
+#   trove_find_by_title <exact title>   prints the id of the one readable book with that title;
+#                                       returns 1 when there is none, 2 on error or ambiguity
 #   trove_fetch <id> <out-file>         writes the whole book to <out-file>, following the
 #                                       "Next: trove items read ..." line that ends a partial read
 #
@@ -14,17 +15,18 @@ trove_valid_id() { [[ "${1:-}" =~ ^[a-z0-9]{10,40}$ ]]; }
 # Locked books stay in the list but cannot be read, so they are skipped.
 trove_find_by_title() {
   local title="$1"
-  command -v trove >/dev/null 2>&1 || return 1
-  command -v jq >/dev/null 2>&1 || return 1
-  local ids
-  ids=$(trove items list --json --no-session 2>/dev/null | jq -r --arg t "$title" \
-    '[(if type == "object" then .items else . end)[] | select(.title == $t and (.locked != true)) | .id] | sort | .[]' 2>/dev/null) || return 1
+  command -v trove >/dev/null 2>&1 || return 2
+  command -v jq >/dev/null 2>&1 || return 2
+  local ids listing
+  listing=$(trove items list --json --no-session 2>/dev/null) || return 2
+  ids=$(printf '%s' "$listing" | jq -r --arg t "$title" \
+    '[(if type == "object" then .items else . end)[] | select(.title == $t and (.locked != true)) | .id] | sort | .[]' 2>/dev/null) || return 2
   [ -n "$ids" ] || return 1
   if [ "$(printf '%s\n' "$ids" | wc -l | tr -d ' ')" -gt 1 ]; then
     echo "WARN: several readable Trove books are titled '$title'; refusing to guess. Rename or remove the extra copies." >&2
-    return 1
+    return 2
   fi
-  trove_valid_id "$ids" || return 1
+  trove_valid_id "$ids" || return 2
   printf '%s\n' "$ids"
 }
 
@@ -62,20 +64,37 @@ trove_fetch() {
       next="${next%"${next##*[![:space:]]}"}"
       [[ "$next" =~ ^--pages\ ([0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*|all)(\ --part\ [0-9]+)?$ ]] || next=""
     fi
+    # Every part repeats the read header; keep it only on the first part.
+    if [ "$i" -gt 1 ]; then
+      _trove_strip_header "$part" || { rm -f "$tmp" "$part"; return 1; }
+    fi
     if [ -z "$next" ]; then
-      cat "$part" >> "$tmp"
-      mv "$tmp" "$out"; rm -f "$part"
+      cat "$part" >> "$tmp" && mv "$tmp" "$out" || { rm -f "$tmp" "$part"; return 1; }
+      rm -f "$part"
       return 0
     fi
     if [ "$next" = "${args[*]}" ]; then
       echo "WARN: trove read of $id repeats '$next'; stopping" >&2
       rm -f "$tmp" "$part"; return 1
     fi
-    grep -vxF "$last" "$part" >> "$tmp"
+    grep -vxF "$last" "$part" >> "$tmp" || [ $? -eq 1 ] || { rm -f "$tmp" "$part"; return 1; }
     read -r -a args <<< "$next"
   done
   echo "WARN: trove read of $id did not finish after 100 parts" >&2
   rm -f "$tmp" "$part"; return 1
+}
+
+# _trove_strip_header <file>: drop a leading "────" / title / ID / Version / "────" block in place.
+_trove_strip_header() {
+  local f="$1" t
+  t=$(mktemp) || return 1
+  # Leading blank lines, then the header block, then the blank lines after it.
+  awk 'state == 0 && /^[[:space:]]*$/ { next }
+       state == 0 && /^─+$/ { state = 1; next }
+       state == 0 { state = 3; print; next }
+       state == 1 { if ($0 ~ /^─+$/) state = 2; next }
+       state == 2 && /^[[:space:]]*$/ { next }
+       { state = 3; print }' "$f" > "$t" && mv "$t" "$f" || { rm -f "$t"; return 1; }
 }
 
 # trove_body <in> <out>: strip the read header and "── Page N ──" markers from a

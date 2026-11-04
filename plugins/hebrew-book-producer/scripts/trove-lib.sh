@@ -19,6 +19,13 @@ trove_find_by_title() {
   command -v jq >/dev/null 2>&1 || return 2
   local ids listing
   listing=$(trove items list --json --no-session 2>/dev/null) || return 2
+  printf '%s' "$listing" | jq -e 'type == "object" or type == "array"' >/dev/null 2>&1 || return 2
+  # A matching book that is locked exists but cannot be read: that is an error, not a miss.
+  if printf '%s' "$listing" | jq -e --arg t "$title" \
+      '[(if type == "object" then .items else . end)[] | select(.title == $t)] | (length > 0 and all(.locked == true))' >/dev/null 2>&1; then
+    echo "WARN: the Trove book titled '$title' is locked" >&2
+    return 2
+  fi
   ids=$(printf '%s' "$listing" | jq -r --arg t "$title" \
     '[(if type == "object" then .items else . end)[] | select(.title == $t and (.locked != true)) | .id] | sort | .[]' 2>/dev/null) || return 2
   [ -n "$ids" ] || return 1
@@ -43,7 +50,7 @@ _trove_read_retry() {
 }
 
 trove_fetch() {
-  local id="$1" out="$2" tmp part last next prefix
+  local id="$1" out="$2" tmp part last next prefix ver first_ver=""
   trove_valid_id "$id" || { echo "WARN: not a Trove id: '$id'" >&2; return 1; }
   command -v trove >/dev/null 2>&1 || return 1
   tmp=$(mktemp) || return 1
@@ -59,10 +66,17 @@ trove_fetch() {
     # Accept only a strict page spec for this same id; book text is never parsed as a command.
     next=""
     prefix="Next: trove items read ${id} "
-    if [[ "$last" == *"$prefix"* ]]; then
+    if [[ "$last" =~ ^(Stopped|Not\ read\ yet|.*continues) && "$last" == *"$prefix"* ]]; then
       next="${last##*"$prefix"}"
       next="${next%"${next##*[![:space:]]}"}"
       [[ "$next" =~ ^--pages\ ([0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*|all)(\ --part\ [0-9]+)?$ ]] || next=""
+    fi
+    # All parts must come from the same version of the book.
+    ver=$(grep -m1 -E '^Version: [0-9]+' "$part" | tr -dc '0-9')
+    if [ "$i" -eq 1 ]; then first_ver="$ver"
+    elif [ "$ver" != "$first_ver" ]; then
+      echo "WARN: $id changed during the read (version $first_ver -> $ver); try again" >&2
+      rm -f "$tmp" "$part"; return 1
     fi
     # Every part repeats the read header; keep it only on the first part.
     if [ "$i" -gt 1 ]; then
@@ -90,9 +104,9 @@ _trove_strip_header() {
   t=$(mktemp) || return 1
   # Leading blank lines, then the header block, then the blank lines after it.
   awk 'state == 0 && /^[[:space:]]*$/ { next }
-       state == 0 && /^─+$/ { state = 1; next }
+       state == 0 && /^(─)+$/ { state = 1; next }
        state == 0 { state = 3; print; next }
-       state == 1 { if ($0 ~ /^─+$/) state = 2; next }
+       state == 1 { if ($0 ~ /^(─)+$/) state = 2; next }
        state == 2 && /^[[:space:]]*$/ { next }
        { state = 3; print }' "$f" > "$t" && mv "$t" "$f" || { rm -f "$t"; return 1; }
 }
@@ -101,8 +115,8 @@ _trove_strip_header() {
 # trove_fetch file, leaving the book's own markdown (pages were split on "# " headings).
 trove_body() {
   awk '
-    hdr < 2 { if ($0 ~ /^─+$/) { hdr++; if (hdr == 2) skipblank = 1 }; next }
-    /^── Page [0-9]+ ──$/ { skipblank = 1; next }
+    hdr < 2 { if ($0 ~ /^(─)+$/) { hdr++; if (hdr == 2) skipblank = 1 }; next }
+    /^── Page [0-9]+( \(part [0-9]+ of [0-9]+\))? ──$/ { skipblank = 1; next }
     skipblank && /^[[:space:]]*$/ { skipblank = 0; next }
     { skipblank = 0; print }
   ' "$1" > "$2"

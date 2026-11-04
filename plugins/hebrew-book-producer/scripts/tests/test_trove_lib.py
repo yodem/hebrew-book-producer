@@ -15,6 +15,7 @@ ITEMS = [
     {"id": "cmlockedbook00000000001", "title": "Hebrew Linguistic Reference", "locked": True},
     {"id": "cmrealbook0000000000001", "title": "Hebrew Linguistic Reference", "locked": False},
     {"id": "cmotherbook000000000001", "title": "Other", "locked": False},
+    {"id": "cmlockedonly00000000001", "title": "Locked Only", "locked": True},
     {"id": "cmdupbook00000000000001", "title": "Dup", "locked": False},
     {"id": "cmdupbook00000000000002", "title": "Dup", "locked": False},
 ]
@@ -81,3 +82,19 @@ def test_find_by_title_error_is_distinct_from_missing(tmp_path):
     missing = _run(tmp_path, "object", 'trove_find_by_title "Nope"; echo "rc=$?"')
     ambiguous = _run(tmp_path, "object", 'trove_find_by_title "Dup"; echo "rc=$?"')
     assert "rc=1" in missing.stdout and "rc=2" in ambiguous.stdout
+
+
+def test_body_works_in_c_locale(tmp_path):
+    r = _run(tmp_path, "object", 'export LC_ALL=C; trove_fetch cmrealbook0000000000001 raw.md && trove_body raw.md body.md')
+    assert r.returncode == 0, r.stderr
+    assert (tmp_path / "body.md").read_text() == "# One\nfirst\n\n# Two\nsecond\n"
+
+
+def test_locked_only_match_is_an_error(tmp_path):
+    r = _run(tmp_path, "object", 'trove_find_by_title "Locked Only"; echo "rc=$?"')
+    assert "rc=2" in r.stdout
+
+
+def test_empty_listing_is_an_error(tmp_path):
+    r = _run(tmp_path, "object", 'printf "" > list.json; trove_find_by_title "Nope"; echo "rc=$?"')
+    assert "rc=2" in r.stdout

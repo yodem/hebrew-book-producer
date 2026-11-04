@@ -67,6 +67,7 @@ echo ".claude/" >> .gitignore
 ```bash
 # Trove CLI (https://heytrove.ai) — שכבת הידע (מדריך כתיבה + Hebrew Linguistic Reference)
 trove auth login
+# נדרש גם jq (חיפוש לפי כותרת וסנכרון קול): brew install jq / apt install jq
 
 # Python — לחילוץ טביעת אצבע סגנונית במסלול הכבד של /init-voice
 pip install pdfplumber python-docx

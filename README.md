@@ -89,6 +89,7 @@ echo ".claude/" >> .gitignore
 ```bash
 # Trove CLI (https://heytrove.ai) — for the shared writing-craft + Hebrew Linguistic Reference layer
 trove auth login
+# jq is required for the title lookup and voice sync (brew install jq / apt install jq)
 
 # Python deps for the heavy /init-voice path
 pip install pdfplumber python-docx

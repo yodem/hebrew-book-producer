@@ -99,7 +99,7 @@ manuscript
 | name | `literary-synthesizer` |
 | model | opus |
 | tools | Read, Grep, Glob, Write, Bash |
-| reads (input artefacts) | `.book-producer/literary-notes/*.json`, `.book-producer/chapter-notes/*.json`, `.book-producer/manuscript-index.json`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.ctx/author-profile.md`, `.ctx/literary-synthesizer-instructions.md`, `skills/changes-schema/SKILL.md` |
+| reads (input artefacts) | `.book-producer/literary-notes/*.json`, `.book-producer/chapter-notes/*.json`, `.book-producer/manuscript-index.json`, `.ctx/writers-guide.md`, `.ctx/hebrew-linguistic-reference.md`, `.ctx/author-profile.md`, `.ctx/literary-synthesizer-instructions.md`, `references/changes-schema/README.md` |
 | writes (output artefacts) | `.book-producer/runs/<run-id>/literary-editor/changes.json` (unified, `change_id` on every entry); `LITERARY_NOTES.md` |
 | emits (state transitions) | `{"chapter": "ALL", "next_stage": "linguistic"}` |
 | hard rules | Notes-first reading; spot-check chunks via Grep only; every change has `change_id`; voice wins (demote to voice-flag rather than auto-apply); three Yeahbuts max per chapter; never write `.book-producer/state.json` |
@@ -155,7 +155,7 @@ manuscript
 | name | `typesetting-agent` |
 | model | sonnet |
 | tools | Read, Write, Bash |
-| reads (input artefacts) | `${CLAUDE_PLUGIN_ROOT}/skills/hebrew-typography/references/fonts.md`, `${CLAUDE_PLUGIN_ROOT}/skills/hebrew-typography/references/layout-rules.md`, `.ctx/hebrew-linguistic-reference.md`, `book.yaml`, `.book-producer/state.json` |
+| reads (input artefacts) | `${CLAUDE_PLUGIN_ROOT}/references/hebrew-typography/references/fonts.md`, `${CLAUDE_PLUGIN_ROOT}/references/hebrew-typography/references/layout-rules.md`, `.ctx/hebrew-linguistic-reference.md`, `book.yaml`, `.book-producer/state.json` |
 | writes (output artefacts) | `TYPESETTING_BRIEF.md`, `TYPESETTING_NOTES.md`; triggers state update to `proofread-2-pending` via production-manager signal |
 | emits (state transitions) | `{"chapter": "<id>", "next_stage": "proofread-2-pending"}` per chapter typeset |
 | hard rules | No PDF rendering — produces specification only; Frank Ruhl Libre is default; even-page chapter starts always; re-trigger proofreader pass 2 after typesetting |
@@ -208,7 +208,7 @@ manuscript
 
 ### `changes.json` — Editor Output Schema
 
-All three editorial agents (literary-editor, linguistic-editor, proofreader) emit `changes.json` alongside their `.md` notes. Production-manager reads this for transparent merging. **See `skills/changes-schema/SKILL.md` for the full JSON Schema fragment and sample objects.**
+All three editorial agents (literary-editor, linguistic-editor, proofreader) emit `changes.json` alongside their `.md` notes. Production-manager reads this for transparent merging. **See `references/changes-schema/README.md` for the full JSON Schema fragment and sample objects.**
 
 Top-level shape:
 

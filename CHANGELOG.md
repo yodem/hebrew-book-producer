@@ -5,6 +5,14 @@ All notable changes to `hebrew-book-producer` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] — 2026-11-17
+
+### Changed
+- **One `book` router skill** replaces eleven commands to cut the description text Claude Code lists in context: `start`, `init`, `lector`, `thesis`, `draft`, `edit`, `proof`, `apply`, `typeset`, `ship`, `help` are now stages of `/hebrew-book-producer:book <stage>` (bodies in `skills/book/phases/<stage>.md`, unchanged apart from reference paths). The old `/start`, `/init`, `/lector`, `/thesis`, `/draft`, `/edit`, `/proof`, `/apply`, `/typeset`, `/ship`, `/help` stay for this release as one-line stubs that forward to `book <stage>`, and will be removed in the next.
+- **Eight reference skills became plain reference files** read by path (they were `user-invocable: false`, so their descriptions only cost context): `skills/book-bootstrap`, `skills/candlekeep-writers-guide`, `skills/changes-schema`, `skills/cite-master`, `skills/hebrew-connectives`, `skills/hebrew-typography`, `skills/niqqud-pass`, `skills/review-style` are now `references/<name>/README.md` (supporting files moved alongside). Agents, scripts, the Gemini MCP calibration bundle (`bundle.ts`) and docs read them by the new path. `skills/voice` is unchanged.
+- The natural-language router table moved from `CLAUDE.md` into `skills/book/SKILL.md` (single source).
+- `scripts/skill_budget.py` and `tests/skill_budget_baseline.json` added: measure and gate the listed description budget.
+
 ## [0.9.0] — 2026-05-28
 
 ### Added

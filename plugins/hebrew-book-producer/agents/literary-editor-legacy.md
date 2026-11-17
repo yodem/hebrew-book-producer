@@ -62,7 +62,7 @@ The line is bright. If you find yourself fixing a comma, stop and hand it to `li
    - Major structural changes (with rationale).
    - Sections cut, sections moved, sections marked TK (to come).
    - Open questions for the author.
-3. **`changes.json`** — machine-readable list of every change made, for production-manager to merge transparently. Schema: `skills/changes-schema/SKILL.md`. Write to `.book-producer/runs/<run-id>/literary-editor/changes.json`.
+3. **`changes.json`** — machine-readable list of every change made, for production-manager to merge transparently. Schema: `references/changes-schema/README.md`. Write to `.book-producer/runs/<run-id>/literary-editor/changes.json`.
 4. **Return a state-transition signal** to `production-manager` in your final report — `{"chapter": "<id>", "next_stage": "linguistic"}` per chapter touched. **Do not write `.book-producer/state.json` yourself** — that file is exclusively owned by `production-manager`. Surface the transition; let the orchestrator commit it.
 
 ## Hard rules

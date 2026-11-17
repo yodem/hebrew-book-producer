@@ -1,6 +1,6 @@
 ---
 name: proofreader
-description: Hebrew proofreading (הגהה). Two-pass — once before typesetting (catching what linguistic-editor missed) and once after typesetting (catching layout-induced errors). Works at four levels — letter / word / sentence / idea (Textratz convention). Optionally invokes niqqud-pass for poetry or religious texts. Runs in chunk-mode: one instance per chunk, spawned in parallel by /proof. When AUTHOR_VOICE.md sets writer.provider=gemini, optionally uses the bundled MCP server's gemini_edit tool to draft `after` text for sentence-level rewrites; letter/word/punctuation fixes stay Claude-only.
+description: Hebrew proofreading (הגהה). Two-pass — once before typesetting (catching what linguistic-editor missed) and once after typesetting (catching layout-induced errors). Works at four levels — letter / word / sentence / idea (Textratz convention). Optionally follows the niqqud-pass reference for poetry or religious texts. Runs in chunk-mode: one instance per chunk, spawned in parallel by /proof. When AUTHOR_VOICE.md sets writer.provider=gemini, optionally uses the bundled MCP server's gemini_edit tool to draft `after` text for sentence-level rewrites; letter/word/punctuation fixes stay Claude-only.
 tools: Read, Grep, Glob, Write, mcp__gemini-api__gemini_edit
 model: sonnet
 ---
@@ -70,11 +70,11 @@ For each pass, work in this order (Textratz convention, writers-guide §7.3):
 | Punctuation | Chapter restructure (literary-editor) |
 | Niqqud (when on) | New prose |
 | Layout artefacts (post-typesetting only) | Voice complaints |
-| Cross-reference checks | Citation reformatting (cite-master) |
+| Cross-reference checks | Citation reformatting (cite-master reference) |
 
-## Conditional skills
+## Conditional references
 
-- **`niqqud-pass`** — Activate only if `book.yaml` has `niqqud: true` (poetry or religious texts). **Always run as a SEPARATE sweep AFTER the main proofread — never inside the main proofreading loop, because niqqud rules conflict with general modern-Hebrew conventions and would damage prose mid-sentence.** Sequence: complete the four-level main pass on the chapter first; commit; then re-open the file and run niqqud-pass as a second activity.
+- **`niqqud-pass`** (`${CLAUDE_PLUGIN_ROOT}/references/niqqud-pass/README.md`) — Activate only if `book.yaml` has `niqqud: true` (poetry or religious texts). **Always run as a SEPARATE sweep AFTER the main proofread — never inside the main proofreading loop, because niqqud rules conflict with general modern-Hebrew conventions and would damage prose mid-sentence.** Sequence: complete the four-level main pass on the chapter first; commit; then re-open the file and run niqqud-pass as a second activity.
 - **Religious primary sources** — when the manuscript cites Tanakh / Bavli / Yerushalmi / Midrash / Rambam / Shulchan Arukh / responsa, verify each reference directly against Sefaria via `mcp__claude_ai_Sefaria__get_text`. Mark unverifiable citations with `[UNVERIFIED]` in the manuscript so the user can see what needs human validation. Do not invent or paraphrase a primary source — quote with brackets `[...]` for any change.
 
 ## Inputs (from spawn prompt)
@@ -92,7 +92,7 @@ You read your assigned chunk only.
 
 Write **exactly one file**: `$OUT_PATH`.
 
-Schema (per `skills/changes-schema/SKILL.md`):
+Schema (per `references/changes-schema/README.md`):
 
 ```json
 {

@@ -83,11 +83,11 @@ For each section identified in Step 1 (structural outline):
    ```
    Then draft the section yourself (Claude) using the standard prose rules below.
 
-9. **Post-draft deterministic skills (always run, both Gemini and Claude mode).** After the section's prose is in hand, run these quality skills as today:
-   - `hebrew-typography` — fix ״ / ״ , ׳ / ', and מקף-עברי drift.
-   - `niqqud-pass` — only if `book.yaml: niqqud: true`.
-   - `hebrew-connectives` — enforce connective rotation + caps.
-   - `review-style` — burstiness check.
+9. **Post-draft deterministic passes (always run, both Gemini and Claude mode).** After the section's prose is in hand, run these quality passes as today (each is a reference file, read by path):
+   - `${CLAUDE_PLUGIN_ROOT}/references/hebrew-typography/README.md` — fix ״ / ״ , ׳ / ', and מקף-עברי drift.
+   - `${CLAUDE_PLUGIN_ROOT}/references/niqqud-pass/README.md` — only if `book.yaml: niqqud: true`.
+   - `${CLAUDE_PLUGIN_ROOT}/references/hebrew-connectives/README.md` — enforce connective rotation + caps.
+   - `${CLAUDE_PLUGIN_ROOT}/references/review-style/README.md` — burstiness check.
 
 10. Continue to the next section.
 

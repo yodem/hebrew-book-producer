@@ -43,7 +43,7 @@ The end-to-end flow that `/ship` orchestrates. Used by production-manager and do
          │
          ▼
 ┌─────────────────┐  agent: typesetting-agent (sonnet)
-│   typeset       │  uses: hebrew-typography skill
+│   typeset       │  uses: references/hebrew-typography
 │     brief       │  output: TYPESETTING_BRIEF.md
 │                 │  + TYPESETTING_NOTES.md
 └────────┬────────┘

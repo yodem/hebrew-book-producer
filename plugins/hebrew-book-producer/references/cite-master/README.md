@@ -1,9 +1,3 @@
----
-name: cite-master
-description: Format and verify citations per book.yaml's citation_style (Chicago Author-Date / APA / Hazal-style). Invoke when an editing agent finishes a chapter with footnotes, or when /proof runs on a chapter with bibliographies. Do NOT use for non-citation prose review — that is review-style's job.
-user-invocable: false
----
-
 # cite-master — citations, consistently
 
 ## Knowledge source

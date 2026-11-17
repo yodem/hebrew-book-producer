@@ -1,9 +1,3 @@
----
-name: niqqud-pass
-description: Niqqud-only proofreading pass for poetry, religious texts, and children's books (book.yaml: niqqud: true). Invoke ONLY as a separate sweep AFTER the main proofreader pass on the same chapter. Do NOT use on modern non-fiction prose — niqqud rules conflict with standard modern Hebrew conventions and will damage the text.
-user-invocable: false
----
-
 # niqqud-pass — vowel-pointing proofreading
 
 ## Knowledge source

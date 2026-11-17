@@ -57,7 +57,7 @@ If `provider: "gemini"` is set AND the tool is present in your toolset, you MAY 
 | Terminology consistency | Niqqud (separate pass) |
 | Cutting clutter (Zinsser §3) | Layout |
 | Logical connector accuracy (ברם / לפיכך / שכן) | Citations format |
-| Removing AI markers (review-style skill) | Page numbers |
+| Removing AI markers (review-style reference) | Page numbers |
 
 ## Method
 
@@ -70,9 +70,9 @@ For each chapter:
    3. Convert passive to active.
    4. Strong opener.
    5. Read aloud — does it sound like the author?
-3. Apply the **review-style skill** for Burstiness — sentence-length variance. AI-flat prose gets short sentences inserted alongside long ones.
+3. Read `${CLAUDE_PLUGIN_ROOT}/references/review-style/README.md` and apply it for Burstiness — sentence-length variance. AI-flat prose gets short sentences inserted alongside long ones.
 4. Check banned and preferred phrases from `AUTHOR_VOICE.md` (project root) — enforce the rules listed in the `## Banned phrases`, `## Preferred phrases`, and `## Register` sections.
-5. Apply the **connectives skill** — verify every logical connector matches the right relation (Addition / Contrast / Cause / Result / Concession).
+5. Read `${CLAUDE_PLUGIN_ROOT}/references/hebrew-connectives/README.md` and apply it — verify every logical connector matches the right relation (Addition / Contrast / Cause / Result / Concession).
 
 ## Banned phrases (AI markers)
 
@@ -107,7 +107,7 @@ You read your assigned chunk only. You do NOT see other chunks. Cross-chunk conc
 
 Write **exactly one file**: `$OUT_PATH`.
 
-Schema (per `skills/changes-schema/SKILL.md`):
+Schema (per `references/changes-schema/README.md`):
 
 ```json
 {

@@ -1,9 +1,3 @@
----
-name: book-bootstrap
-description: Auto-detect a Hebrew manuscript and scaffold the project — book.yaml, .book-producer/, AUTHOR_VOICE.md (via voice-miner if missing). Invoked by /start before any terminal action; idempotent on already-scaffolded projects. Do NOT use as a standalone CLI — it has no terminal output of its own; it returns a JSON result to the caller.
-user-invocable: false
----
-
 # book-bootstrap — auto-scaffold a Hebrew book project
 
 ## When to invoke

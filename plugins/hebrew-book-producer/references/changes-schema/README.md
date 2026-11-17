@@ -1,9 +1,3 @@
----
-name: changes-schema
-description: Defines the `changes.json` output schema for editorial agents (literary-editor, linguistic-editor, proofreader). Invoke when an editorial agent is about to write its structured output, or when production-manager is validating an incoming changes.json. Do NOT use for prose review or state management — this skill defines the handoff contract only.
-user-invocable: false
----
-
 # changes-schema — structured editorial handoff
 
 ## When to invoke

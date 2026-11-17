@@ -377,7 +377,8 @@ def measure(skills_dir, commands_dir=None):
 # --------------------------------------------------------------------------
 
 # Files that exist only in the built plugin (produced by `npm run build`), not in src/.
-BUILD_GENERATED = {"bin/aw"}
+# bin/aw is bundled by the build; .claude-plugin/plugin.json is written by scripts/build-plugins.sh.
+BUILD_GENERATED = {"bin/aw", ".claude-plugin/plugin.json"}
 _ROW_PHASE = re.compile(r"^`([^`\s|]+)`$")
 _VAR_PATH = re.compile(r"\$\{(CLAUDE_SKILL_DIR|CLAUDE_PLUGIN_ROOT)\}/([^\s`)\]\"'>]+)")
 _MD_LINK = re.compile(r"\]\(([^)\s]+)\)")

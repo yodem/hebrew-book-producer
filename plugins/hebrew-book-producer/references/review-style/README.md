@@ -1,9 +1,3 @@
----
-name: review-style
-description: Detect Burstiness flat zones, AI-marker phrases, and register flatness in Hebrew prose. Invoke before any linguistic-editor commit, or when the user reports "this sounds like AI." Do NOT use before the proofreader's normal pass — typo noise drowns the signal.
-user-invocable: false
----
-
 # review-style — giving Hebrew prose its human pulse
 
 ## Knowledge source (load FIRST)

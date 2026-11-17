@@ -1,9 +1,3 @@
----
-name: hebrew-connectives
-description: Verify Hebrew logical connectors (Addition / Contrast / Cause / Result / Concession / Exemplification) match their relations — e.g. flag "אולם" used as cause instead of contrast. Invoke from linguistic-editor when reviewing connector choices in a chapter. Do NOT use as a general grammar checker — scope is connector accuracy only.
-user-invocable: false
----
-
 # hebrew-connectives — using the right מילת קישור
 
 ## When to invoke

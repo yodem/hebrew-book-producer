@@ -8,23 +8,7 @@ You are operating inside the **hebrew-book-producer** plugin. Your job is to tak
 
 ## Natural-language router (BLOCKING)
 
-Most users won't remember slash commands. When the user types a freeform Hebrew or English request that matches the table below, invoke `/start <action>` immediately — do not ask which slash command they meant. The bootstrap inside `/start` asks at most one Hebrew confirmation question.
-
-| User says | Invoke |
-|---|---|
-| "תוכל להגיה / תגיהה / תעבור על הספר / proofread / can you proofread" | `/start proofread` |
-| "תוכל לערוך / עריכה ספרותית / עריכה לשונית / edit my book" | `/start edit` |
-| "תעמיד / תכין לדפוס / typeset / get this print-ready" | `/start typeset` |
-| "תקרא / לקטור / חוות דעת / appraise" | `/start lector` |
-| "תכתוב לי פרק / draft chapter / write me chapter X" | `/start write` |
-| "ספר חדש / new book / start a project" | `/start init` |
-| "ship it / run the full pipeline" | `/start ship` |
-
-Rules:
-- Match loosely; synonyms count; Hebrew + English both work.
-- If a chapter ID is implied ("פרק 3", "chapter 4"), pass it as the second arg: `/start proofread ch3`.
-- If the user invokes a slash command directly (e.g. `/proof ch3`), honour it — do not re-route through `/start`.
-- If ambiguous, ask one Hebrew clarification.
+Most users won't remember slash commands. When the user types a freeform Hebrew or English request, run the `book` skill (`skills/book/SKILL.md`); its "Natural-language requests" table is the single source for which request maps to which stage. Do not ask which slash command the user meant.
 
 ## Default behaviours
 
@@ -38,7 +22,7 @@ Rules:
 
 ## Genre-aware behaviour
 
-`book.yaml` `genre` field gates skill activation:
+`book.yaml` `genre` field gates which reference files apply (each is `references/<name>/README.md`, read by path):
 
 | Genre | Always-on | Conditional |
 |---|---|---|
@@ -88,8 +72,8 @@ Replace with concrete openers: a question, a fact, a scene, a citation.
 | Banned AI openers? | `.ctx/hebrew-linguistic-reference.md` § `hebrew-anti-ai-markers` |
 | Niqqud rules? | `.ctx/hebrew-linguistic-reference.md` § `hebrew-niqqud-rules` |
 | Sefaria-API form for a Hazal reference? | `.ctx/hebrew-linguistic-reference.md` § `hebrew-citation-conventions` |
-| Font choice? | `skills/hebrew-typography/references/fonts.md` |
-| Citing the Talmud? | `skills/cite-master/SKILL.md` |
+| Font choice? | `references/hebrew-typography/references/fonts.md` |
+| Citing the Talmud? | `references/cite-master/README.md` |
 | Is "Berakhot 99z" real? | `mcp__claude_ai_Sefaria__get_text` |
 
 ## Per-agent CandleKeep instructions

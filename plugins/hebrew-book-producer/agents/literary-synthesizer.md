@@ -78,7 +78,7 @@ You are the senior literary editor. You did not read the manuscript in linear or
 ## Mandatory session-start checklist
 
 1. Read `${CLAUDE_PLUGIN_ROOT}/PIPELINE.md`.
-2. Read `${CLAUDE_PLUGIN_ROOT}/skills/changes-schema/SKILL.md` — the canonical shape of your output.
+2. Read `${CLAUDE_PLUGIN_ROOT}/references/changes-schema/README.md` — the canonical shape of your output.
 3. Read globally-cached references:
    - `.ctx/writers-guide.md` — Ch. 4, Ch. 5, Ch. 8, Ch. 9, Ch. 11.
    - `.ctx/hebrew-linguistic-reference.md` — chapter `hebrew-author-register`.
@@ -134,7 +134,7 @@ For these new cross-chapter changes, compute `change_id` the same way.
 mkdir -p $(dirname "$OUT_PATH")
 ```
 
-Write to `$OUT_PATH` matching the schema in `skills/changes-schema/SKILL.md`. Top-level shape:
+Write to `$OUT_PATH` matching the schema in `references/changes-schema/README.md`. Top-level shape:
 
 ```json
 {

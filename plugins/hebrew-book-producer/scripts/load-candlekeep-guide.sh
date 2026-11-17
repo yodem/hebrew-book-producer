@@ -29,7 +29,7 @@
 #
 # Citation lookups (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, Shulchan Arukh)
 # are NOT handled by this script — they go directly to the Sefaria MCP tool
-# (mcp__claude_ai_Sefaria__get_text) inside the cite-master skill.
+# (mcp__claude_ai_Sefaria__get_text) inside the cite-master reference (references/cite-master/README.md).
 
 set -u
 
@@ -123,7 +123,7 @@ echo
 echo "Done. Cached references in: ${CTX_DIR}/"
 echo
 echo "NOTE on canonical religious texts (Tanakh, Bavli, Yerushalmi, Midrash, Rambam, etc.):"
-echo "  Those are NOT cached here. The cite-master skill queries Sefaria directly"
+echo "  Those are NOT cached here. The cite-master reference (references/cite-master/README.md) queries Sefaria directly"
 echo "  via the MCP tool mcp__claude_ai_Sefaria__get_text (sole validator)."
 echo "  CandleKeep is for the author's curated knowledge layer (craft, thesis, voice),"
 echo "  not canonical primary texts."

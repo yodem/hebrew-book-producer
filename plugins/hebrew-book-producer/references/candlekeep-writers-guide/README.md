@@ -1,9 +1,3 @@
----
-name: candlekeep-writers-guide
-description: Loads the author's curated knowledge layer (Writer's Guide, Agent-Team guide, Hebrew Linguistic Reference) from CandleKeep into .ctx/ at session start — delegated to the SessionStart hook so agents share one cached read. Invoked when .ctx/ cache is missing or stale. Do NOT use to fetch canonical religious texts — those go through Sefaria MCP.
-user-invocable: false
----
-
 # candlekeep-writers-guide — load the master guide
 
 ## When to invoke

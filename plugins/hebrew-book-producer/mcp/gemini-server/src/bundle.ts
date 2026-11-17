@@ -4,7 +4,7 @@
  * Reads:
  *   - AUTHOR_VOICE.md (project root) — author voice profile, including the
  *     `## Writer Configuration` block consumed by the orchestrator.
- *   - skills/hebrew-connectives/references/connectives-table.md (plugin) —
+ *   - references/hebrew-connectives/references/connectives-table.md (plugin) —
  *     the Hebrew connectives table; the equivalent of academic-writer's
  *     `words.md`. Rendered as the HEBREW CONNECTIVES section.
  *
@@ -71,7 +71,7 @@ export async function getBundle(targetLanguage: string): Promise<CalibrationBund
     const [voice, connectives] = await Promise.all([
       readOptional(path.join(project, 'AUTHOR_VOICE.md')),
       readOptional(
-        path.join(plugin, 'skills', 'hebrew-connectives', 'references', 'connectives-table.md'),
+        path.join(plugin, 'references', 'hebrew-connectives', 'references', 'connectives-table.md'),
       ),
     ]);
 

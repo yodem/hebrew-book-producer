@@ -1,9 +1,3 @@
----
-name: hebrew-typography
-description: Hebrew book typography reference for typesetting-agent — Frank Ruhl Libre, RTL margin rules, even-page chapter starts, גיליון דפוס math. Invoke when generating TYPESETTING_BRIEF.md or computing printing-sheet counts. Do NOT use for character-level rules (quotation marks, niqqud, bidi) — those live in the shared CandleKeep Hebrew Linguistic Reference.
-user-invocable: false
----
-
 # hebrew-typography — Hebrew book layout standards
 
 ## When to invoke

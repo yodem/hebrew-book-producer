@@ -29,8 +29,8 @@ This skill is a router. Pick one stage, read its file, and follow it. Never load
 ## How to run
 
 1. The first word of the arguments is the stage. Everything after it is the stage's arguments.
-2. Arguments but no stage word: infer the stage from the request (a freeform request such as "תוכל להגיה את הספר שלי?" or "can you proofread my book" runs `start` with that action). If two stages fit, ask the author which one. Do not guess. No arguments at all: run `help`.
-3. A first word that is not in the table: print the table and stop.
+2. Check in this order. Arguments that are more than one bare word (a sentence or request such as "תוכל להגיה את הספר שלי?" or "can you proofread my book") have no stage word: infer the stage from the request and run `start` with that action. If two stages fit, ask the author which one. Do not guess. No arguments at all: run `help`.
+3. Only when the arguments are a single bare word, with no sentence around it, and that word is not in the table: print the table and stop. Never apply this rule to a sentence.
 4. Read exactly one file, `${CLAUDE_SKILL_DIR}/phases/<phase>.md`, and follow it as if it were this skill's body. The paths inside it that start with `${CLAUDE_SKILL_DIR}` or `${CLAUDE_PLUGIN_ROOT}` are already correct.
 
 ## Natural-language requests

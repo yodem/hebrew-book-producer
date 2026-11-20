@@ -1,5 +1,7 @@
 # hebrew-book-producer
 
+> **Unmaintained (2026-11-20).** This plugin is no longer maintained: no fixes, releases or support. It stays here for reference only.
+
 A Claude Code plugin that takes a Hebrew manuscript through the full Israeli book-production pipeline — lectorship, literary editing, linguistic editing, proofreading, and a typesetting brief.
 
 > ספרי עיון, אוטוביוגרפיה, פילוסופיה וטקסטים דתיים. בעברית. מהערכת כתב היד עד הקובץ המוכן לדפוס.
